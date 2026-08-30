@@ -1,7 +1,7 @@
 # TradeOS Learning System
 
 **Document:** 10_LEARNING_SYSTEM.md  
-**Version:** 0.1.0  
+**Version:** 0.1.1  
 **Status:** Architecture Baseline  
 **Scope:** Learning loops, mistake detection, pattern discovery, agent learning, strategy learning, intervention governance, evaluation, and controlled improvement
 
@@ -91,6 +91,8 @@ A detected pattern is not automatically a rule.
                         └──────────────→ Evaluation
 ```
 
+Learning is advisory and adaptive-context infrastructure, not an independent trading authority.
+
 ---
 
 # 4. Learning Domains
@@ -144,6 +146,8 @@ Apply an approved learning rule.
 ## Level 6 — Re-evaluate
 
 Measure whether the rule continues to help.
+
+Activation requires the applicable governance path; learning does not self-authorize trading or safety changes.
 
 ---
 
@@ -570,6 +574,8 @@ Increase data requirements
 
 Recommendations must identify their intended scope.
 
+Recommendations are not trade authorization.
+
 ---
 
 # 23. Learning Rule
@@ -605,6 +611,8 @@ STRATEGY_ADJUSTMENT
 
 Risk-critical restrictions require stronger governance.
 
+No learning rule may override mandatory Risk or safety controls.
+
 ---
 
 # 25. Learning Governance
@@ -631,6 +639,15 @@ Approval
 Activation
 ```
 
+Learning autonomy is bounded by approved scope. Autonomous learning may optimize analysis, candidate generation, monitoring, and context selection, but it may not independently:
+
+- increase hard risk limits
+- disable or weaken safety controls
+- bypass Risk rejection
+- deploy an unvalidated model or strategy
+- create uncontrolled recursive agent behavior
+- alter immutable architecture invariants
+
 ---
 
 # 26. Intervention Experiments
@@ -650,6 +667,8 @@ Compare
 ```
 
 The objective is to determine whether the intervention actually improves behavior.
+
+Experiments must not introduce material trading risk merely to generate learning evidence.
 
 ---
 
@@ -940,6 +959,8 @@ Timeframe
 
 The Context Manager should avoid injecting unrelated lessons.
 
+Learning context must not silently alter authoritative strategy, portfolio, risk, or execution constraints.
+
 ---
 
 # 41. Learning Expiration
@@ -992,6 +1013,20 @@ Outcome
 Retirement
 ```
 
+Each activated learning rule should additionally retain provenance for:
+
+```text
+source evidence
+pattern version
+validation result
+recommendation version
+approval / governance decision
+activation version
+scope
+configuration reference
+activation time
+```
+
 This allows TradeOS to answer:
 
 > "Why does the system behave this way?"
@@ -1033,6 +1068,8 @@ Instead, it may learn:
 > "This strategy produces better results when position size is reduced under this regime."
 
 Even then, the change requires validation and governance.
+
+Learning cannot grant itself authority to change hard risk limits or bypass mandatory controls.
 
 ---
 
@@ -1203,6 +1240,8 @@ Model B
 
 Care must be taken to avoid introducing additional trading risk merely to run an experiment.
 
+Controlled evaluation should use the least risky evaluation mode that can answer the question, such as historical analysis, backtesting, simulation, or paper trading before production exposure.
+
 ---
 
 # 54. Learning Safety Threshold
@@ -1280,6 +1319,10 @@ The following must remain true:
 13. User behavior can be learned.
 14. Strategy behavior can be learned.
 15. The system must learn from both success and failure.
+16. Learning is not an independent trading authority.
+17. Autonomous learning is bounded by approved scope.
+18. Material learning changes require traceable provenance.
+19. Learning should use efficient, evidence-driven analysis rather than unnecessary computation.
 
 ---
 
@@ -1314,9 +1357,41 @@ Automated Evaluation
 
 Only after reliable measurement should more autonomous learning be introduced.
 
+Initial autonomous behavior should focus on bounded analysis, candidate generation, monitoring, and context retrieval—not autonomous changes to authoritative trading or safety controls.
+
 ---
 
-# 60. Future Learning Architecture
+# 60. Efficient Learning Architecture
+
+Learning workflows should avoid unnecessary analysis.
+
+Preferred pattern:
+
+```text
+New Evidence
+      ↓
+Cheap / Deterministic Checks
+      ↓
+Sufficient Evidence?
+   ┌──┴──┐
+  No    Yes
+   ↓      ↓
+Record  Targeted Analysis
+ /Defer     ↓
+          Pattern Candidate
+               ↓
+           Validation
+```
+
+The Learning System should escalate computationally only when evidence, impact, recurrence, or uncertainty justifies deeper analysis.
+
+Learning should optimize for **useful improvement per unit of computation and complexity**, not maximum analysis volume.
+
+Unnecessary agent debates, recursive self-analysis, and broad context retrieval should not be triggered without an explicit learning reason.
+
+---
+
+# 61. Future Learning Architecture
 
 A mature system may eventually support:
 
@@ -1338,11 +1413,11 @@ Model / Strategy Improvement
 Continuous Evaluation
 ```
 
-This remains governed and auditable.
+This remains governed, bounded, and auditable.
 
 ---
 
-# 61. Learning Architecture Success Criteria
+# 62. Learning Architecture Success Criteria
 
 The Learning System is successful when TradeOS can:
 
@@ -1359,10 +1434,13 @@ The Learning System is successful when TradeOS can:
 - Retire ineffective learning.
 - Preserve historical truth.
 - Never compromise safety while learning.
+- Keep learning authority separate from trading and risk authority.
+- Trace material learning changes back to evidence and governance.
+- Escalate analysis only when justified by evidence or impact.
 
 ---
 
-# 62. Related Documents
+# 63. Related Documents
 
 - `README.md`
 - `rules.md`
@@ -1387,7 +1465,8 @@ The Learning System is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS learning architecture, including repeated-mistake learning, agent learning, strategy learning, intervention governance, and effectiveness measurement |
+| 0.1.1 | Architecture Baseline | Added bounded learning autonomy, explicit separation from trading/risk authority, learning provenance, and efficient evidence-driven escalation |
 
 ---
 
-> **Learning principle: remember what happened, understand why it happened, detect what repeats, validate what matters, intervene carefully, and measure whether the system actually improves.**
+> **Learning principle: remember what happened, understand why it happened, detect what repeats, validate what matters, intervene carefully, and measure whether the system actually improves—without allowing learning to become an uncontrolled source of authority.**
