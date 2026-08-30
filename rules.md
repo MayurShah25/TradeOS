@@ -1,6 +1,6 @@
 # TradeOS Global Rules
 
-**Version:** 0.2.0  
+**Version:** 0.2.1  
 **Status:** Foundation / Architecture Phase  
 **Scope:** Applies to all TradeOS agents, strategies, models, workflows, and execution components.
 
@@ -39,7 +39,42 @@ Every proposed trade must define:
 
 If required information is unavailable or unreliable, reject the trade.
 
-## 4. Position Sizing
+## 4. Deterministic Risk Engine
+
+Safety-critical numerical risk controls must be enforced by a deterministic Risk Engine wherever deterministic computation is appropriate.
+
+The Risk Engine is authoritative for hard constraints including:
+
+- Position sizing
+- Maximum monetary risk
+- Risk percentage
+- Daily loss limits
+- Drawdown limits
+- Portfolio exposure limits
+- Leverage
+- Margin
+- Concentration limits
+- Liquidity constraints where deterministically measurable
+
+An LLM or AI agent must never be the sole authority for these hard numerical controls.
+
+Conceptually:
+
+```text
+Trade Proposal
+      ↓
+Deterministic Risk Engine
+      ↓
+Risk Review / Risk Agent
+      ↓
+Risk Gate
+      ↓
+APPROVE / REJECT / REVIEW
+```
+
+A hard Risk Engine rejection cannot be overturned downstream.
+
+## 5. Position Sizing
 
 The initial personal-testing baseline is approximately **0.5% of account equity risk per trade**, subject to final validation and configuration.
 
@@ -57,7 +92,53 @@ Final quantity must also respect lot sizes, contract specifications, available c
 
 Never increase position size to recover losses.
 
-## 5. Drawdown and Daily Loss Protection
+## 6. Risk Review Agent
+
+The Risk Agent is a governance component, not the sole numerical safety mechanism.
+
+It should provide contextual risk reasoning and identify concerns such as:
+
+- Event risk
+- Liquidity risk
+- Regime risk
+- Stress risk
+- Strategy-specific risk
+- Correlation concerns
+- Unusual conditions
+
+The Risk Agent may recommend rejection, reduction, escalation, or review.
+
+The Risk Agent **cannot weaken a hard Risk Engine constraint** and cannot independently create or authorize a trade that has no valid upstream decision.
+
+> **Risk can stop a trade, but Risk cannot invent a trade.**
+
+## 7. Risk Gate
+
+The Risk Gate is the enforcement boundary between risk governance and execution.
+
+```text
+Strategy / Analysis
+        ↓
+Critic
+        ↓
+Portfolio
+        ↓
+Deterministic Risk Engine
+        ↓
+Risk Review
+        ↓
+RISK GATE
+        ↓
+Execution Authorization
+        ↓
+Execution
+```
+
+If any mandatory hard constraint fails, the Risk Gate must return `REJECT` and execution is prohibited.
+
+No downstream component may convert a hard rejection into an approval.
+
+## 8. Drawdown and Daily Loss Protection
 
 TradeOS must support configurable drawdown states that progressively reduce risk and ultimately halt new trading.
 
@@ -71,7 +152,7 @@ The system must also maintain a daily loss budget. Once the configured limit is 
 
 Existing positions may continue to be managed according to their approved exit and safety rules.
 
-## 6. Stop-Loss Rules
+## 9. Stop-Loss Rules
 
 1. Every trade must have an invalidation mechanism.
 2. A stop-loss must be established before or immediately with entry.
@@ -80,7 +161,7 @@ Existing positions may continue to be managed according to their approved exit a
 5. Increased model confidence cannot remove risk controls.
 6. If the trade thesis is invalidated, the approved exit rules take precedence.
 
-## 7. Let Winners Run
+## 10. Let Winners Run
 
 When a trade moves strongly in the expected direction and the thesis remains valid, the system should avoid prematurely closing it solely to secure a small profit.
 
@@ -95,7 +176,7 @@ Permitted mechanisms include:
 
 Trailing logic must be predefined. Stops may move toward reduced risk but never be widened merely to give a losing position more room.
 
-## 8. Portfolio Risk
+## 11. Portfolio Risk
 
 Every proposed trade must be evaluated against existing exposure, including where applicable:
 
@@ -111,7 +192,7 @@ Every proposed trade must be evaluated against existing exposure, including wher
 
 A good individual setup may still be rejected because portfolio risk is already too high.
 
-## 9. Multi-Market Architecture
+## 12. Multi-Market Architecture
 
 TradeOS may support NSE/BSE, U.S. equities, options, cryptocurrency, forex, gold, Gold/INR, commodities, and future markets.
 
@@ -129,7 +210,7 @@ Each market must have a Market Profile describing applicable:
 
 Adding a market must not require rewriting the core architecture.
 
-## 10. Agent Governance
+## 13. Agent Governance
 
 Every agent must have clearly defined:
 
@@ -177,15 +258,17 @@ Cannot override hard risk limits.
 
 ### Risk Agent
 
-Calculates risk, position size, exposure, and trade eligibility.
+Provides contextual risk governance and review.
 
-**Has hard veto authority.**
+It may recommend rejection, reduction, escalation, or review, but it is **not the sole numerical risk calculator**.
+
+Hard numerical constraints are enforced by the deterministic Risk Engine, and the Risk Gate enforces the resulting decision.
 
 ### Execution Agent
 
-Executes only approved orders and verifies actual broker state.
+Executes only explicitly authorized orders and verifies actual broker state.
 
-Cannot create its own trading thesis or bypass Risk.
+Cannot create its own trading thesis, bypass Risk, or increase quantity without authorization.
 
 ### Learning Agent
 
@@ -199,29 +282,32 @@ Explains decisions and creates learning reports.
 
 Cannot override trading controls.
 
-## 11. Risk Veto
+## 14. Risk Authority
 
-The decision hierarchy is:
+The risk authority model is:
 
 ```text
-Research / Market Analysis
+Hard Numerical Constraints
         ↓
-Strategy
+Deterministic Risk Engine
         ↓
-Prediction
+Risk Review / Risk Agent
         ↓
-Critic
+Risk Gate
         ↓
-Portfolio
-        ↓
-RISK GATE
-        ↓
-Execution
+Execution Authorization
 ```
 
-If the Risk Gate returns `REJECT`, execution is prohibited.
+The following rules are mandatory:
 
-## 12. Inter-Agent Communication
+1. A hard Risk Engine failure means `REJECT`.
+2. A hard Risk Engine rejection cannot be overturned by an agent.
+3. Risk may stop or restrict an otherwise valid strategy proposal.
+4. Risk cannot invent a new trade.
+5. Execution cannot proceed without a valid Risk Gate decision.
+6. Risk calculations must remain reproducible and auditable.
+
+## 15. Inter-Agent Communication
 
 Agents must not enter uncontrolled conversations.
 
@@ -239,7 +325,7 @@ Every workflow must have a termination condition.
 
 **Infinite agent-to-agent loops are prohibited.**
 
-## 13. Token Efficiency
+## 16. Token Efficiency
 
 Agents must not read the entire repository for every decision.
 
@@ -259,7 +345,9 @@ Agent Context
 
 Prefer deterministic code for calculations and LLMs for reasoning, interpretation, synthesis, and explanation.
 
-## 14. Data Integrity
+TradeOS should improve reasoning efficiency over time without weakening safety, validation, or auditability.
+
+## 17. Data Integrity
 
 Do not trade using knowingly:
 
@@ -275,7 +363,21 @@ If critical data cannot be validated:
 
 **Do not trade.**
 
-## 15. Execution Safety
+## 18. Execution Safety
+
+TradeOS must distinguish:
+
+```text
+Trade Proposal
+    ≠
+Order Intent
+    ≠
+Broker Order
+    ≠
+Fill
+    ≠
+Position
+```
 
 Before and during execution, verify:
 
@@ -289,7 +391,9 @@ Before and during execution, verify:
 
 Never assume an order filled without verification.
 
-## 16. Operating Modes
+If broker state is ambiguous, mark it `UNKNOWN`, reconcile, and do not blindly resubmit.
+
+## 19. Operating Modes
 
 TradeOS must support:
 
@@ -306,7 +410,7 @@ Mode changes must be explicit and auditable.
 
 Higher autonomy requires predefined validation gates.
 
-## 17. Research / Production Separation
+## 20. Research / Production Separation
 
 New strategies and models begin in a research sandbox.
 
@@ -322,7 +426,7 @@ They may not:
 
 Promotion to production must be explicit.
 
-## 18. Backtesting
+## 21. Backtesting
 
 Backtests must document:
 
@@ -339,9 +443,11 @@ Backtests must document:
 - Drawdown
 - Limitations
 
+Backtests must avoid look-ahead bias, data leakage, and unrealistic execution assumptions.
+
 A profitable backtest does not authorize live trading.
 
-## 19. Learning Without Uncontrolled Self-Modification
+## 22. Learning Without Uncontrolled Self-Modification
 
 TradeOS should learn from trades, missed opportunities, rejected setups, prediction accuracy, execution quality, market regimes, and strategy performance.
 
@@ -349,7 +455,9 @@ The Learning Agent may recommend changes.
 
 Safety-critical changes require explicit approval and validation.
 
-## 20. Explainability
+One outcome is not sufficient evidence for a permanent learning rule.
+
+## 23. Explainability
 
 For every meaningful trade proposal, TradeOS should be able to explain:
 
@@ -365,7 +473,7 @@ For every meaningful trade proposal, TradeOS should be able to explain:
 10. What happened afterward?
 11. What was learned?
 
-## 21. Auditability
+## 24. Auditability
 
 Important decisions must record:
 
@@ -378,6 +486,7 @@ Important decisions must record:
 - Decision
 - Confidence
 - Risk assessment
+- Risk Engine version/configuration where applicable
 - Position size
 - Execution result
 - Errors
@@ -385,7 +494,7 @@ Important decisions must record:
 
 A completed trade should be reconstructable from its records.
 
-## 22. Human Override and Kill Switch
+## 25. Human Override and Kill Switch
 
 The user must be able to:
 
@@ -398,7 +507,7 @@ The user must be able to:
 
 The system must provide an emergency mechanism that prevents new trading after severe drawdown, broker failure, data failure, unexpected order behavior, system malfunction, abnormal volatility, security events, or other configured triggers.
 
-## 23. Configuration
+## 26. Configuration
 
 Risk and operating parameters must be configuration-driven, including:
 
@@ -417,7 +526,7 @@ agent_timeout
 
 Configuration changes must be logged. Safety-critical limits should be protected against accidental weakening.
 
-## 24. Strategy Independence
+## 27. Strategy Independence
 
 Every strategy must have:
 
@@ -435,7 +544,7 @@ Every strategy must have:
 
 Strategies must be independently testable.
 
-## 25. Indicator Governance
+## 28. Indicator Governance
 
 Indicators such as EMA, RSI, Fibonacci, MACD, ATR, VWAP, Bollinger Bands, and volume indicators are not automatically predictive.
 
@@ -443,7 +552,7 @@ Their usefulness must be validated within a defined strategy and market context.
 
 Avoid redundant indicators and overfitting.
 
-## 26. Prediction Governance
+## 29. Prediction Governance
 
 Prediction models must report uncertainty appropriately.
 
@@ -456,7 +565,7 @@ Track separately:
 
 A correct prediction does not guarantee a profitable trade.
 
-## 27. No Hidden Behavior
+## 30. No Hidden Behavior
 
 No component may silently:
 
@@ -471,7 +580,7 @@ No component may silently:
 
 Important state changes must be observable and logged.
 
-## 28. Safe Failure
+## 31. Safe Failure
 
 When a component fails:
 
@@ -489,7 +598,24 @@ Recover or Require Review
 
 System uncertainty must never be converted into a trading decision.
 
-## 29. Version Control
+## 32. Kill Switches
+
+TradeOS must support authoritative kill switches at appropriate scopes.
+
+Possible scopes include:
+
+- Order
+- Instrument
+- Strategy
+- Account
+- Market
+- Platform
+
+A kill switch must be enforceable without relying on an LLM's interpretation.
+
+Emergency mode must preserve evidence and support reconciliation rather than destroying state.
+
+## 33. Version Control
 
 Version all important:
 
@@ -506,7 +632,7 @@ Version all important:
 
 Live decisions must be traceable to the versions that produced them.
 
-## 30. Security
+## 34. Security
 
 Never commit secrets to GitHub.
 
@@ -514,7 +640,7 @@ This includes broker keys, API secrets, AWS credentials, database passwords, LLM
 
 Development, paper, and live credentials should be separated where possible.
 
-## 31. Professional Completion Standard
+## 35. Professional Completion Standard
 
 A feature is not complete merely because it works once.
 
@@ -528,7 +654,20 @@ Production candidates must be:
 - Failure-aware
 - Reviewable
 
-## 32. Ultimate Rule
+## 36. Architectural Conflict Rule
+
+When a detailed subsystem design conflicts with these global rules:
+
+1. Stop implementation of the conflicting behavior.
+2. Identify the conflict explicitly.
+3. Resolve the architecture.
+4. Update the affected documentation.
+5. Update this document if the global rule itself changes.
+6. Only then implement or resume the affected behavior.
+
+Detailed documents may refine these rules but may not silently weaken them.
+
+## 37. Ultimate Rule
 
 When any component is uncertain whether an action is safe:
 
