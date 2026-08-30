@@ -1,7 +1,7 @@
 # TradeOS Observability and Audit Architecture
 
 **Document:** 17_OBSERVABILITY_AND_AUDIT.md  
-**Version:** 0.1.0  
+**Version:** 0.1.1  
 **Status:** Architecture Baseline  
 **Scope:** Logging, metrics, traces, events, audit records, decision reconstruction, system health, agent observability, execution audit, and operational monitoring
 
@@ -10,6 +10,8 @@
 ## 1. Purpose
 
 The Observability and Audit Architecture defines how TradeOS understands what happened inside the system and why.
+
+Observability is an evidence and monitoring boundary. It records, correlates, detects, and surfaces conditions; it does not independently authorize trading actions or alter authoritative financial state.
 
 The core principle is:
 
@@ -104,7 +106,7 @@ These allow related records to be connected.
 
 # 6. Traceability
 
-A complete trading workflow should be traceable:
+A complete trading workflow should be traceable. Critical records should preserve both the causal chain and the authoritative state transition that resulted:
 
 ```text
 Market Event
@@ -865,7 +867,7 @@ Safe System Response
 
 # 50. Automated Safe Responses
 
-Some conditions may trigger deterministic protective actions.
+Some conditions may trigger deterministic protective actions. Such responses must be explicitly governed, bounded, auditable, and implemented through authoritative control paths rather than agent discretion.
 
 Examples:
 
@@ -972,7 +974,7 @@ Rejected Changes
 Repeated Mistakes
 ```
 
-Learning observations should not automatically modify production controls.
+Learning observations should not automatically modify production controls. Observability outputs are evidence for investigation, validation, or governed learning; they must not directly grant permissions, alter Risk limits, authorize execution, or create production changes.
 
 ---
 
@@ -1361,6 +1363,10 @@ The following must remain true:
 13. Security events are auditable.
 14. Audit records are protected from silent modification.
 15. Observability failures have explicit safety behavior.
+16. Observability does not grant trading authority or mutate authoritative financial state.
+17. Critical financial actions remain reconstructable from authoritative records, not telemetry alone.
+18. Automated protective responses use deterministic, explicitly governed control paths.
+19. Learning may consume observability evidence, but observability cannot directly activate production changes.
 
 ---
 
@@ -1442,6 +1448,7 @@ The Observability System is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS observability and audit architecture, including logs, metrics, traces, events, decision reconstruction, monitoring, incident response, and audit integrity |
+| 0.1.1 | Architecture Baseline | Clarified observability as an evidence/monitoring boundary, strengthened critical-action auditability, and bounded automated responses and learning feedback |
 
 ---
 
