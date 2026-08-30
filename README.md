@@ -1,6 +1,6 @@
 # TradeOS
 
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Architecture & Documentation Phase  
 **Project Type:** Personal AI-Assisted Multi-Market Trading Operating System
 
@@ -23,8 +23,9 @@ TradeOS aims to:
 - Support multiple markets without redesigning the core architecture.
 - Explain why a trade was considered, approved, rejected, or exited.
 - Learn from historical, paper, and controlled live outcomes.
+- Learn from repeated mistakes rather than reacting to isolated outcomes.
 - Allow new strategies and markets to be added as modular components.
-- Keep AI context and infrastructure costs efficient.
+- Keep reasoning, AI-token, and infrastructure costs efficient.
 - Maintain complete auditability.
 
 TradeOS is initially a **personal research, education, and controlled trading system**, not a commercial product.
@@ -32,7 +33,13 @@ TradeOS is initially a **personal research, education, and controlled trading sy
 ## Core Philosophy
 
 ### Capital Preservation First
-No strategy, prediction, agent, or opportunity may override established risk controls.
+No strategy, prediction, agent, or opportunity may override established risk controls. **No trade is a valid outcome.**
+
+### Intelligence Does Not Equal Authority
+Predictions, strategies, and agent recommendations provide intelligence. Governance and deterministic safety boundaries determine what the system is permitted to do.
+
+### Deterministic Work Stays Deterministic
+Not every intelligent component is an authority, and not every system component should be an agent. Deterministic calculations, state management, reconciliation, validation, and enforcement belong in deterministic services/engines where appropriate.
 
 ### Evidence Before Belief
 Strategies earn their place through testing and evidence rather than popularity or intuition.
@@ -46,8 +53,10 @@ The system should explain why a setup was detected, what evidence supported or c
 ### Modularity
 Markets, strategies, models, agents, brokers, and data providers should be replaceable without redesigning the entire platform.
 
-### Token Efficiency
-Agents receive only the information required for their task. Structured data, summaries, caching, deterministic calculations, and event-driven workflows are preferred.
+### Reasoning Efficiency
+Agents receive only the information required for their task. Structured data, summaries, caching where safe, deterministic calculations, selective model use, and bounded workflows are preferred.
+
+> **TradeOS should learn to think more efficiently—not simply use fewer tokens—so that it can make better decisions with less unnecessary reasoning.**
 
 ### Safety Before Automation
 The intended progression is:
@@ -72,21 +81,25 @@ The core architecture remains market-agnostic. Market-specific behavior belongs 
 
 ## Multi-Agent Architecture
 
-Initial conceptual agents:
+TradeOS uses specialized, bounded agents rather than one unrestricted general-purpose trading agent.
+
+Initial conceptual components include:
 
 - **Orchestrator Agent** — coordinates workflows.
-- **Market Data Agent** — validates and normalizes market information.
-- **Market Research Agent** — identifies market conditions and opportunities.
+- **Market Data Service / Agent Boundary** — deterministic ingestion, normalization, freshness, and validation; optional agents may interpret data quality.
+- **Market Research Agent** — identifies market conditions and research opportunities.
 - **Technical Analysis Agent** — evaluates indicators and price behavior.
 - **Fundamental Analysis Agent** — evaluates fundamentals where applicable.
 - **News & Sentiment Agent** — evaluates relevant news and sentiment.
-- **Strategy Agent** — evaluates strategies and generates trade theses.
+- **Market Regime Agent** — evaluates market regime.
+- **Strategy Agent** — evaluates strategies and generates trade proposals.
 - **Prediction Agent** — produces probabilistic forecasts where appropriate.
 - **Critic Agent** — challenges proposed trades and searches for counter-evidence.
 - **Portfolio Agent** — evaluates portfolio exposure and correlation.
-- **Risk Agent** — enforces risk limits and has hard veto authority.
-- **Execution Agent** — handles broker/order execution.
-- **Backtesting Agent** — evaluates strategies against historical data.
+- **Deterministic Risk Engine** — enforces hard numerical risk constraints.
+- **Risk Review Agent** — provides contextual risk governance and review.
+- **Risk Gate** — deterministic enforcement boundary between risk governance and execution.
+- **Execution Service / OMS** — performs authorized order handling, broker-state verification, and reconciliation.
 - **Learning Agent** — analyzes outcomes and identifies potential improvements.
 - **Coach Agent** — explains decisions and produces educational feedback.
 
@@ -96,7 +109,25 @@ No agent has unrestricted authority.
 
 Risk is separated from strategy intelligence.
 
-The architecture will support configurable controls for:
+The architecture follows:
+
+```text
+Trade Proposal
+      ↓
+Deterministic Risk Engine
+      ↓
+Risk Review Agent
+      ↓
+Risk Gate
+      ↓
+Execution Authorization
+      ↓
+Execution Service / OMS
+```
+
+The Risk Engine is authoritative for hard numerical constraints. The Risk Review Agent provides contextual governance. The Risk Gate enforces the resulting boundary.
+
+The architecture supports configurable controls for:
 
 - Risk per trade
 - Maximum daily loss
@@ -109,20 +140,20 @@ The architecture will support configurable controls for:
 - Strategy-specific limits
 - Market-specific constraints
 
-The initial personal-testing target discussed is approximately **0.5% account risk per trade**, with dynamic risk reduction during drawdowns. Exact production parameters will be finalized in `docs/08_RISK_MANAGEMENT.md`.
+The initial personal-testing target discussed is approximately **0.5% account risk per trade**, subject to validation and final configuration.
 
-> **Risk controls have absolute veto authority over trading decisions.**
+> **Risk can stop a trade, but Risk cannot invent a trade. A hard deterministic Risk rejection cannot be overturned downstream.**
 
 ## Trade Lifecycle
 
 ```text
 Market Data
      ↓
-Research
+Research / Intelligence
      ↓
 Setup Detection
      ↓
-Strategy Analysis
+Strategy Proposal
      ↓
 Prediction / Probability
      ↓
@@ -130,17 +161,23 @@ Critic Review
      ↓
 Portfolio Review
      ↓
-Risk Validation
+Deterministic Risk Engine
      ↓
-Execution Decision
+Risk Review
      ↓
-Paper / Live Execution
+Risk Gate
+     ↓
+Execution Authorization
+     ↓
+Execution Service / OMS
+     ↓
+Broker Verification / Reconciliation
      ↓
 Trade Management
      ↓
 Exit
      ↓
-Journal
+Journal / Audit
      ↓
 Performance Analysis
      ↓
@@ -206,10 +243,47 @@ The system should record:
 - Execution quality
 - Risk-management behavior
 - Lessons learned
+- Repeated mistakes and recurring patterns
 
-The Coach Agent converts these results into understandable learning reports.
+Learning follows a governed lifecycle:
 
-The Learning System may recommend improvements but must not automatically modify immutable risk controls.
+```text
+Observed
+   ↓
+Logged
+   ↓
+Pattern Candidate
+   ↓
+Repeated Evidence
+   ↓
+Validated
+   ↓
+Recommendation
+   ↓
+Approved
+   ↓
+Active Learning Rule
+   ↓
+Measured Again
+```
+
+The Learning Agent may recommend improvements but must not automatically modify immutable safety controls or silently deploy unvalidated behavior.
+
+## Agent Communication
+
+Agent coordination is bounded and structured.
+
+Preferred pattern:
+
+```text
+Agent A
+   ↓
+Orchestrator
+   ↓
+Agent B
+```
+
+Unrestricted peer-to-peer agent loops are prohibited. Every workflow must have maximum iterations, maximum runtime, maximum retries, and a termination condition.
 
 ## Operating Modes
 
@@ -231,7 +305,27 @@ Execution is permitted only within explicit authorization and risk boundaries.
 ### Emergency / Kill-Switch Mode
 New trading is disabled and safety procedures are activated.
 
-Operating mode is configuration-driven.
+Operating mode is configuration-driven and auditable.
+
+## Execution State Integrity
+
+TradeOS distinguishes:
+
+```text
+Trade Proposal
+    ≠
+Order Intent
+    ≠
+Broker Order
+    ≠
+Fill
+    ≠
+Position
+```
+
+An intended order is not proof of execution. An ambiguous broker state is `UNKNOWN` until reconciled.
+
+TradeOS must not blindly resubmit an order when broker-side state is uncertain.
 
 ## Backtesting and Validation
 
@@ -248,6 +342,8 @@ TradeOS distinguishes:
 
 Testing should account for transaction costs, slippage, liquidity, spreads, partial fills, market hours, corporate actions, data quality, and execution latency where applicable.
 
+Historical evaluation must respect point-in-time information and avoid look-ahead bias and data leakage.
+
 Material differences between expected and live performance should trigger investigation.
 
 ## Dashboard
@@ -255,7 +351,7 @@ Material differences between expected and live performance should trigger invest
 The planned dashboard will show:
 
 - Operating mode
-- Agent status
+- Agent/service status
 - Market conditions
 - Candidate setups
 - Proposed trades
@@ -294,6 +390,9 @@ TradeOS/
 ├── README.md
 ├── rules.md
 ├── docs/
+│   ├── architecture/
+│   ├── contracts/
+│   └── governance/
 ├── decisions/
 ├── agents/
 ├── core/
@@ -311,7 +410,7 @@ TradeOS/
 └── config/
 ```
 
-The detailed structure will be finalized before implementation.
+This is the intended implementation direction, not a claim that these runtime directories already exist. The detailed implementation structure will be finalized before coding.
 
 ## Development Methodology
 
@@ -355,11 +454,11 @@ The project is intentionally **not ready for live trading**.
 
 Current priority:
 
-1. Complete documentation.
-2. Review architecture.
-3. Define agent contracts.
-4. Define data contracts.
-5. Define risk controls.
+1. Complete and reconcile documentation.
+2. Lock architecture and governance.
+3. Define agent and service contracts.
+4. Define data and state contracts.
+5. Define risk and execution controls.
 6. Establish testing standards.
 7. Build the first narrow prototype.
 8. Validate before expanding.
@@ -372,6 +471,30 @@ It is designed to make **better-structured decisions under uncertainty**.
 
 Predictions are probabilities, not guarantees.
 
+## Documentation Governance
+
+`rules.md` is the global constitutional rule layer.
+
+Detailed architecture documents define how those principles are implemented. They must not silently weaken or contradict the global rules.
+
+The documentation process is:
+
+```text
+Discuss
+  ↓
+Agree
+  ↓
+Lock
+  ↓
+Update Canonical Document
+  ↓
+Update Dependencies
+  ↓
+Cross-Document Review
+```
+
+One concept should have one canonical owner and one authoritative definition.
+
 ## Disclaimer
 
 TradeOS is a personal research and trading-system development project.
@@ -382,14 +505,15 @@ Financial markets involve substantial risk, including possible loss of capital. 
 
 | Document | Status |
 |---|---|
-| README.md | Draft v0.1 |
-| rules.md | Draft |
+| README.md | Architecture navigator v0.2 |
+| rules.md | Global constitutional rules |
 | 01 Project Vision | Approved direction |
 | 02 Design Principles | Approved direction |
 | 03 Engineering Principles | Approved direction |
 | 04 System Architecture | Approved direction |
-| 05 Agent Architecture | In progress |
-| Remaining documents | Planned |
+| 05 Agent Architecture | In consistency review |
+| 13–19 supporting architecture | In consistency review |
+| 20–28 governance/contracts | In consistency review |
 
 ---
 
