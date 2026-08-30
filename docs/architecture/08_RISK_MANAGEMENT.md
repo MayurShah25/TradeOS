@@ -1,7 +1,7 @@
 # TradeOS Risk Management
 
 **Document:** 08_RISK_MANAGEMENT.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Architecture Baseline  
 **Scope:** Risk philosophy, controls, position sizing, portfolio limits, drawdown protection, kill switches, approvals, and risk governance
 
@@ -103,29 +103,48 @@ An LLM must not be the sole authority for these calculations.
 
 ---
 
-# 6. Risk Gate
+# 6. Risk Authorization and Gate
 
-Every trade intended for execution must pass the Risk Gate.
+Every trade intended for execution must pass the complete risk authorization sequence.
 
 ```text
 Trade Proposal
       ↓
 Deterministic Risk Engine
       ↓
-Risk Agent
+Risk Review Agent
       ↓
 Risk Gate
       ↓
 APPROVE / REJECT / REVIEW
 ```
 
+The three stages have distinct responsibilities:
+
+```text
+Risk Engine
+    = deterministic hard constraints
+
+Risk Review Agent
+    = contextual risk review and explanation
+
+Risk Gate
+    = deterministic enforcement
+```
+
 Hard constraint failure results in:
 
 ```text
-REJECT
+Risk Engine → REJECTED
+       ↓
+STOP
 ```
 
 No downstream component may convert a hard rejection into an approval.
+
+The Risk Review Agent may identify contextual concerns or require additional review, but it cannot override a hard Risk Engine rejection.
+
+Risk processing should be deterministic-first and context-selective: perform mandatory deterministic checks before invoking contextual review, invoke only the risk capabilities required by the workflow, and terminate once sufficient evidence exists for a safe decision. Risk reasoning must remain bounded and must not create unnecessary agent-to-agent coordination loops.
 
 ---
 
@@ -838,7 +857,7 @@ This enables analytics and learning.
 
 # 44. Risk Decision Record
 
-Every material risk decision should preserve:
+Every material risk decision should preserve the three-stage risk record separately:
 
 ```text
 timestamp
@@ -853,12 +872,15 @@ drawdown
 daily_loss
 leverage
 margin
-decision
-reason_codes
+risk_engine_result
+risk_review_result
+risk_gate_decision
 risk_engine_version
+risk_review_agent_version
 risk_configuration_version
-risk_agent_version
 ```
+
+The record must not collapse the Risk Engine result, Risk Review result, and Risk Gate decision into one generic risk decision field.
 
 ---
 
@@ -876,6 +898,8 @@ Any permitted override must be:
 - Re-evaluated by Risk
 
 An override must never disable immutable safety constraints.
+
+In particular, no override mechanism may convert a failed deterministic Risk Engine hard constraint into an executable trade. Contextual recommendations or review outcomes may be overrideable only where explicitly permitted by policy and where no immutable safety boundary is violated.
 
 ---
 
@@ -1110,12 +1134,14 @@ Portfolio
       ↓
 Deterministic Risk Engine
       ↓
+Risk Review Agent
+      ↓
 Risk Gate
       ↓
 Execution
 ```
 
-Risk is a gate, not another opinion.
+Risk is a governed authorization boundary, not merely another opinion.
 
 ---
 
@@ -1154,6 +1180,8 @@ Minimum categories:
 - Drawdown
 - Leverage
 - Margin
+- Risk Engine hard constraints
+- Risk Gate enforcement
 
 ### Boundary Tests
 
@@ -1168,6 +1196,8 @@ Minimum categories:
 - Unknown position
 - Broker unavailable
 - Risk engine unavailable
+- Risk Review Agent unavailable
+- Risk Gate unavailable
 
 ### Scenario Tests
 
@@ -1243,6 +1273,7 @@ Historical risk decisions must reference:
 
 ```text
 risk_engine_version
+risk_review_agent_version
 risk_configuration_version
 ```
 
@@ -1256,16 +1287,20 @@ The following are non-negotiable:
 
 1. Risk is authoritative.
 2. Hard risk controls are deterministic.
-3. Execution cannot bypass Risk.
-4. Missing critical risk information blocks execution.
-5. Unknown broker state requires reconciliation.
-6. Daily loss protection cannot be silently disabled.
-7. Drawdown protection cannot be silently disabled.
-8. Kill switches are authoritative.
-9. Learning cannot increase risk without explicit governance.
-10. Every material risk decision is auditable.
-11. Confidence never overrides risk.
-12. No trade is preferable to unsafe trade.
+3. Risk Engine, Risk Review Agent, and Risk Gate have distinct responsibilities.
+4. Execution cannot bypass Risk.
+5. Missing critical risk information blocks execution.
+6. Unknown broker state requires reconciliation.
+7. Daily loss protection cannot be silently disabled.
+8. Drawdown protection cannot be silently disabled.
+9. Kill switches are authoritative.
+10. Learning cannot increase risk without explicit governance.
+11. Every material risk decision is auditable.
+12. Confidence never overrides risk.
+13. No trade is preferable to unsafe trade.
+14. Hard Risk Engine rejection cannot be overridden.
+15. Risk reasoning should be deterministic-first, context-selective, and bounded.
+16. Risk workflows must not create unbounded agent coordination loops.
 
 ---
 
@@ -1287,6 +1322,10 @@ Daily Loss
 Drawdown
       ↓
 Portfolio Exposure
+      ↓
+Risk Engine
+      ↓
+Risk Review Agent
       ↓
 Risk Gate
       ↓
@@ -1320,8 +1359,10 @@ The risk architecture is successful when:
 - Unknown execution states are contained.
 - Kill switches work independently of AI reasoning.
 - Risk decisions are auditable.
+- Risk Engine, Risk Review Agent, and Risk Gate outputs remain separately traceable.
 - Learning can identify recurring risk problems.
 - Risk controls cannot be weakened by an agent.
+- Risk reasoning is efficient without weakening safety or decision quality.
 
 ---
 
@@ -1350,6 +1391,7 @@ The risk architecture is successful when:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS risk architecture, including deterministic risk controls, portfolio protection, kill switches, and risk learning |
+| 0.2.0 | Architecture Baseline | Aligned risk authority model, separate risk-stage records, immutable hard constraints, and efficient bounded risk reasoning |
 
 ---
 
