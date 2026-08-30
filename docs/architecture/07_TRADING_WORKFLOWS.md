@@ -1,7 +1,7 @@
 # TradeOS Trading Workflows
 
 **Document:** 07_TRADING_WORKFLOWS.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Architecture Baseline  
 **Scope:** End-to-end workflows for research, analysis, trade proposals, risk, execution, trade management, journaling, learning, and recovery
 
@@ -28,7 +28,13 @@ Critique
     ↓
 Portfolio Review
     ↓
-Risk Authorization
+Risk Evaluation
+    ↓
+Risk Review
+    ↓
+Risk Gate
+    ↓
+Execution Authorization
     ↓
 Execution
     ↓
@@ -52,8 +58,13 @@ Every important workflow should be:
 - Risk-first
 - Observable
 - Reproducible where practical
+- Efficient in its use of context and computation
 
 No workflow may bypass mandatory safety gates.
+
+TradeOS should not run every available agent for every opportunity. The Orchestrator should select the minimum sufficient set of capabilities and context required for the workflow, and stop optional analysis when additional reasoning is unlikely to improve the decision materially.
+
+This is not token minimization for its own sake. The objective is to **learn to think more efficiently** while preserving decision quality, safety, and auditability.
 
 ---
 
@@ -271,6 +282,9 @@ The Orchestrator should select agents based on:
 - Available data
 - Market
 - Workflow requirements
+- Expected information value
+
+The Orchestrator should avoid redundant agent calls and should stop optional analysis once sufficient evidence exists for the next workflow stage.
 
 ---
 
@@ -393,16 +407,29 @@ It should evaluate:
 
 # 14. Workflow 9 — Risk Authorization
 
-This is a mandatory gate.
+This is a mandatory control sequence.
 
 ```text
 Trade Proposal
       ↓
 Deterministic Risk Engine
       ↓
-Risk Agent
+Risk Review Agent
       ↓
 Risk Gate
+```
+
+The three stages have distinct authority:
+
+```text
+Risk Engine
+    = deterministic hard numerical constraints
+
+Risk Review Agent
+    = contextual review and explanation
+
+Risk Gate
+    = deterministic enforcement decision
 ```
 
 Possible results:
@@ -418,10 +445,14 @@ REQUIRES_REVIEW
 If a hard risk constraint fails:
 
 ```text
-REJECTED
+Risk Engine → REJECTED
+       ↓
+STOP
 ```
 
-No AI agent may override it.
+No AI agent or user approval may override a hard Risk Engine rejection.
+
+A contextual Risk Review may add concerns or require review, but it cannot convert a hard rejection into approval.
 
 ---
 
@@ -458,7 +489,7 @@ Market-specific rules must be applied.
 In `ASSISTED_LIVE` mode:
 
 ```text
-Risk Approved
+Risk Gate Approved
       ↓
 User Review
       ↓
@@ -479,6 +510,8 @@ The user should be able to see:
 - Target
 - Expected scenarios
 
+Human approval is an additional authorization step where required. It cannot bypass a failed hard risk constraint.
+
 ---
 
 # 17. Workflow 11 — Execution
@@ -486,9 +519,13 @@ The user should be able to see:
 Only an authorized proposal may reach execution.
 
 ```text
-Approved Proposal
+Risk Gate Approved
       ↓
-Execution Engine
+Human Approval if Required
+      ↓
+Execution Authorization
+      ↓
+Execution Service / OMS
       ↓
 Order Validation
       ↓
@@ -502,6 +539,8 @@ Fill Verification
 ```
 
 The execution layer must not assume a fill.
+
+Execution state is owned by the deterministic execution service/OMS, not by an autonomous reasoning agent.
 
 ---
 
@@ -941,7 +980,9 @@ Intraday Analysis
    ↓
 Trade Proposals
    ↓
-Risk
+Risk Evaluation
+   ↓
+Risk Review / Gate
    ↓
 Execution
    ↓
@@ -1108,7 +1149,7 @@ Continue only if safe
 Otherwise Escalate / Reject
 ```
 
-A Risk failure is treated differently from an optional analysis-agent failure.
+A Risk Review Agent failure is treated differently from an optional analysis-agent failure. If required risk evaluation cannot be completed, the affected trade must not proceed to execution.
 
 ---
 
@@ -1209,7 +1250,11 @@ Critic
       ↓
 Portfolio
       ↓
-Risk
+Risk Engine
+      ↓
+Risk Review Agent
+      ↓
+Risk Gate
       ↓
 Execution if authorized
 ```
@@ -1239,6 +1284,8 @@ Any authorized override should be:
 - Attributed
 - Time-stamped
 - Reviewable
+
+A hard Risk Engine rejection is not an overrideable recommendation.
 
 ---
 
@@ -1315,6 +1362,8 @@ The system should preserve the disagreement.
 
 Disagreement may become useful learning data.
 
+Resolution should remain bounded; the system must not create an unbounded agent-to-agent debate loop.
+
 ---
 
 # 54. Workflow 46 — Insufficient Evidence
@@ -1342,7 +1391,7 @@ If an agent workflow approaches its token/cost budget:
 ```text
 Budget Warning
       ↓
-Compress Context
+Compress / Select Relevant Context
       ↓
 Terminate Optional Analysis
       ↓
@@ -1352,6 +1401,8 @@ Otherwise Escalate / Reject
 ```
 
 Cost control must never cause unsafe risk behavior.
+
+Token efficiency is a means to more efficient reasoning, not an objective that overrides decision quality or safety.
 
 ---
 
@@ -1376,7 +1427,13 @@ Critic
    ↓
 Portfolio
    ↓
-Risk
+Risk Engine Result
+   ↓
+Risk Review Result
+   ↓
+Risk Gate Decision
+   ↓
+Execution Authorization
    ↓
 Orders
    ↓
@@ -1420,6 +1477,8 @@ NEW DECISION
 ```
 
 This is one of the defining workflows of TradeOS.
+
+Learning must improve future context and decisions without creating uncontrolled recursive agent loops.
 
 ---
 
@@ -1483,6 +1542,8 @@ Deployment
 
 No uncontrolled self-modification is permitted.
 
+Agent improvement is a governed versioned process, not a live recursive self-editing loop.
+
 ---
 
 # 60. Workflow 52 — Learning Rule Retirement
@@ -1523,6 +1584,11 @@ The following must remain true:
 10. Mistakes can be learned from without treating every loss as a mistake.
 11. Agent disagreement is preserved.
 12. Counterfactual results are not actual outcomes.
+13. Risk Engine, Risk Review Agent, and Risk Gate have distinct responsibilities.
+14. Execution state is owned by the deterministic Execution Service / OMS.
+15. Optional agent analysis should be selected and bounded rather than run indiscriminately.
+16. Efficient reasoning must never weaken safety or decision quality.
+17. Agent workflows must not create unbounded coordination loops.
 
 ---
 
@@ -1537,7 +1603,9 @@ Strategy
    ↓
 Trade Proposal
    ↓
-Risk
+Risk Engine
+   ↓
+Risk Gate
    ↓
 Paper Execution
    ↓
@@ -1577,6 +1645,8 @@ The workflow architecture is successful when TradeOS can:
 - Preserve disagreements.
 - Recover safely from failures.
 - Reproduce historical workflows.
+- Select context and agents efficiently without sacrificing decision quality.
+- Maintain bounded orchestration without unnecessary agent-to-agent loops.
 
 ---
 
@@ -1604,8 +1674,9 @@ The workflow architecture is successful when TradeOS can:
 
 | Version | Status | Description |
 |---|---|---|
-| 0.1.0 | Architecture Baseline | Initial TradeOS workflow architecture, including repeated-mistake and agent-learning loops |
+| 0.1.0 | Architecture Baseline | Initial TradeOS trading workflow architecture |
+| 0.2.0 | Architecture Baseline | Aligned risk authority, execution ownership, bounded orchestration, and efficient-reasoning principles |
 
 ---
 
-> **Workflow principle: every decision has a path, every execution has a gate, every outcome becomes evidence, and every recurring mistake becomes an opportunity to improve.**
+> **Workflow principle: move from evidence to action through bounded, auditable, risk-controlled steps — then learn from outcomes without creating uncontrolled loops.**
