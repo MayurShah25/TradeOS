@@ -35,9 +35,9 @@ The documentation baseline currently consists of:
 - `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
 - `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
 - `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
-- `docs/architecture/22_DATA_PROVIDERS.md` through `28_DATA_QUALITY.md` — supporting architecture and data concerns.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `28_EVENT_CONTRACT_GOVERNANCE.md` — domain, state, event, authority, reasoning, and governance architecture.
 
-**All numbered documents 01–28 are accounted for in the repository. No numbered architecture/documentation gap is currently known.**
+**All numbered documents 01–28 are accounted for in the repository. No numbered documentation gap is currently known.**
 
 The documentation set is treated as the baseline for implementation. Future documentation changes must follow the governance process and must not silently contradict canonical rules or contracts.
 
@@ -47,12 +47,16 @@ The documentation set is treated as the baseline for implementation. Future docu
 |---|---|---|
 | Global rules | `rules.md` | Constitutional rules and non-negotiable boundaries |
 | Governance | `docs/DOCUMENTATION_GOVERNANCE.md` | Documentation hierarchy and change control |
-| 01–04 | `docs/architecture/` | Vision, design, engineering, and system architecture |
-| 05–12 | `docs/architecture/` | Agent, data, workflow, risk, execution, and related architecture |
-| 13–19 | `docs/architecture/` | Supporting architecture through testing |
+| 01–19 | `docs/architecture/` | Core architecture through testing |
 | 20 | `docs/contracts/` | Agent contracts |
 | 21 | `docs/configuration/` | Configuration |
-| 22–28 | `docs/architecture/` | Data-provider and data-quality architecture |
+| 22 | `docs/architecture/` | Domain model |
+| 23 | `docs/architecture/` | State machines |
+| 24 | `docs/architecture/` | Event contracts |
+| 25 | `docs/architecture/` | Authority and permission model |
+| 26 | `docs/architecture/` | Reasoning efficiency and agent orchestration |
+| 27 | `docs/architecture/` | State-machine governance |
+| 28 | `docs/architecture/` | Event-contract governance |
 
 ## Repository Structure — Current State
 
@@ -69,33 +73,33 @@ TradeOS/
     │   ├── 04_SYSTEM_ARCHITECTURE.md
     │   ├── 05_AGENT_ARCHITECTURE.md
     │   ├── 06_DATA_ARCHITECTURE.md
-    │   ├── 07_WORKFLOW_ARCHITECTURE.md
-    │   ├── 08_RISK_ARCHITECTURE.md
-    │   ├── 09_EXECUTION_ARCHITECTURE.md
-    │   ├── 10_PORTFOLIO_ARCHITECTURE.md
-    │   ├── 11_BACKTESTING_ARCHITECTURE.md
-    │   ├── 12_PREDICTION_ARCHITECTURE.md
-    │   ├── 13_LEARNING_ARCHITECTURE.md
-    │   ├── 14_DASHBOARD_ARCHITECTURE.md
-    │   ├── 15_INFRASTRUCTURE_ARCHITECTURE.md
-    │   ├── 16_SECURITY_ARCHITECTURE.md
-    │   ├── 17_OBSERVABILITY_ARCHITECTURE.md
-    │   ├── 18_AUDIT_ARCHITECTURE.md
+    │   ├── 07_TRADING_WORKFLOWS.md
+    │   ├── 08_RISK_MANAGEMENT.md
+    │   ├── 09_PREDICTION_ENGINE.md
+    │   ├── 10_LEARNING_SYSTEM.md
+    │   ├── 11_BACKTESTING_AND_VALIDATION.md
+    │   ├── 12_EXECUTION_ARCHITECTURE.md
+    │   ├── 13_PORTFOLIO_ARCHITECTURE.md
+    │   ├── 14_MARKET_DATA_ARCHITECTURE.md
+    │   ├── 15_RESEARCH_ARCHITECTURE.md
+    │   ├── 16_STRATEGY_ARCHITECTURE.md
+    │   ├── 17_OBSERVABILITY_AND_AUDIT.md
+    │   ├── 18_SECURITY_AND_ACCESS_CONTROL.md
     │   ├── 19_TESTING_ARCHITECTURE.md
-    │   ├── 22_DATA_PROVIDERS.md
-    │   ├── 23_DATA_NORMALIZATION.md
-    │   ├── 24_MARKET_CALENDARS.md
-    │   ├── 25_MARKET_MICROSTRUCTURE.md
-    │   ├── 26_CORPORATE_ACTIONS.md
-    │   ├── 27_REFERENCE_DATA.md
-    │   └── 28_DATA_QUALITY.md
+    │   ├── 22_DOMAIN_MODEL.md
+    │   ├── 23_STATE_MACHINES.md
+    │   ├── 24_EVENT_CONTRACTS.md
+    │   ├── 25_AUTHORITY_AND_PERMISSION_MODEL.md
+    │   ├── 26_REASONING_EFFICIENCY_AND_AGENT_ORCHESTRATION.md
+    │   ├── 27_STATE_MACHINE_GOVERNANCE.md
+    │   └── 28_EVENT_CONTRACT_GOVERNANCE.md
     ├── contracts/
     │   └── 20_AGENT_CONTRACTS.md
     └── configuration/
         └── 21_CONFIGURATION.md
 ```
 
-This is the **actual documentation repository structure**, not a claim that the runtime implementation directories already exist. Runtime code should be introduced deliberately from the foundation phase rather than pre-populating speculative directories.
+This is the **actual documentation repository structure**. Runtime implementation directories do not yet exist and will be introduced deliberately during the foundation phase.
 
 ## Architectural Direction
 
