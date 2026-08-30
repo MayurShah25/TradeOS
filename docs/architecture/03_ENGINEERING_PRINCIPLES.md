@@ -1,7 +1,7 @@
 # TradeOS Engineering Principles
 
 **Document:** 03_ENGINEERING_PRINCIPLES.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Approved Direction  
 **Scope:** Engineering standards for TradeOS source code, infrastructure, agents, integrations, testing, and AI-assisted development.
 
@@ -154,11 +154,13 @@ Examples:
 - `Strategy`
 - `PredictionModel`
 - `RiskEngine`
-- `ExecutionEngine`
+- `RiskReviewAgent`
+- `RiskGate`
+- `ExecutionService`
 - `Agent`
 - `BacktestEngine`
 
-This makes replacement and testing easier.
+These boundaries make replacement and testing easier and preserve authority separation.
 
 ---
 
@@ -176,6 +178,16 @@ Avoid components that simultaneously:
 - Write reports
 
 Separate those responsibilities.
+
+In particular:
+
+- `RiskEngine` performs deterministic risk calculations and hard-constraint checks.
+- `RiskReviewAgent` performs contextual risk review and explanation.
+- `RiskGate` deterministically enforces the risk authorization decision.
+- `ExecutionService / OMS` owns deterministic order lifecycle and execution state.
+- `BrokerAdapter` translates the execution contract to broker-specific APIs.
+
+No reasoning component should silently absorb deterministic authority that belongs to a control boundary.
 
 ---
 
@@ -195,6 +207,9 @@ Use normal Python code for:
 - Date/time calculations
 - Data transformations
 - Limit enforcement
+- Risk Engine hard constraints
+- Risk Gate enforcement
+- Execution state management
 
 Use AI for:
 
@@ -205,6 +220,9 @@ Use AI for:
 - Hypothesis generation
 - Explanation
 - Qualitative comparison
+- Contextual risk review
+
+The Risk Review Agent must not replace deterministic risk enforcement.
 
 ---
 
@@ -414,8 +432,6 @@ Example:
 }
 ```
 
-This makes monitoring and debugging easier.
-
 ---
 
 # 20. Correlation IDs
@@ -520,6 +536,8 @@ Track where practical:
 
 Agents should not repeatedly request information they already received.
 
+Token budgets should be used to encourage efficient reasoning, not to weaken safety or decision quality.
+
 ---
 
 # 25. Caching
@@ -585,6 +603,7 @@ For deterministic components such as:
 - Risk calculations
 - Indicators
 - Portfolio calculations
+- Risk Gate enforcement
 
 ### Integration Tests
 
@@ -594,6 +613,7 @@ For:
 - Database
 - Market-data providers
 - Agent orchestration
+- Execution Service / OMS
 
 ### End-to-End Tests
 
@@ -610,6 +630,7 @@ For:
 The following require especially strong test coverage:
 
 - Risk engine
+- Risk Gate
 - Position sizing
 - Order validation
 - Kill switch
@@ -641,6 +662,8 @@ Test:
 - Network failure
 - Invalid configuration
 - Unexpected market conditions
+- Risk Review Agent failure
+- Risk Gate failure
 
 ---
 
@@ -728,7 +751,9 @@ Examples:
 - Order
 - Position
 - Trade proposal
-- Risk decision
+- Risk Engine result
+- Risk Review result
+- Risk Gate decision
 - Prediction
 - Agent result
 
@@ -798,7 +823,7 @@ The rest of TradeOS should not depend directly on a specific broker SDK.
 Example:
 
 ```text
-Execution Engine
+Execution Service / OMS
       ↓
 Broker Interface
       ↓
@@ -817,7 +842,7 @@ Zerodha SDK
 
 # 39. Execution Safety
 
-The execution layer must verify order state.
+The Execution Service / OMS must verify order state.
 
 Do not assume:
 
@@ -828,6 +853,8 @@ submit_order() == filled
 The actual workflow is:
 
 ```text
+Execution Authorization
+ ↓
 Submit
  ↓
 Broker Response
@@ -840,6 +867,8 @@ Update Position
 ```
 
 Unknown order state must be treated conservatively.
+
+Execution state belongs to the deterministic Execution Service / OMS, not to an autonomous reasoning agent.
 
 ---
 
@@ -862,7 +891,9 @@ The database should preserve the history needed for:
 - Positions
 - Market data references
 - Agent decisions
-- Risk decisions
+- Risk Engine results
+- Risk Review results
+- Risk Gate decisions
 - Strategy versions
 - Model versions
 - Backtest runs
@@ -999,6 +1030,8 @@ They must follow the repository architecture and documentation.
 10. Rewrite unrelated modules unnecessarily.
 11. Introduce hidden autonomous behavior.
 12. silently change architecture.
+13. Allow a Risk Review Agent or other AI component to bypass Risk Engine or Risk Gate controls.
+14. Treat execution submission as proof of fill or position state.
 
 ---
 
@@ -1272,6 +1305,7 @@ When engineering concerns conflict, prioritize:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Approved Direction | Initial engineering principles for TradeOS |
+| 0.2.0 | Approved Direction | Aligned risk authority, execution ownership, and efficient reasoning boundaries |
 
 ---
 
