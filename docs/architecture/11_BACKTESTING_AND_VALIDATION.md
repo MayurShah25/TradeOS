@@ -1,7 +1,7 @@
 # TradeOS Backtesting and Validation
 
 **Document:** 11_BACKTESTING_AND_VALIDATION.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Architecture Baseline  
 **Scope:** Strategy validation, model validation, agent evaluation, backtesting, walk-forward analysis, robustness, paper trading, promotion, and research governance
 
@@ -28,6 +28,8 @@ Production Ready
 The core principle is:
 
 > **No strategy, model, agent, or learning intervention reaches production without passing its defined validation gates.**
+
+Validation establishes evidence and promotion eligibility; it does not itself authorize live trading. Live authorization remains governed by the production risk and execution architecture.
 
 ---
 
@@ -73,6 +75,8 @@ Controlled Promotion
 ```
 
 The exact sequence may vary by artifact.
+
+Validation should escalate in depth only as evidence, uncertainty, artifact impact, or promotion risk justifies it. A workflow should not invoke every model, agent, simulation, or test merely because those capabilities are available.
 
 ---
 
@@ -845,6 +849,8 @@ Worse
 Inconclusive
 ```
 
+Learning recommendations and production learning changes must be evaluated using evidence independent of the data used to generate or tune the recommendation. A learning candidate must not contaminate the validation set that determines whether that candidate works.
+
 ---
 
 # 47. False Intervention Rate
@@ -884,6 +890,8 @@ Production Candidate
 ```
 
 Exact thresholds belong in configuration/governance, not hard-coded prose.
+
+Passing validation makes an artifact eligible for the next governance stage; it does not itself grant live trading authority.
 
 ---
 
@@ -987,6 +995,8 @@ The approval record should contain:
 - Approval identity
 - Timestamp
 
+Validation evidence supports the approval record; validation itself is not the approval authority.
+
 ---
 
 # 55. Rollback
@@ -1042,8 +1052,6 @@ result
 status
 conclusion
 ```
-
-This helps prevent repeatedly testing the same failed ideas.
 
 ---
 
@@ -1135,6 +1143,8 @@ Research may have limits on:
 
 This reduces uncontrolled optimization.
 
+Validation budgets should be used to prioritize the tests most informative for the artifact and decision at hand, rather than maximizing the number of tests performed.
+
 ---
 
 # 62. Statistical Significance
@@ -1210,6 +1220,8 @@ At Threshold
 Above Threshold
 ```
 
+Validation of risk controls demonstrates their behavior under test conditions. It does not replace live risk authorization.
+
 ---
 
 # 67. Validation of Execution Controls
@@ -1260,6 +1272,8 @@ Production Rule
 ```
 
 without validation and governance.
+
+Learning candidates must remain separated from protected evaluation evidence when that evidence is used to determine whether the candidate is effective.
 
 ---
 
@@ -1367,6 +1381,8 @@ Validation
 
 Learning does not bypass validation.
 
+Validation evidence should remain separated from any learning process that could tune the artifact against that same evidence.
+
 ---
 
 # 76. Validation Architecture Invariants
@@ -1388,6 +1404,10 @@ The following must remain true:
 13. Learning rules require validation.
 14. Validation cannot be bypassed by an agent.
 15. Production performance must continue to be monitored.
+16. Validation establishes evidence and promotion eligibility but does not itself authorize live trading.
+17. Protected evaluation evidence must not be used to tune the artifact being evaluated.
+18. Validation depth should be proportionate to evidence, uncertainty, impact, and promotion risk.
+19. Validation workflows must not create unbounded agent coordination loops.
 
 ---
 
@@ -1425,6 +1445,8 @@ Learning Intervention Experiments
 Continuous Drift Detection
 ```
 
+Deeper validation should be introduced when it answers a material question about robustness, uncertainty, or promotion—not merely because another test is available.
+
 ---
 
 # 78. Validation Architecture Success Criteria
@@ -1442,6 +1464,9 @@ The system is successful when TradeOS can:
 - Promote artifacts through controlled gates.
 - Roll back production changes.
 - Continuously monitor deployed systems.
+- Distinguish validation evidence from live authorization.
+- Preserve independence between learning/tuning and protected evaluation evidence.
+- Scale validation depth efficiently according to the question and risk.
 
 ---
 
@@ -1470,6 +1495,7 @@ The system is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS backtesting and validation architecture, including robustness, out-of-sample testing, agent validation, learning validation, and controlled promotion |
+| 0.2.0 | Architecture Baseline | Aligned validation authority, protected evaluation evidence, efficient validation depth, and risk/learning boundaries |
 
 ---
 
