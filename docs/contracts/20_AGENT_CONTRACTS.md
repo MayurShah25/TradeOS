@@ -1,7 +1,7 @@
 # TradeOS Agent Contracts
 
 **Document:** 20_AGENT_CONTRACTS.md  
-**Version:** 0.1.0  
+**Version:** 0.1.1  
 **Status:** Architecture Baseline  
 **Scope:** Agent interfaces, input/output contracts, permissions, tool usage, confidence, abstention, errors, handoffs, validation, and governance
 
@@ -14,6 +14,8 @@ Agent Contracts define how TradeOS agents communicate with the rest of the syste
 The core principle is:
 
 > **An agent is a bounded component with a contract, not an unrestricted autonomous process.**
+
+Agent contracts define interface behavior and bounded permissions; they do not create authority beyond permissions granted by system policy, Risk, Security, and execution controls.
 
 Every production agent must have:
 
@@ -119,6 +121,8 @@ constraints
 timeout
 cost_budget
 failure_policy
+authority_scope
+authorization_context
 ```
 
 ---
@@ -613,11 +617,11 @@ The Execution Agent may:
 
 - Prepare an order intent
 - Validate execution conditions
-- Submit through approved interfaces
+- Submit through approved interfaces when explicit authorization is present
 - Monitor status
 - Request reconciliation
 
-It must not independently decide that a trade should exist.
+It must not independently decide that a trade should exist, create live authority, bypass Risk, or treat an agent recommendation as execution authorization.
 
 ---
 
@@ -655,7 +659,7 @@ It may:
 - Recommend interventions
 - Evaluate learning effectiveness
 
-It must not silently activate safety-critical changes.
+It must not silently activate safety-critical changes, grant permissions, weaken security controls, modify Risk limits, or authorize live execution.
 
 ---
 
@@ -1152,6 +1156,8 @@ Execution
 
 No agent can skip a higher-priority safety boundary.
 
+Agent-to-agent handoffs transfer data and recommendations, not authority. A downstream agent must obtain its own explicitly permitted authority from the governing system boundary.
+
 ---
 
 # 59. Agent-to-Agent Trust
@@ -1226,6 +1232,11 @@ The following must remain true:
 13. Agent failures have defined behavior.
 14. Execution authority is separate from analysis authority.
 15. Deterministic safety controls remain authoritative.
+16. Agent contracts cannot grant authority that was not explicitly granted by the governing system.
+17. Agent-to-agent handoffs transfer information and recommendations, not permissions or execution authority.
+18. Learning feedback cannot directly authorize production behavior, modify Risk limits, or weaken security controls.
+19. Observability or telemetry cannot grant permissions or mutate authoritative financial state.
+20. Live execution requires explicit authorization independent of an agent's analytical recommendation.
 
 ---
 
@@ -1297,6 +1308,8 @@ The contract system is successful when TradeOS can:
 - Learn from repeated agent mistakes.
 - Prevent agents from bypassing Risk.
 - Replace or disable an agent safely.
+- Prevent agent coordination from creating an unbounded authority path.
+- Preserve explicit authorization boundaries through agent handoffs.
 
 ---
 
@@ -1322,6 +1335,7 @@ The contract system is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS agent contracts, permissions, structured outputs, failure handling, safety boundaries, evaluation, and governance |
+| 0.1.1 | Architecture Baseline | Clarified authority scope, explicit authorization context, bounded agent handoffs, and non-escalation boundaries across Risk, Security, Execution, Observability, and Learning |
 
 ---
 
