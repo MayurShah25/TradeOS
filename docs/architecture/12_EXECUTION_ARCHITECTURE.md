@@ -1,7 +1,7 @@
 # TradeOS Execution Architecture
 
 **Document:** 12_EXECUTION_ARCHITECTURE.md  
-**Version:** 0.1.0  
+**Version:** 0.1.1  
 **Status:** Architecture Baseline  
 **Scope:** Order lifecycle, execution gateway, broker adapters, idempotency, fills, reconciliation, failures, recovery, and execution safety
 
@@ -16,6 +16,8 @@ The central principle is:
 > **TradeOS must never confuse an intended action with an executed action.**
 
 The execution layer must be conservative, deterministic where possible, observable, and independently auditable.
+
+Execution is an enforcement boundary, not a reasoning authority. It executes only an action that has passed the required upstream approvals and deterministic execution checks.
 
 ---
 
@@ -45,6 +47,8 @@ Risk
    ↓
 Execution
 ```
+
+No LLM, agent, broker adapter, or execution component may manufacture or elevate trading authority. Execution authorization is a deterministic enforcement step over already-approved authority and current state.
 
 ---
 
@@ -108,6 +112,10 @@ Before an order is submitted, verify:
 - Operating mode permits execution
 - No applicable kill switch is active
 - Order has not already been submitted
+
+Execution authorization must be derived from the authoritative approval records and current deterministic state. It is not an opportunity for an agent to reconsider or expand authority.
+
+Authorization should be uniquely bound to the approved trade proposal, account, instrument, intended order parameters, applicable risk decision, configuration/version references, and validity window. Reuse after material state change requires revalidation.
 
 ---
 
@@ -1295,6 +1303,8 @@ Broker
 
 Each transition should be recorded.
 
+Execution Authorization is an enforcement decision over already-granted authority; it cannot grant more authority than the upstream Risk decision and applicable configuration permit.
+
 ---
 
 # 74. Execution Architecture Invariants
@@ -1316,6 +1326,9 @@ The following must remain true:
 13. Process restart must reconcile before replay.
 14. Duplicate events must be safely handled.
 15. Actual fills determine actual execution outcomes.
+16. Execution authorization cannot expand upstream authority.
+17. Material state changes invalidate or require revalidation of stale authorization.
+18. Execution workflows must not create unbounded agent coordination loops.
 
 ---
 
@@ -1371,6 +1384,8 @@ The Execution System is successful when TradeOS can:
 - Track actual execution quality.
 - Preserve complete execution audit trails.
 - Learn from recurring execution failures.
+- Keep execution authority bounded by upstream approvals and deterministic controls.
+- Revalidate authorization when material state changes occur.
 
 ---
 
@@ -1399,6 +1414,7 @@ The Execution System is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS execution architecture, including order lifecycle, idempotency, broker adapters, reconciliation, recovery, and execution learning |
+| 0.1.1 | Architecture Baseline | Clarified deterministic execution authority, bounded authorization, stale-approval handling, and prevention of authority expansion or unbounded execution orchestration |
 
 ---
 
