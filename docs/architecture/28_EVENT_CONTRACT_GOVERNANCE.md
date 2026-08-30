@@ -1,7 +1,7 @@
 # TradeOS Event Contract Governance
 
 **Document:** `28_EVENT_CONTRACT_GOVERNANCE.md`  
-**Version:** 0.1.0  
+**Version:** 0.1.1  
 **Status:** Architecture Baseline  
 **Scope:** Canonical event semantics, bounded event-driven workflows, idempotency, replay safety, loop prevention, and reasoning-trigger policy
 
@@ -11,7 +11,7 @@
 
 `24_EVENT_CONTRACTS.md` is the canonical source of truth for TradeOS event contracts.
 
-This document records the governance rules established during the 01–25 consistency review so the event system remains useful, deterministic, auditable, and compatible with the TradeOS reasoning-efficiency principle.
+This document records the governance rules established during the 01–27 consistency review so the event system remains useful, deterministic, auditable, and compatible with the TradeOS reasoning-efficiency principle.
 
 > **Events communicate what happened. They do not create authority, and they do not automatically create AI work.**
 
@@ -153,13 +153,13 @@ Example:
 
 ```text
 order.filled (event ABC)
-        ↓
+       ↓
 process
-        ↓
+       ↓
 order.filled (event ABC) again
-        ↓
+       ↓
 recognized as already processed
-        ↓
+       ↓
 no duplicate effect
 ```
 
