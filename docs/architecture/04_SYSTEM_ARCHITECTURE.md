@@ -1,13 +1,13 @@
 # TradeOS System Architecture
 
 **Document:** 04_SYSTEM_ARCHITECTURE.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Architecture Baseline  
 **Scope:** Logical architecture, system boundaries, data flow, runtime components, and major integration points
 
 ---
 
-## 1. Purpose
+# 1. Purpose
 
 This document defines the logical architecture of TradeOS.
 
@@ -24,6 +24,8 @@ The architecture is designed around five priorities:
 This document describes **what components exist, how they interact, and where responsibilities belong**.
 
 Detailed implementation contracts will be defined in subsequent documents.
+
+> **Architectural boundary:** not every intelligent component is an agent, and not every system component should be an agent. Deterministic calculations, state management, validation, reconciliation, and enforcement belong to deterministic services/engines where appropriate; bounded agents provide reasoning, analysis, and recommendations; governed control boundaries determine authority.
 
 ---
 
@@ -59,11 +61,18 @@ At a high level:
                          │ Critic / Portfolio│
                          └─────────┬─────────┘
                                    ▼
-                         ┌───────────────────┐
-                         │    RISK GATE      │
-                         │ Deterministic +   │
-                         │ Risk Agent        │
-                         └─────────┬─────────┘
+                    ┌─────────────────────────────┐
+                    │ DETERMINISTIC RISK ENGINE  │
+                    └──────────────┬──────────────┘
+                                   ▼
+                    ┌─────────────────────────────┐
+                    │    RISK REVIEW AGENT       │
+                    └──────────────┬──────────────┘
+                                   ▼
+                    ┌─────────────────────────────┐
+                    │          RISK GATE          │
+                    │ Deterministic Enforcement   │
+                    └──────────────┬──────────────┘
                                    │
                          ┌─────────┴─────────┐
                          ▼                   ▼
@@ -71,11 +80,11 @@ At a high level:
                                              │
                                              ▼
                                   ┌───────────────────┐
-                                  │ EXECUTION LAYER   │
-                                  │ OMS / Broker      │
+                                  │ EXECUTION SERVICE │
+                                  │       / OMS       │
                                   └─────────┬─────────┘
                                             ▼
-                                         MARKET
+                                         BROKER
                                             │
                                             ▼
                                   ┌───────────────────┐
@@ -92,6 +101,8 @@ At a high level:
                                             ▼
                                   Future Decisions
 ```
+
+The Risk Engine, Risk Gate, and Execution Service are deterministic control boundaries. They are not replaced by LLM reasoning.
 
 ---
 
@@ -159,6 +170,8 @@ Responsible for:
 - Prediction
 - Research
 
+Intelligence components produce structured outputs and do not directly execute trades.
+
 ---
 
 ## Layer 5 — Decision Governance
@@ -167,11 +180,11 @@ Responsible for:
 
 - Critic review
 - Portfolio analysis
-- Risk evaluation
-- Position sizing
-- Trade authorization
+- Deterministic risk evaluation
+- Contextual risk review
+- Trade authorization through governed boundaries
 
-This is where intelligence becomes a governed decision.
+This is where intelligence becomes a governed decision. Hard numerical constraints remain deterministic.
 
 ---
 
@@ -185,6 +198,8 @@ Responsible for:
 - Fill verification
 - Position reconciliation
 - Trade management
+
+Execution is isolated behind explicit authorization and deterministic controls.
 
 ---
 
@@ -256,7 +271,7 @@ It is responsible for:
 
 - Receiving system events
 - Selecting workflows
-- Invoking appropriate agents
+- Invoking appropriate agents/services
 - Passing structured context
 - Maintaining workflow state
 - Enforcing iteration limits
@@ -461,7 +476,7 @@ Portfolio constraints may reject otherwise valid strategy signals.
 
 # 14. Risk Architecture
 
-Risk is deliberately separated into two cooperating components:
+Risk is deliberately separated into deterministic enforcement and contextual review:
 
 ```text
                  ┌──────────────────────┐
@@ -471,20 +486,23 @@ Trade Proposal → │ Deterministic Risk   │
                             │
                             ▼
                  ┌──────────────────────┐
-                 │ Risk Agent           │
-                 │ Explanation / Review  │
+                 │ Risk Review Agent    │
+                 │ Context / Review     │
                  └──────────┬───────────┘
                             │
                             ▼
                        RISK GATE
-                       /                           REJECT    APPROVE
+                            │
+                     ┌──────┴──────┐
+                     ▼             ▼
+                  REJECT        APPROVE
 ```
 
-The deterministic Risk Engine should enforce hard numerical constraints.
+The deterministic Risk Engine enforces hard numerical constraints.
 
-The Risk Agent can provide contextual reasoning and explanations.
+The Risk Review Agent provides contextual reasoning and explanation. It cannot weaken or overturn deterministic constraints.
 
-The Risk Agent must not weaken deterministic constraints.
+The Risk Gate is the deterministic enforcement boundary before execution.
 
 ---
 
@@ -517,16 +535,20 @@ REQUIRES_REVIEW
 
 Only `APPROVED` may proceed toward execution.
 
+A hard Risk Engine rejection cannot be converted to approval downstream.
+
 ---
 
 # 16. Execution Architecture
 
-Execution should be separated from strategy logic.
+Execution should be separated from strategy and analytical logic.
 
 ```text
 Approved Trade
       ↓
-Execution Engine
+Execution Authorization
+      ↓
+Execution Service / OMS
       ↓
 Order Validator
       ↓
@@ -537,7 +559,7 @@ Broker Adapter
 External Broker
 ```
 
-The Execution Engine must:
+The Execution Service must:
 
 - Validate order parameters
 - Enforce authorized operating mode
@@ -547,6 +569,8 @@ The Execution Engine must:
 - Verify fills
 - Reconcile positions
 - Report execution results
+
+Execution does not assume that an intended order became a fill.
 
 ---
 
@@ -598,7 +622,7 @@ FAILED
 UNKNOWN
 ```
 
-`UNKNOWN` must trigger reconciliation rather than assumptions.
+`UNKNOWN` must trigger reconciliation rather than assumptions or blind resubmission.
 
 ---
 
@@ -911,7 +935,7 @@ Risk State
 Compact Agent Context
 ```
 
-The Context Manager is essential for token efficiency.
+The Context Manager is essential for efficient reasoning and controlled context.
 
 ---
 
@@ -1208,11 +1232,13 @@ Portfolio Review
      ↓
 Risk Engine
      ↓
-Risk Agent / Risk Gate
+Risk Review Agent
+     ↓
+Risk Gate
      ↓
 Human Approval if Required
      ↓
-Execution
+Execution Service / OMS
 ```
 
 ---
@@ -1329,14 +1355,20 @@ The following must remain true:
 
 1. Risk can veto strategy.
 2. Execution cannot bypass Risk.
-3. Agents cannot modify immutable safety rules.
-4. Research cannot silently modify production.
-5. Live mode must be explicit.
-6. Data integrity is mandatory.
-7. Important decisions are auditable.
-8. Agent communication is bounded.
-9. Learning cannot silently self-deploy.
-10. The system must fail safely.
+3. Hard numerical Risk constraints are enforced by the deterministic Risk Engine.
+4. A hard Risk Engine rejection cannot be overturned.
+5. Risk Review provides contextual governance but cannot weaken hard constraints.
+6. The Risk Gate is the deterministic enforcement boundary before execution.
+7. Execution is isolated behind explicit authorization and deterministic controls.
+8. Agents cannot modify immutable safety rules.
+9. Research cannot silently modify production.
+10. Live mode must be explicit.
+11. Data integrity is mandatory.
+12. Important decisions are auditable.
+13. Agent communication is bounded.
+14. Learning cannot silently self-deploy.
+15. The system must fail safely.
+16. TradeOS should optimize reasoning efficiency, not merely minimize token count.
 
 ---
 
@@ -1480,6 +1512,7 @@ The architecture is successful when:
 - AI context is controlled.
 - Failure produces safer behavior.
 - The first implementation can remain small.
+- Reasoning is efficient without sacrificing decision quality or safety.
 
 ---
 
@@ -1510,7 +1543,8 @@ The architecture is successful when:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS system architecture, including repeated-mistake learning |
+| 0.2.0 | Architecture Baseline | Aligned agent/service boundaries, deterministic risk authority, Risk Review Agent, Risk Gate, execution controls, and reasoning efficiency |
 
 ---
 
-> **Architecture principle: intelligence may propose, governance decides, risk authorizes, execution verifies, and learning improves the next decision.**
+> **Architecture principle: intelligence may propose, governance reviews, deterministic risk controls enforce, execution verifies, and learning improves the next decision.**
