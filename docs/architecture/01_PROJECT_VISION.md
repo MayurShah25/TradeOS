@@ -1,7 +1,7 @@
 # TradeOS Project Vision
 
 **Document:** 01_PROJECT_VISION.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Approved Direction  
 **Owner:** TradeOS Project  
 **Scope:** Product vision, objectives, boundaries, and success criteria
@@ -290,15 +290,26 @@ Conceptually:
                    PORTFOLIO
                        │
                        ▼
-                     RISK
-                  HARD VETO
+                 RISK ENGINE
+             HARD CONSTRAINTS
+                       │
+                       ▼
+               RISK REVIEW AGENT
+                CONTEXTUAL REVIEW
+                       │
+                       ▼
+                   RISK GATE
+              DETERMINISTIC ENFORCEMENT
                        │
                  ┌─────┴─────┐
                  │           │
                REJECT      APPROVE
                              │
                              ▼
-                         EXECUTION
+                  EXECUTION AUTHORIZATION
+                             │
+                             ▼
+                  EXECUTION SERVICE / OMS
                              │
                              ▼
                          JOURNAL
@@ -308,7 +319,7 @@ Conceptually:
                  LEARNING           COACH
 ```
 
-Each agent will have a narrowly defined responsibility and limited context.
+Each agent will have a narrowly defined responsibility and limited context. Deterministic system controls retain authority over safety and execution.
 
 ---
 
@@ -409,6 +420,18 @@ The system should additionally enforce:
 
 Risk controls must be capable of stopping trading regardless of how attractive a setup appears.
 
+The authority chain is:
+
+```text
+Risk Engine
+    ↓
+Risk Review Agent
+    ↓
+Risk Gate
+```
+
+The Risk Engine evaluates deterministic hard constraints. The Risk Review Agent provides contextual review. The Risk Gate deterministically enforces the final risk decision. A hard Risk Engine rejection cannot be overridden by an agent, strategy, prediction, or user approval.
+
 ---
 
 ## 16. Trade Management Philosophy
@@ -473,6 +496,8 @@ The platform should support:
 
 The system should never silently assume permission for greater autonomy.
 
+Human approval is an additional authorization layer where required; it cannot bypass hard safety constraints.
+
 ---
 
 ## 19. Modularity and Extensibility
@@ -514,6 +539,8 @@ The design principle is:
 
 > **Context is earned, not assumed.**
 
+Token efficiency is not an end in itself. The broader objective is to **learn to think more efficiently**: select the right context, invoke the right capability, avoid redundant reasoning, and stop when sufficient evidence exists without weakening safety or decision quality.
+
 ---
 
 ## 21. Auditability
@@ -546,7 +573,7 @@ Safety systems override:
 - Profit opportunities
 - User pressure to trade
 
-The Risk Agent and system-level safety mechanisms have authority to stop a trade.
+The deterministic Risk Engine and Risk Gate, together with system-level safety mechanisms, have authority to stop a trade. The Risk Review Agent provides contextual review but cannot override hard Risk Engine constraints.
 
 ---
 
@@ -693,6 +720,7 @@ Related documents:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Approved Direction | Initial project vision based on founder requirements and architecture discussions |
+| 0.2.0 | Approved Direction | Aligned risk authority model, execution boundaries, and efficient-reasoning principle |
 
 ---
 
