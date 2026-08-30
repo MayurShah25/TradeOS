@@ -1,7 +1,7 @@
 # TradeOS Agent Architecture
 
-**Document:** 05_AGENT_ARCHITECTURE.md  
-**Version:** 0.1.0  
+**Document:** `05_AGENT_ARCHITECTURE.md`  
+**Version:** 0.2.0  
 **Status:** Architecture Baseline  
 **Scope:** Agent roles, authority, contracts, context, communication, memory, governance, learning, and runtime behavior
 
@@ -11,13 +11,15 @@
 
 This document defines the architecture and governance of the TradeOS agent ecosystem.
 
-TradeOS does not use one general-purpose AI agent to perform all trading functions.
-
-Instead, it uses specialized agents with clearly bounded responsibilities.
+TradeOS does not use one general-purpose AI agent to perform all trading functions. Instead, it uses specialized agents with clearly bounded responsibilities.
 
 The fundamental rule is:
 
 > **Agents provide intelligence and services; system governance determines authority.**
+
+The second architectural rule is:
+
+> **Not every intelligent component is an authority, and not every system component should be an agent. Deterministic work belongs to deterministic services/engines; reasoning belongs to bounded agents; authority belongs to governed control boundaries.**
 
 No agent may bypass global safety rules, deterministic risk controls, or execution safeguards.
 
@@ -41,21 +43,13 @@ Deterministic Governance
 Full Auditability
 ```
 
-Agents should be:
+Agents should be specialized, replaceable, testable, observable, versioned, context-efficient, and failure-aware.
 
-- Specialized
-- Replaceable
-- Testable
-- Observable
-- Versioned
-- Context-efficient
-- Failure-aware
+Deterministic calculations, state management, reconciliation, safety-critical validation, and enforcement should use deterministic services or engines where appropriate.
 
 ---
 
 # 3. Agent Categories
-
-TradeOS agents are grouped into three major categories.
 
 ## 3.1 Intelligence Agents
 
@@ -71,23 +65,21 @@ Generate analysis, research, forecasts, and recommendations.
 
 ## 3.2 Governance Agents
 
-Challenge, constrain, and authorize decisions.
+Challenge, review, and provide contextual governance.
 
 - Critic Agent
 - Portfolio Agent
-- Risk Agent
+- Risk Review Agent
 
-## 3.3 Operational Agents
+## 3.3 Operational / Learning Agents
 
-Coordinate, execute, record, learn, and explain.
+Coordinate, learn, and explain system behavior.
 
 - Orchestrator Agent
-- Market Data Agent
-- Execution Agent
 - Learning Agent
 - Coach Agent
 
-The category does not override the detailed authority contract.
+Deterministic components such as Market Data Service, Risk Engine, Risk Gate, Execution Service/OMS, and reconciliation services are services/engines, not AI agents.
 
 ---
 
@@ -104,13 +96,17 @@ The category does not override the detailed authority contract.
             ┌──────────────────┼──────────────────┐
             │                  │                  │
             ▼                  ▼                  ▼
-        DATA AGENTS      INTELLIGENCE         RESEARCH
+     MARKET DATA          INTELLIGENCE         RESEARCH
+       SERVICE                 │                  │
+                               ▼                  │
+          ┌───────────┬───────┼────────┬─────────┘
+          ▼           ▼       ▼        ▼
+      Technical   Fundamental News   Strategy
+          │           │       │        │
+          └───────────┴───────┼────────┘
+                              ▼
+                         Prediction
                               │
-          ┌───────────┬───────┼────────┬────────────┐
-          ▼           ▼       ▼        ▼            ▼
-      Technical   Fundamental News   Strategy    Prediction
-          │           │       │        │            │
-          └───────────┴───────┼────────┴────────────┘
                               ▼
                            CRITIC
                               │
@@ -118,32 +114,39 @@ The category does not override the detailed authority contract.
                           PORTFOLIO
                               │
                               ▼
-                         RISK GATE
-                       HARD VETO LAYER
+                    DETERMINISTIC RISK ENGINE
                               │
-                       ┌──────┴──────┐
-                       │             │
-                    REJECT         APPROVE
-                                     │
-                                     ▼
-                                 EXECUTION
-                                     │
-                                     ▼
-                                   BROKER
-                                     │
-                                     ▼
-                                  JOURNAL
-                                     │
-                           ┌─────────┴─────────┐
-                           ▼                   ▼
-                       LEARNING              COACH
-                           │
-                           ▼
-                    VALIDATED LEARNING
-                           │
-                           ▼
-                    FUTURE CONTEXT
+                              ▼
+                       RISK REVIEW AGENT
+                              │
+                              ▼
+                          RISK GATE
+                              │
+                    ┌─────────┴─────────┐
+                    │                   │
+                 REJECT              APPROVE
+                                        │
+                                        ▼
+                              EXECUTION SERVICE
+                                        │
+                                        ▼
+                                      BROKER
+                                        │
+                                        ▼
+                                     JOURNAL
+                                        │
+                              ┌─────────┴─────────┐
+                              ▼                   ▼
+                          LEARNING              COACH
+                              │
+                              ▼
+                       VALIDATED LEARNING
+                              │
+                              ▼
+                       FUTURE CONTEXT
 ```
+
+The Risk Engine, Risk Gate, and Execution Service are deterministic control boundaries. They are not replaced by LLM reasoning.
 
 ---
 
@@ -155,30 +158,31 @@ Every agent has an explicit authority level.
 L0 — Observe
 L1 — Analyze
 L2 — Recommend
-L3 — Govern
-L4 — Execute
+L3 — Govern / Review
+L4 — Execute through an explicitly authorized execution boundary
 ```
 
-Examples:
+| Component | Type | Authority |
+|---|---|---|
+| Market Data Service | Deterministic service | Data authority only |
+| Market Data Agent | Agent | L0/L1 |
+| Research | Agent | L1/L2 |
+| Technical | Agent | L1/L2 |
+| Fundamental | Agent | L1/L2 |
+| News/Sentiment | Agent | L1/L2 |
+| Strategy | Agent | L2 |
+| Prediction | Agent | L1/L2 |
+| Critic | Agent | L2 |
+| Portfolio | Agent | L2/L3 |
+| Risk Engine | Deterministic engine | Hard numerical control |
+| Risk Review Agent | Agent | L3 |
+| Risk Gate | Deterministic boundary | Execution enforcement |
+| Execution Service | Deterministic service | Authorized execution |
+| Learning | Agent | L1/L2 |
+| Coach | Agent | L1/L2 |
+| Orchestrator | Agent/service boundary | Workflow coordination |
 
-| Agent | Authority |
-|---|---|
-| Market Data | L0/L1 |
-| Research | L1/L2 |
-| Technical | L1/L2 |
-| Fundamental | L1/L2 |
-| News/Sentiment | L1/L2 |
-| Strategy | L2 |
-| Prediction | L1/L2 |
-| Critic | L2 |
-| Portfolio | L2/L3 |
-| Risk | L3 |
-| Execution | L4 |
-| Learning | L1/L2 |
-| Coach | L1/L2 |
-| Orchestrator | Workflow coordination |
-
-**Execution authority is isolated from analytical authority.**
+**Execution authority is isolated from analytical authority.** An agent authority level never permits bypassing a higher-priority deterministic safety boundary.
 
 ---
 
@@ -210,6 +214,8 @@ audit_requirements
 performance_metrics
 ```
 
+Deterministic services and engines must have equivalent versioned contracts appropriate to their responsibilities.
+
 ---
 
 # 7. Agent Lifecycle
@@ -217,26 +223,10 @@ performance_metrics
 Agents follow:
 
 ```text
-REGISTERED
-    ↓
-INITIALIZED
-    ↓
-READY
-    ↓
-RUNNING
-    ↓
-COMPLETED
+REGISTERED → INITIALIZED → READY → RUNNING → COMPLETED
 ```
 
-Failure states may include:
-
-```text
-TIMEOUT
-FAILED
-CANCELLED
-DEGRADED
-DISABLED
-```
+Failure states may include `TIMEOUT`, `FAILED`, `CANCELLED`, `DEGRADED`, and `DISABLED`.
 
 An unhealthy agent must not silently continue producing trusted outputs.
 
@@ -244,358 +234,63 @@ An unhealthy agent must not silently continue producing trusted outputs.
 
 # 8. Orchestrator Agent
 
-## Purpose
+Coordinates TradeOS workflows, invokes agents/services, passes structured context, manages state, enforces iteration and timeout limits, terminates workflows, and records outcomes.
 
-Coordinates TradeOS workflows.
-
-## Responsibilities
-
-- Receive events
-- Select workflows
-- Invoke agents
-- Pass structured context
-- Manage workflow state
-- Enforce iteration limits
-- Handle timeouts
-- Terminate workflows
-- Record workflow outcomes
-
-## Inputs
-
-- System events
-- User requests
-- Market events
-- Strategy requests
-- Risk state
-- Operating mode
-
-## Outputs
-
-- Workflow commands
-- Structured agent requests
-- Workflow state
-- Final workflow status
-
-## Tools
-
-- Agent registry
-- Workflow engine
-- Context manager
-- State manager
-
-## Forbidden
+Forbidden:
 
 - Bypassing Risk
 - Direct unauthorized execution
 - Modifying immutable safety rules
 - Increasing autonomy
-- Granting agents unrestricted access
+- Granting unrestricted agent access
 
 ---
 
-# 9. Market Data Agent
+# 9. Market Data Service / Agent Boundary
 
-## Purpose
+Deterministic ingestion, normalization, freshness checks, validation, and market-state handling belong to the Market Data Service/Gateway.
 
-Provide validated and normalized market information.
+An optional Market Data Agent may interpret data quality or research context.
 
-## Responsibilities
-
-- Retrieve data
-- Validate freshness
-- Detect anomalies
-- Normalize data
-- Identify missing information
-- Report data quality
-
-## Outputs
-
-Examples:
-
-```text
-OHLCV
-Tick
-Quote
-Volume
-Instrument metadata
-Market status
-Data quality
-Freshness
-```
-
-## Forbidden
-
-- Making trading decisions
-- Authorizing trades
-- Modifying strategy rules
+It cannot authorize trades or modify strategy rules.
 
 ---
 
 # 10. Market Research Agent
 
-## Purpose
-
-Analyze broader market conditions and identify research opportunities.
-
-## Responsibilities
-
-- Market scanning
-- Sector analysis
-- Market-condition analysis
-- Research hypothesis generation
-- Candidate setup identification
-
-## Outputs
-
-- Market observations
-- Candidate opportunities
-- Research hypotheses
-- Supporting evidence
-- Contradictory evidence
-
-## Forbidden
-
-- Direct execution
-- Risk override
-- Live strategy modification
-
----
+Analyzes broader market conditions and identifies research opportunities. It cannot execute, override Risk, or silently modify live strategies.
 
 # 11. Technical Analysis Agent
 
-## Purpose
-
-Analyze price, volume, volatility, and technical structure.
-
-## Potential Inputs
-
-- OHLCV
-- Volume
-- Indicators
-- Market regime
-- Timeframes
-- Historical context
-
-## Potential Outputs
-
-```text
-trend
-momentum
-support_resistance
-volatility
-pattern
-signal
-confidence
-evidence
-invalidations
-```
-
-## Forbidden
-
-- Direct execution
-- Risk override
-- Treating indicators as guaranteed predictions
-
----
+Analyzes price, volume, volatility, and technical structure. Indicators are evidence, not guarantees.
 
 # 12. Fundamental Analysis Agent
 
-## Purpose
-
-Evaluate fundamental information where applicable.
-
-## Inputs
-
-- Financial statements
-- Earnings
-- Valuation metrics
-- Corporate information
-- Macro data
-- Company events
-
-## Outputs
-
-- Fundamental assessment
-- Valuation observations
-- Growth observations
-- Risks
-- Supporting evidence
-
-## Forbidden
-
-- Direct execution
-- Treating fundamental analysis as certainty
-- Overriding risk
-
-For assets where conventional fundamentals are inappropriate, this agent may be inactive.
-
----
+Evaluates fundamental information where applicable. It may be inactive for assets where conventional fundamentals are inappropriate.
 
 # 13. News & Sentiment Agent
 
-## Purpose
-
-Evaluate relevant news and sentiment.
-
-## Responsibilities
-
-- Identify material news
-- Classify relevance
-- Determine sentiment
-- Detect potentially market-moving events
-- Distinguish facts from commentary
-
-## Outputs
-
-- News events
-- Relevance
-- Sentiment
-- Confidence
-- Potential market impact
-
-## Forbidden
-
-- Trading solely from an unverified headline
-- Direct execution
-- Risk override
-
----
+Evaluates relevant news and sentiment. External headlines are untrusted input until validated.
 
 # 14. Market Regime Agent
 
-## Purpose
-
-Identify the current market environment.
-
-Potential regimes:
-
-```text
-TRENDING_UP
-TRENDING_DOWN
-RANGE_BOUND
-HIGH_VOLATILITY
-LOW_VOLATILITY
-BREAKOUT
-MEAN_REVERSION
-UNCERTAIN
-```
-
-The exact taxonomy will evolve.
-
-## Outputs
-
-- Current regime
-- Regime confidence
-- Supporting evidence
-- Historical regime characteristics
-
-Regime information may influence strategy selection but cannot override risk.
-
----
+Identifies market conditions such as trending, range-bound, high-volatility, low-volatility, breakout, mean-reversion, or uncertain regimes. Regime information may influence strategy selection but cannot override Risk.
 
 # 15. Strategy Agent
 
-## Purpose
+Evaluates defined strategy rules and generates structured Trade Proposals containing entry, invalidation, target concept, thesis, evidence, and required confirmations.
 
-Determine whether a defined strategy produces a valid trade proposal.
-
-## Responsibilities
-
-- Evaluate strategy rules
-- Identify setups
-- Generate trade thesis
-- Define entry concept
-- Define invalidation
-- Define target concept
-- Identify required confirmations
-
-## Outputs
-
-A structured Trade Proposal.
-
-Example:
-
-```json
-{
-  "strategy_id": "example_strategy",
-  "strategy_version": "1.0.0",
-  "instrument": "XYZ",
-  "direction": "LONG",
-  "entry": 100,
-  "stop": 97,
-  "target": 108,
-  "thesis": "Structured explanation",
-  "evidence": [],
-  "invalidations": []
-}
-```
-
-## Forbidden
-
-- Execution
-- Risk override
-- Stop widening to avoid losses
-- Unvalidated strategy deployment
-
----
+It cannot execute, override Risk, widen stops to avoid losses, or deploy an unvalidated strategy.
 
 # 16. Prediction Agent
 
-## Purpose
-
-Estimate probabilities or scenarios.
-
-## Outputs
-
-Potentially:
-
-```text
-direction_probability
-scenario_probabilities
-expected_range
-confidence
-uncertainty
-calibration_metadata
-```
-
-Example:
-
-```text
-Bullish scenario: 0.68
-Neutral scenario: 0.21
-Bearish scenario: 0.11
-```
-
-These are estimates, not guarantees.
-
-## Forbidden
-
-- Claiming certainty
-- Direct execution
-- Overriding Risk
-
----
+Produces probabilistic forecasts or scenarios and reports uncertainty. Predictions are estimates, not guarantees, and cannot authorize execution.
 
 # 17. Critic Agent
 
-## Purpose
+Acts as an adversarial reviewer, searching for contradictory evidence, missing confirmation, overconfidence, regime mismatch, poor reward/risk, data-quality issues, and overfitting.
 
-Act as an adversarial reviewer.
-
-The Critic should actively search for reasons a proposed trade may fail.
-
-## Responsibilities
-
-- Challenge assumptions
-- Search for contradictory evidence
-- Identify missing confirmation
-- Detect overconfidence
-- Identify regime mismatch
-- Identify poor reward/risk
-- Identify data quality issues
-- Identify potential overfitting
-
-## Outputs
+Outputs may include:
 
 ```text
 CRITIC_PASS
@@ -603,239 +298,133 @@ CRITIC_CONCERN
 CRITIC_REJECT
 ```
 
-with structured reasons.
-
-## Forbidden
-
-- Forcing a trade
-- Overriding hard Risk controls
-
----
+It cannot force execution or override hard Risk controls.
 
 # 18. Portfolio Agent
 
-## Purpose
-
-Evaluate the proposed trade in the context of the portfolio.
-
-## Inputs
-
-- Open positions
-- Proposed position
-- Correlations
-- Exposure
-- Margin
-- Leverage
-- Concentration
-- Strategy exposure
-
-## Outputs
-
-- Portfolio impact
-- Exposure impact
-- Correlation risk
-- Concentration warnings
-- Recommendation
-
-## Forbidden
-
-- Overriding hard Risk limits
+Evaluates a proposed trade against existing exposure, correlations, margin, leverage, concentration, and strategy exposure. It may recommend rejection or reduction but cannot override hard Risk limits.
 
 ---
 
-# 19. Risk Agent
+# 19. Risk Review Agent
 
 ## Purpose
 
-Provide risk governance and explain risk decisions.
+Provide contextual risk governance and explain risk decisions.
 
 ## Responsibilities
 
-- Evaluate proposed risk
-- Validate position size
+- Review proposed risk
 - Review portfolio exposure
-- Evaluate drawdown state
-- Evaluate daily loss state
-- Enforce configured limits
-- Reject unsafe trades
-- Trigger risk reduction
-- Trigger trading halts
+- Evaluate event, regime, liquidity, and stress concerns
+- Evaluate drawdown and daily-loss context
+- Recommend rejection, reduction, escalation, or review
+- Explain the risk decision
 
 ## Authority
 
-**L3 — Governance**
+**L3 — Governance / Review**
 
-The Risk Agent has hard veto authority.
+The Risk Review Agent is not the sole numerical risk calculator. It cannot weaken a hard Risk Engine constraint, independently invent a trade, or convert a failed hard constraint into approval.
 
-However, numerical hard limits should also be enforced by a deterministic Risk Engine.
+Forbidden:
 
-## Forbidden
-
-The Risk Agent must not:
-
-- Increase permitted risk without authorized configuration
-- Disable safety limits
-- Enable live trading
-- Modify immutable global rules
+- Increasing permitted risk without authorized configuration
+- Disabling safety limits
+- Enabling live trading
+- Modifying immutable global rules
+- Overturning a hard Risk Engine rejection
+- Independently authorizing a trade
 
 ---
 
 # 20. Deterministic Risk Engine
 
-The Risk Agent should not be the sole safety mechanism.
-
-A deterministic Risk Engine should enforce hard numerical constraints.
+The Deterministic Risk Engine is authoritative for hard numerical constraints including risk per trade, position sizing, maximum monetary risk, daily loss, drawdown, portfolio exposure, leverage, margin, concentration, and other deterministic safety limits.
 
 ```text
 Trade Proposal
       ↓
 Deterministic Risk Engine
       ↓
-Risk Agent
+Risk Review Agent
       ↓
 Risk Gate
 ```
 
-If the deterministic engine rejects a trade, an LLM cannot overturn it.
+If the Risk Engine rejects a trade, no agent may overturn that rejection.
+
+Risk Engine outputs must be deterministic, reproducible, versioned, and auditable.
 
 ---
 
-# 21. Execution Agent
+# 21. Risk Gate
 
-## Purpose
+The Risk Gate is the deterministic enforcement boundary between risk governance and execution.
 
-Execute authorized orders and maintain execution state.
+It is not an LLM decision-maker.
 
-## Responsibilities
-
-- Validate approved orders
-- Submit orders
-- Track order status
-- Verify fills
-- Reconcile positions
-- Report execution results
-
-## Authority
-
-**L4 — Execution**
-
-But L4 does not mean unrestricted authority.
-
-Execution requires an approved trade and valid operating mode.
-
-## Forbidden
-
-- Creating an independent strategy
-- Bypassing Risk
-- Increasing quantity without authorization
-- Assuming a fill
-- Enabling live trading
-
----
-
-# 22. Learning Agent
-
-## Purpose
-
-Analyze outcomes and identify opportunities for improvement.
-
-## Responsibilities
-
-- Compare expected vs actual outcomes
-- Detect mistakes
-- Detect repeated mistakes
-- Evaluate strategies
-- Evaluate agents
-- Evaluate prediction calibration
-- Generate learning recommendations
-
-## Forbidden
-
-- Automatically modifying immutable safety rules
-- Increasing risk
-- Deploying unvalidated strategies
-- Deleting unfavorable results
-
----
-
-# 23. Coach Agent
-
-## Purpose
-
-Turn system activity into understandable education.
-
-## Responsibilities
-
-- Explain trades
-- Explain rejected trades
-- Explain mistakes
-- Compare expectations vs outcomes
-- Produce daily/weekly learning reports
-- Identify educational topics
-- Explain strategy behavior
-
-## Forbidden
-
-- Overriding risk
-- Executing trades
-- Changing strategy rules independently
-
----
-
-# 24. Agent Memory
-
-Agents should have controlled memory access.
-
-Memory categories include:
+It produces an explicit state such as:
 
 ```text
-Current Workflow Memory
-Operational Memory
-Trade/Episodic Memory
-Pattern Memory
-Strategy Memory
-Agent Performance Memory
-Learning Memory
+APPROVED
+REJECTED
+REQUIRES_REVIEW
 ```
 
-Agents should access only the memory relevant to their role.
+Only `APPROVED` may proceed to the execution boundary. A hard Risk Engine rejection cannot be converted to approval downstream.
 
 ---
 
-# 25. Agent Performance Memory
+# 22. Execution Service / Execution Agent Boundary
 
-TradeOS should measure how individual agents perform.
+Deterministic order validation, idempotency, broker-state tracking, fill verification, and reconciliation belong to the Execution Service/OMS.
 
-Examples:
+An Execution Agent may assist with bounded operational reasoning, but it cannot bypass deterministic execution controls.
+
+TradeOS distinguishes:
 
 ```text
-Technical Agent
-- Signal precision
-- False-positive rate
-- Regime-specific performance
-
-Prediction Agent
-- Calibration
-- Brier-like probability metrics
-- Overconfidence frequency
-
-Critic Agent
-- Useful rejection rate
-- Missed risks
-- False objections
-
-Data Agent
-- Data-quality detection accuracy
-- Freshness failures
+Trade Proposal
+    ≠
+Order Intent
+    ≠
+Broker Order
+    ≠
+Fill
+    ≠
+Position
 ```
 
-Metrics should be designed carefully and should not encourage agents to game their scores.
+Never assume an order filled. If broker state is ambiguous, mark it `UNKNOWN`, reconcile, and do not blindly resubmit.
 
 ---
 
-# 26. Repeated Agent Mistakes
+# 23. Learning Agent
 
-Agent behavior should be evaluated for recurring weaknesses.
+Analyzes outcomes and identifies opportunities for improvement.
+
+It should compare expected versus actual outcomes, detect individual and repeated mistakes, evaluate strategies and agents, evaluate prediction calibration, and generate learning recommendations.
+
+It cannot automatically modify immutable safety rules, increase risk, deploy unvalidated strategies, or delete unfavorable results.
+
+# 24. Coach Agent
+
+Turns system activity into understandable education, including trades, rejected trades, mistakes, expectations versus outcomes, and learning reports.
+
+It cannot override Risk, execute trades, or independently change strategy rules.
+
+# 25. Agent Memory
+
+Agents have controlled memory access appropriate to their roles. Memory categories may include workflow, operational, trade/episodic, pattern, strategy, agent-performance, and learning memory.
+
+# 26. Agent Performance Memory
+
+TradeOS should measure agent performance using appropriate metrics such as signal precision, false-positive rate, prediction calibration, critic usefulness, and data-quality detection. Metrics must not encourage agents to game their scores.
+
+# 27. Repeated Agent Mistakes
+
+Agent behavior should be evaluated for recurring weaknesses. The Learning Agent may identify patterns and recommend future context, additional review, or validated intervention. It must not silently rewrite production instructions.
 
 Example:
 
@@ -848,8 +437,6 @@ Poor outcomes during high volatility
      ↓
 Pattern detected
      ↓
-"Potential high-volatility overconfidence"
-     ↓
 Validation
      ↓
 Agent performance memory
@@ -857,30 +444,13 @@ Agent performance memory
 Future context / warning
 ```
 
-The Learning Agent should not silently rewrite the agent's instructions.
+# 28. Repeated Trader Mistakes
 
----
-
-# 27. Repeated Trader Mistakes
-
-The system should also detect user/trading-process patterns.
-
-Examples:
-
-- Repeated late entries
-- Repeated FOMO
-- Repeated trades immediately after losses
-- Repeated stop widening
-- Repeated premature exits
-- Repeated trading outside strategy conditions
+The system should detect recurring trading-process patterns such as late entries, FOMO, revenge trading, stop widening, premature exits, or trading outside strategy conditions.
 
 A recurring behavioral pattern can become a validated learning rule or warning.
 
----
-
-# 28. Learning Rule Lifecycle
-
-Learning should follow:
+# 29. Learning Rule Lifecycle
 
 ```text
 Observed
@@ -904,86 +474,23 @@ Measured Again
 
 One observation is not enough to create a permanent rule.
 
----
+# 30. Agent Communication Model
 
-# 29. Agent Communication Model
+Agents communicate through structured messages containing, where applicable, sender, recipient, timestamp, workflow ID, message type, schema version, payload, confidence, and evidence references.
 
-Agents should communicate through structured messages.
-
-Conceptually:
-
-```text
-Agent A
-   ↓
-Message Contract
-   ↓
-Agent B
-   ↓
-Validated Response
-```
-
-Messages should include:
-
-- Sender
-- Recipient
-- Timestamp
-- Workflow ID
-- Message type
-- Schema version
-- Payload
-- Confidence where relevant
-- Evidence references
-
----
-
-# 30. Allowed Communication
-
-The Orchestrator should generally control agent invocation.
-
-Direct unrestricted agent-to-agent communication should be avoided.
-
-Preferred:
-
-```text
-Agent A
-  ↓
-Orchestrator
-  ↓
-Agent B
-```
-
-rather than:
-
-```text
-Agent A
-  ↔
-Agent B
-  ↔
-Agent C
-  ↔
-Agent A
-```
-
-This reduces loops and makes workflows auditable.
-
----
+The preferred coordination pattern is orchestrated rather than unrestricted peer-to-peer communication.
 
 # 31. Agent Loop Protection
 
-Every workflow must have:
+Every workflow must have maximum iterations, maximum runtime, maximum retries, and a termination condition.
 
-- Maximum iterations
-- Maximum runtime
-- Maximum retries
-- Termination condition
+Repeated or circular communication must be detected and terminated.
 
-Repeated or circular communication should trigger termination.
-
----
+**Infinite agent-to-agent loops are prohibited.**
 
 # 32. Agent Context Management
 
-Context should be assembled dynamically.
+Context should be assembled dynamically:
 
 ```text
 Agent Task
@@ -1003,45 +510,28 @@ Compact Context
 
 The agent should not automatically receive the entire project context.
 
----
+# 33. Reasoning Efficiency and Token Budgeting
 
-# 33. Token Budgeting
+Each agent should have an expected resource budget. The system may track input tokens, output tokens, calls, latency, estimated cost, and cache utilization.
 
-Each agent should have an expected token budget.
+However, the objective is not simply lower token usage.
 
-The system should track:
-
-- Input tokens
-- Output tokens
-- Calls
-- Latency
-- Estimated cost
-- Cache utilization
-
-Agents exceeding normal usage should be investigated.
-
----
+> **TradeOS should learn to think more efficiently — selecting the right information, the right agent, the right amount of reasoning, and stopping unnecessary workflows early without sacrificing decision quality or safety.**
 
 # 34. Model Selection
 
 Different agents may use different models.
 
-A simple task should not require the most expensive reasoning model.
-
-Potential mapping:
-
 ```text
-Deterministic Calculation → Python
-Simple Classification      → Small Model / Rules
-Research Synthesis         → Reasoning Model
+Deterministic Calculation → Python / Engine
+Simple Classification      → Rules / Small Model
+Research Synthesis         → Appropriate Reasoning Model
 Complex Strategy Review    → Strong Reasoning Model
 Risk Calculation           → Deterministic Engine
 Explanation                → Appropriate Language Model
 ```
 
 Model selection should be configuration-driven.
-
----
 
 # 35. Agent Failure Behavior
 
@@ -1061,27 +551,15 @@ Continue only if safe
 Otherwise Reject / Escalate
 ```
 
-A failed intelligence agent may sometimes result in `REQUIRES_REVIEW`.
-
-A failed Risk component must prevent new execution.
-
----
+A failed intelligence agent may sometimes result in `REQUIRES_REVIEW`. A failed Risk component must prevent new execution.
 
 # 36. Agent Timeouts
 
-Every agent must have a timeout.
-
-Long-running agents must not block the entire trading workflow indefinitely.
-
-Timeouts should be configurable by agent class.
-
----
+Every agent must have a timeout. Long-running agents must not block the entire trading workflow indefinitely. Timeouts should be configurable by agent class.
 
 # 37. Agent Retries
 
 Retries must be bounded.
-
-Not every failure should be retried.
 
 Examples:
 
@@ -1090,13 +568,9 @@ Examples:
 - Risk engine failure → do not blindly retry into execution.
 - Broker uncertainty → reconcile before retrying.
 
----
-
 # 38. Structured Output Validation
 
 Agent outputs must be validated before being consumed.
-
-For example:
 
 ```text
 LLM Output
@@ -1110,30 +584,18 @@ Consumer
 
 Malformed output must not silently enter the trading workflow.
 
----
-
 # 39. Agent Prompt Governance
 
-Prompts and system instructions that materially affect agent behavior should be:
-
-- Versioned
-- Reviewed
-- Stored appropriately
-- Testable
-- Associated with agent versions
+Prompts and system instructions that materially affect agent behavior should be versioned, reviewed, stored appropriately, testable, and associated with agent versions.
 
 Prompt changes can change trading behavior and should therefore be treated as meaningful software changes.
-
----
 
 # 40. Agent Security
 
 Agents should never receive raw credentials.
 
-For example:
-
 ```text
-Execution Agent
+Execution Service
       ↓
 Broker Interface
       ↓
@@ -1142,19 +604,11 @@ Credential Service
 Broker
 ```
 
-rather than:
-
-```text
-LLM
- ↓
-Raw API Secret
-```
-
----
+Never expose raw API secrets to an LLM.
 
 # 41. Agent Observability
 
-Track:
+Track, where appropriate:
 
 - Agent calls
 - Latency
@@ -1166,8 +620,6 @@ Track:
 - Model version
 - Cost
 - Escalations
-
----
 
 # 42. Agent Audit Trail
 
@@ -1185,33 +637,24 @@ For important decisions, retain:
 
 Sensitive information must be excluded or protected.
 
----
-
 # 43. Agent Testing
 
 Agents require multiple testing approaches.
 
 ### Contract Tests
-
 Verify input/output schemas.
 
 ### Scenario Tests
-
 Provide known situations and expected behavior.
 
 ### Regression Tests
-
 Ensure changes do not unexpectedly alter established behavior.
 
 ### Safety Tests
-
 Verify the agent cannot perform forbidden actions.
 
 ### Evaluation Tests
-
 Measure analytical quality.
-
----
 
 # 44. Agent Evaluation
 
@@ -1230,8 +673,6 @@ Evaluate:
 - Latency
 - Cost
 
----
-
 # 45. Agent Abstention
 
 Agents should be allowed to say:
@@ -1244,8 +685,6 @@ REQUIRES_REVIEW
 
 Abstention is preferable to fabricated confidence.
 
----
-
 # 46. Confidence Is Not Authority
 
 An agent may output:
@@ -1256,11 +695,7 @@ confidence = 0.95
 
 and still be rejected by Risk.
 
-Confidence informs analysis.
-
-It does not grant permission.
-
----
+Confidence informs analysis. It does not grant permission.
 
 # 47. Agent Consensus
 
@@ -1274,7 +709,7 @@ Fundamental → BUY
 News → BUY
 Prediction → BUY
 Critic → CONCERN
-Risk → REJECT
+Risk Engine → REJECT
 ```
 
 Final result:
@@ -1284,8 +719,6 @@ REJECT
 ```
 
 Risk authority remains independent of agent consensus.
-
----
 
 # 48. Agent Disagreement
 
@@ -1300,8 +733,6 @@ The system should record:
 - Final resolution
 
 Repeated disagreement patterns can become learning signals.
-
----
 
 # 49. Agent Registry
 
@@ -1324,8 +755,6 @@ status
 
 The Orchestrator uses the registry to determine which agents can perform a task.
 
----
-
 # 50. Agent Capability Discovery
 
 Agents should declare capabilities rather than requiring hard-coded knowledge of every agent.
@@ -1342,8 +771,6 @@ technical_analysis.v1
 
 This allows replacement and versioning.
 
----
-
 # 51. Agent Versioning
 
 Agent versions must change when behavior materially changes.
@@ -1357,8 +784,6 @@ technical_analysis.v2.0.0
 ```
 
 Important decisions should record the agent version used.
-
----
 
 # 52. Agent Promotion
 
@@ -1382,8 +807,6 @@ Approved
 
 No experimental agent should automatically receive live execution privileges.
 
----
-
 # 53. Agent Degradation
 
 If an agent's measured performance deteriorates materially, TradeOS should be able to:
@@ -1395,8 +818,6 @@ If an agent's measured performance deteriorates materially, TradeOS should be ab
 - Require review
 
 The system should not hide degraded performance.
-
----
 
 # 54. Agent Learning Boundaries
 
@@ -1418,8 +839,6 @@ Learning may not independently:
 - Delete evidence
 - Deploy unvalidated behavior
 
----
-
 # 55. Emergency Behavior
 
 If a critical safety issue occurs:
@@ -1429,16 +848,12 @@ Any Critical Component
         ↓
 Emergency Signal
         ↓
-Orchestrator
-        ↓
-Risk / Safety Layer
+Safety Layer
         ↓
 STOP NEW TRADING
 ```
 
 Safety signals must not depend on an LLM agreeing with them.
-
----
 
 # 56. Agent Architecture Invariants
 
@@ -1446,21 +861,21 @@ The following must always remain true:
 
 1. Agents have bounded responsibilities.
 2. Agents use least privilege.
-3. Risk has hard veto authority.
-4. Execution requires authorization.
-5. Agents cannot modify immutable safety rules.
-6. Agent communication is bounded.
-7. Agent outputs are schema-validated.
-8. Agent failures fail safely.
-9. Agent versions are auditable.
-10. Learning cannot silently self-deploy.
-
----
+3. Hard numerical risk constraints are enforced by the deterministic Risk Engine.
+4. A hard Risk Engine rejection cannot be overturned.
+5. Execution requires authorization through the Risk Gate.
+6. Deterministic execution controls cannot be bypassed by an agent.
+7. Agents cannot modify immutable safety rules.
+8. Agent communication is bounded.
+9. Agent outputs are schema-validated.
+10. Agent failures fail safely.
+11. Agent versions are auditable.
+12. Learning cannot silently self-deploy.
 
 # 57. Example: Complete Trade Workflow
 
 ```text
-Market Data Agent
+Market Data Service
       ↓
 Market Research Agent
       ↓
@@ -1480,11 +895,13 @@ Portfolio Agent
       ↓
 Deterministic Risk Engine
       ↓
-Risk Agent
+Risk Review Agent
+      ↓
+Risk Gate
       ↓
 Human Approval if Required
       ↓
-Execution Agent
+Execution Service / OMS
       ↓
 Broker
       ↓
@@ -1496,8 +913,6 @@ Coach Agent
 ```
 
 The Orchestrator coordinates this workflow.
-
----
 
 # 58. Example: Risk Rejection
 
@@ -1527,8 +942,6 @@ REJECT
 
 No agent may override the Risk result.
 
----
-
 # 59. Example: Repeated Mistake
 
 ```text
@@ -1554,9 +967,7 @@ Critic / Coach / User Review
 Outcome Measured
 ```
 
-This creates a closed learning loop.
-
----
+This creates a governed closed learning loop.
 
 # 60. Example: Agent Overconfidence
 
@@ -1580,18 +991,16 @@ Future prediction context
 
 The model is not automatically retrained or replaced without governance.
 
----
-
 # 61. Agent Architecture Success Criteria
 
 The agent architecture is successful when:
 
 - Every agent has a clear purpose.
 - No agent has unnecessary authority.
-- Risk cannot be bypassed.
-- Execution is isolated.
+- Hard Risk controls cannot be bypassed.
+- Execution is isolated behind deterministic controls.
 - Agent communication is bounded.
-- Context is minimized.
+- Context is minimized without sacrificing required information.
 - Outputs are structured.
 - Failures are safe.
 - Performance is measurable.
@@ -1599,8 +1008,6 @@ The agent architecture is successful when:
 - Agent weaknesses are measurable.
 - Learning is governed.
 - New agents can be added without redesigning the system.
-
----
 
 # 62. Related Documents
 
@@ -1625,6 +1032,7 @@ The agent architecture is successful when:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial agent architecture, governance, communication, memory, and learning design |
+| 0.2.0 | Architecture Baseline | Clarified agent/service boundaries, deterministic risk authority, Risk Gate enforcement, execution boundary, bounded communication, and reasoning efficiency |
 
 ---
 
