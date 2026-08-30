@@ -1,7 +1,7 @@
 # TradeOS Strategy Architecture
 
 **Document:** 16_STRATEGY_ARCHITECTURE.md  
-**Version:** 0.1.0  
+**Version:** 0.1.1  
 **Status:** Architecture Baseline  
 **Scope:** Strategy definitions, signals, rules, lifecycle, versions, regime compatibility, portfolio interaction, validation, deployment, and retirement
 
@@ -483,6 +483,8 @@ Risk
 
 Risk can reject a strategy-generated trade.
 
+Risk approval is an authority boundary: a strategy cannot infer approval from favorable analysis, prediction confidence, or historical success, and cannot expand the limits granted by Risk.
+
 ---
 
 # 28. Strategy and Execution
@@ -490,6 +492,8 @@ Risk can reject a strategy-generated trade.
 Execution receives an approved order intent only after the required gates.
 
 Strategy should never call the broker directly.
+
+A strategy may supply execution preferences defined by its validated configuration, but those preferences cannot expand Risk-approved authority or bypass execution validation.
 
 ---
 
@@ -1251,6 +1255,9 @@ The following must remain true:
 13. Invalid dependencies prevent activation.
 14. Strategy failures fail safely.
 15. Parameter changes require controlled validation.
+16. Strategy cannot expand or infer authority beyond the approved Risk decision.
+17. Dynamic AI assistance must remain within the strategy's defined decision space and cannot silently rewrite live rules.
+18. Strategy workflows must not create unbounded agent coordination loops.
 
 ---
 
@@ -1310,6 +1317,7 @@ The Strategy System is successful when TradeOS can:
 - Revalidate or pause strategies.
 - Maintain strategy research lineage.
 - Prevent strategy logic from bypassing Risk or Execution controls.
+- Keep dynamic AI assistance bounded by the validated strategy decision space.
 
 ---
 
@@ -1339,6 +1347,7 @@ The Strategy System is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS strategy architecture, including strategy definitions, signals, lifecycle, versioning, regime compatibility, validation, deployment, monitoring, and learning |
+| 0.1.1 | Architecture Baseline | Clarified strategy authority boundaries, bounded AI-assisted adaptation, and prevention of unbounded strategy orchestration |
 
 ---
 
