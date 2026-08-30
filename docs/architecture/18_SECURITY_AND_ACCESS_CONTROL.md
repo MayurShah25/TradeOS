@@ -1,7 +1,7 @@
 # TradeOS Security and Access Control
 
 **Document:** 18_SECURITY_AND_ACCESS_CONTROL.md  
-**Version:** 0.1.0  
+**Version:** 0.1.1  
 **Status:** Architecture Baseline  
 **Scope:** Authentication, authorization, secrets, identity, agent isolation, execution permissions, data protection, configuration security, audit security, and secure operations
 
@@ -16,6 +16,8 @@ The core principle is:
 > **No component should have more authority than it needs, and no agent should be able to grant itself additional authority.**
 
 Security is a system-wide property, not a single authentication feature.
+
+Security controls are enforcement boundaries. Security observations, alerts, and learning recommendations must not themselves grant trading authority or weaken existing controls.
 
 ---
 
@@ -1173,6 +1175,8 @@ event_id
 
 where applicable.
 
+Observability may detect or report a security condition, but telemetry itself must not grant permissions or change authoritative trading state.
+
 ---
 
 # 75. Security and Configuration
@@ -1200,6 +1204,8 @@ Allowed Actions
 Resource Limits
 Escalation Rules
 ```
+
+Security policy remains authoritative over agent-generated recommendations.
 
 ---
 
@@ -1231,7 +1237,7 @@ Broker
 
 Learning systems may identify security or operational anomalies.
 
-However, learning recommendations must not automatically weaken security controls.
+However, learning recommendations must not automatically weaken security controls, grant permissions, modify Risk limits, or authorize live execution.
 
 ---
 
@@ -1273,6 +1279,10 @@ The following must remain true:
 16. Kill switches cannot be overridden by the affected agent.
 17. Sensitive commands support replay protection where appropriate.
 18. Security controls fail closed when critical authorization is unavailable.
+19. Security observations and learning recommendations cannot grant trading authority or weaken security policy.
+20. Automated protective responses use deterministic, explicitly governed control paths.
+21. Security and observability telemetry cannot mutate authoritative financial state.
+22. Agent coordination cannot create an unbounded path around authorization or security boundaries.
 
 ---
 
@@ -1327,6 +1337,7 @@ The Security System is successful when TradeOS can:
 - Preserve security audit evidence.
 - Revoke compromised access quickly.
 - Recover safely from security incidents.
+- Prevent security, observability, or learning feedback from silently expanding trading authority.
 
 ---
 
@@ -1351,6 +1362,7 @@ The Security System is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS security architecture, including identity, authorization, secrets, agent isolation, execution security, prompt injection defense, and incident response |
+| 0.1.1 | Architecture Baseline | Strengthened security authority boundaries, bounded automated responses and learning feedback, and clarified that telemetry cannot grant trading authority |
 
 ---
 
