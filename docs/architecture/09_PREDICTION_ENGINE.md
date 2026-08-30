@@ -1,7 +1,7 @@
 # TradeOS Prediction Engine
 
 **Document:** 09_PREDICTION_ENGINE.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Architecture Baseline  
 **Scope:** Prediction generation, scenario modeling, probability calibration, model governance, uncertainty, validation, and integration with strategy and risk
 
@@ -70,10 +70,16 @@ Prediction Output
      ↓
 Strategy / Critic / Portfolio
      ↓
-Risk
+Risk Engine
+     ↓
+Risk Review Agent
+     ↓
+Risk Gate
 ```
 
-Risk remains independent.
+Prediction is an information-producing subsystem, not an authorization boundary. Risk remains independently authoritative.
+
+Prediction outputs may inform Strategy, Critic, and Portfolio components, but prediction itself cannot authorize a trade, override strategy constraints, or bypass the Risk Engine or Risk Gate.
 
 ---
 
@@ -162,6 +168,8 @@ uncertainty
 input_reference
 calibration_reference
 ```
+
+Prediction provenance should remain explicit enough to reconstruct which model, feature set, dataset, horizon, calibration state, and inputs produced the output.
 
 ---
 
@@ -297,6 +305,8 @@ LLM Interpretation
 ```
 
 LLMs should not replace deterministic calculations where deterministic calculations are appropriate.
+
+Prediction workflows should use the simplest validated capability that can answer the prediction question. Deterministic calculations and statistical/ML models should perform suitable quantitative work before invoking LLM reasoning.
 
 ---
 
@@ -627,6 +637,16 @@ Result:
 REJECT
 ```
 
+Prediction cannot override the risk authorization sequence:
+
+```text
+Risk Engine
+    ↓
+Risk Review Agent
+    ↓
+Risk Gate
+```
+
 ---
 
 # 35. Prediction vs Portfolio
@@ -883,6 +903,8 @@ Prediction workflows should track:
 
 A more expensive prediction must demonstrate sufficient value.
 
+Prediction workflows should favor efficient reasoning rather than unnecessary model or agent calls. Efficiency means using the minimum validated computation and context needed for a sound prediction, not merely reducing token counts.
+
 ---
 
 # 49. LLM-Assisted Prediction
@@ -898,6 +920,8 @@ LLMs may assist with:
 LLMs should not be treated as inherently calibrated probability engines.
 
 If an LLM outputs probabilities, those probabilities must be evaluated empirically.
+
+LLM use should be context-selective and bounded. The system should not invoke multiple reasoning agents merely to repeat or debate the same prediction when a validated quantitative or deterministic method is sufficient.
 
 ---
 
@@ -919,7 +943,7 @@ Prompt changes may alter prediction behavior.
 
 Prediction output must never directly trigger execution.
 
-Required path:
+Required authorization path:
 
 ```text
 Prediction
@@ -930,10 +954,16 @@ Critic
    ↓
 Portfolio
    ↓
-Risk
+Risk Engine
+   ↓
+Risk Review Agent
+   ↓
+Risk Gate
    ↓
 Execution
 ```
+
+Prediction remains an input to the decision process and has no authority to bypass any downstream control.
 
 ---
 
@@ -1005,13 +1035,17 @@ The following must remain true:
 3. Confidence is not authority.
 4. Prediction cannot bypass strategy rules.
 5. Prediction cannot bypass Risk.
-6. Critical inputs must be validated.
-7. Predictions are time-horizon specific.
-8. Models are versioned.
-9. Calibration is measured.
-10. Learning cannot silently deploy model changes.
-11. Out-of-distribution conditions may require abstention.
-12. Historical predictions remain auditable.
+6. Prediction cannot authorize execution.
+7. Critical inputs must be validated.
+8. Predictions are time-horizon specific.
+9. Models are versioned.
+10. Calibration is measured.
+11. Learning cannot silently deploy model changes.
+12. Out-of-distribution conditions may require abstention.
+13. Historical predictions remain auditable.
+14. Prediction workflows should use deterministic or validated quantitative methods before AI reasoning where appropriate.
+15. AI reasoning should be context-selective and bounded.
+16. Prediction workflows must not create unbounded agent coordination loops.
 
 ---
 
@@ -1044,6 +1078,8 @@ Drift Detection
 LLM-Assisted Reasoning
 ```
 
+Additional prediction capabilities should be introduced only when they provide validated value and do not create unnecessary reasoning complexity.
+
 ---
 
 # 58. Prediction Architecture Success Criteria
@@ -1060,6 +1096,8 @@ The Prediction Engine is successful when TradeOS can:
 - Track model versions.
 - Detect degradation.
 - Keep prediction authority separate from risk authority.
+- Preserve prediction provenance.
+- Use reasoning efficiently without weakening prediction quality or downstream safety.
 
 ---
 
@@ -1088,6 +1126,7 @@ The Prediction Engine is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS prediction architecture, including calibration, uncertainty, model governance, and prediction learning |
+| 0.2.0 | Architecture Baseline | Aligned prediction authority, risk boundaries, provenance, and efficient bounded reasoning |
 
 ---
 
