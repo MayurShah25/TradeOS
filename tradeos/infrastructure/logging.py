@@ -2,9 +2,8 @@
 
 import datetime
 import json
+from logging import LogRecord, Logger, basicConfig, getLogger
 from typing import Any
-
-from logging import LogRecord, basicConfig, getLogger
 
 
 _RESERVED = set(LogRecord(None, 0, "", 0, "", (), None).__dict__) | {"message"}
@@ -18,7 +17,7 @@ def configure_logging(level: str = "INFO") -> None:
     )
 
 
-def get_logger(name: str) -> Any:
+def get_logger(name: str) -> Logger:
     """Return a namespaced logger."""
     return getLogger(name)
 
