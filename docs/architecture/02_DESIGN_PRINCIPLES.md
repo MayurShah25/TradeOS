@@ -1,7 +1,7 @@
 # TradeOS Design Principles
 
 **Document:** 02_DESIGN_PRINCIPLES.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Approved Direction  
 **Scope:** Architectural and product design principles for TradeOS
 
@@ -58,15 +58,15 @@ This separation allows:
 - Easier testing.
 - Stronger safety guarantees.
 
-The Risk Agent and deterministic risk engine must therefore operate independently from strategy generation.
+The deterministic Risk Engine and Risk Review Agent must therefore operate independently from strategy generation, with the Risk Gate providing deterministic enforcement.
 
 ---
 
 # 4. Intelligence and Authority Must Be Separate
 
-AI agents generate intelligence.
+AI agents generate intelligence and contextual review.
 
-System controls determine authority.
+Deterministic system controls determine authority.
 
 For example:
 
@@ -85,10 +85,16 @@ Portfolio
     ↓
 Risk Engine
     ↓
+Risk Review Agent
+    ↓
+Risk Gate
+    ↓
 "APPROVED / REJECTED"
 ```
 
-No amount of model confidence can bypass an authoritative safety rule.
+No amount of model confidence or contextual agent reasoning can bypass an authoritative safety rule.
+
+A hard Risk Engine rejection cannot be converted into approval by the Risk Review Agent, another agent, or a user.
 
 ---
 
@@ -133,8 +139,10 @@ Examples:
 - Technical Agent → technical analysis.
 - Strategy Agent → strategy evaluation.
 - Prediction Agent → probabilistic forecasting.
-- Risk Agent → risk authorization.
-- Execution Agent → order execution.
+- Risk Review Agent → contextual risk review.
+- Risk Engine → deterministic risk calculations and hard constraints.
+- Risk Gate → deterministic risk enforcement.
+- Execution Service / OMS → order lifecycle and execution state.
 - Coach Agent → explanation and education.
 
 An agent should not gradually become a "do everything" agent.
@@ -372,7 +380,7 @@ An agent should receive information because it needs that information.
 
 It should not receive information simply because it exists.
 
-For example, a Risk Agent may need:
+For example, a Risk Review Agent may need:
 
 - Account equity
 - Proposed entry
@@ -381,6 +389,7 @@ For example, a Risk Agent may need:
 - Existing positions
 - Portfolio exposure
 - Risk configuration
+- Risk Engine result
 
 It does not necessarily need:
 
@@ -490,6 +499,7 @@ The system should be able to answer:
 - What did the prediction model estimate?
 - What did the critic identify?
 - What risk was calculated?
+- What did the Risk Review Agent identify?
 - Why was the trade approved or rejected?
 - What happened afterward?
 
@@ -512,7 +522,11 @@ Model Version
 +
 Agent Outputs
 +
-Risk Decision
+Risk Engine Result
++
+Risk Review Result
++
+Risk Gate Decision
 +
 Execution Result
 ```
@@ -568,9 +582,13 @@ Portfolio Check
    ↓
 Risk Engine
    ↓
+Risk Gate
+   ↓
 Order Validator
    ↓
-Broker
+Execution Service / OMS
+   ↓
+Broker Adapter
 ```
 
 Even if one component behaves incorrectly, another layer should prevent unsafe execution where practical.
@@ -659,6 +677,8 @@ The user should be able to:
 - Approve strategy promotion
 
 Human oversight should be configurable but never silently removed.
+
+A human may provide an additional approval or rejection where the operating mode requires it, but cannot bypass immutable safety boundaries or convert a hard Risk Engine rejection into an executable trade.
 
 ---
 
@@ -886,7 +906,7 @@ Broker A
      ↓
 Broker Interface
      ↓
-Execution Engine
+Execution Service / OMS
      ↓
 Broker B
 ```
@@ -1122,6 +1142,7 @@ TradeOS should be:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Approved Direction | Initial design principles based on TradeOS project requirements |
+| 0.2.0 | Approved Direction | Aligned risk authority model, execution ownership, and bounded efficient reasoning |
 
 ---
 

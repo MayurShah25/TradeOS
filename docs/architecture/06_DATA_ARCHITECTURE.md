@@ -1,7 +1,7 @@
 # TradeOS Data Architecture
 
 **Document:** 06_DATA_ARCHITECTURE.md  
-**Version:** 0.1.0  
+**Version:** 0.2.0  
 **Status:** Architecture Baseline  
 **Scope:** Data domains, entities, relationships, storage, lineage, quality, retention, versioning, and learning-oriented data design
 
@@ -51,9 +51,9 @@ The architecture should favor durable historical records over destructive update
 
 ---
 
-# 3. Data Truth Hierarchy
+# 3. Data Truth and Processing Model
 
-TradeOS should distinguish information by its level of authority.
+TradeOS must distinguish information by both **provenance** and **authority**. The following represents the normal processing lineage; it is not a claim that later records are inherently more truthful than source records.
 
 ```text
                     SOURCE DATA
@@ -74,7 +74,7 @@ TradeOS should distinguish information by its level of authority.
                  TRADE PROPOSAL
                         │
                         ▼
-                  RISK DECISION
+              RISK EVALUATION
                         │
                         ▼
                    EXECUTION
@@ -86,11 +86,9 @@ TradeOS should distinguish information by its level of authority.
                     LEARNING
 ```
 
-A lower layer must not overwrite the truth of a higher-authority source.
+Each record remains its own category of truth. For example, an execution record does not replace market-source truth, and a model prediction must never overwrite an actual historical price.
 
-For example:
-
-> A model prediction must never overwrite the actual historical price.
+Authority is defined by the owning component and control boundary, not by position in this processing flow. In particular, hard risk constraints are authoritative through the deterministic Risk Engine and Risk Gate.
 
 ---
 
@@ -487,7 +485,7 @@ Historical state transitions should be auditable.
 
 # 20. Risk Decision Data
 
-Every risk evaluation should produce a durable record.
+Every risk evaluation should produce a durable record that preserves the distinct deterministic and contextual stages.
 
 Fields may include:
 
@@ -504,12 +502,22 @@ drawdown
 portfolio_exposure
 leverage
 margin
-decision
+risk_engine_result
+risk_review_result
+risk_gate_decision
 reason_codes
 risk_engine_version
-risk_agent_version
+risk_review_agent_version
 created_at
 ```
+
+The three risk fields have different meanings:
+
+- `risk_engine_result` — deterministic evaluation of hard numerical constraints.
+- `risk_review_result` — contextual review and reasoning from the Risk Review Agent.
+- `risk_gate_decision` — deterministic enforcement decision governing whether execution may proceed.
+
+A hard Risk Engine rejection cannot be converted into approval downstream.
 
 ---
 
@@ -1265,10 +1273,10 @@ For example:
 Technical Agent
 → Market Data
 
-Risk Agent
+Risk Review Agent
 → Portfolio + Risk State
 
-Execution Agent
+Execution Service / OMS
 → Approved Order + Execution State
 
 Coach Agent
@@ -1474,6 +1482,10 @@ The following must remain true:
 8. Agent access is least-privilege.
 9. Learning is traceable to evidence.
 10. Learning cannot silently rewrite history.
+11. Hard Risk Engine results remain distinguishable from contextual Risk Review results.
+12. Risk Gate decisions remain distinguishable from both Risk Engine and Risk Review outputs.
+13. Execution state is owned by deterministic execution services/OMS rather than an autonomous reasoning agent.
+14. Context selection should support efficient reasoning without indiscriminately expanding agent input.
 
 ---
 
@@ -1527,6 +1539,8 @@ The data architecture is successful when TradeOS can:
 - Reproduce research results.
 - Preserve historical truth.
 - Prevent untrusted interpretations from becoming facts.
+- Trace risk from deterministic evaluation through contextual review to the final gate decision.
+- Assemble relevant context efficiently without treating token minimization as the sole objective.
 
 ---
 
@@ -1555,6 +1569,7 @@ The data architecture is successful when TradeOS can:
 | Version | Status | Description |
 |---|---|---|
 | 0.1.0 | Architecture Baseline | Initial TradeOS data architecture, including learning and repeated-mistake data structures |
+| 0.2.0 | Architecture Baseline | Aligned risk-stage data, execution ownership, provenance semantics, and efficient-reasoning context principles |
 
 ---
 

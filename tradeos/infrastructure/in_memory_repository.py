@@ -1,0 +1,19 @@
+"""In-memory repository adapter for deterministic tests and early foundation work."""
+
+from tradeos.infrastructure.repository import Repository
+
+
+class InMemoryRepository[T](Repository[T]):
+    """Simple repository implementation with explicit replace semantics."""
+
+    def __init__(self) -> None:
+        self._items: dict[str, T] = {}
+
+    def get(self, entity_id: str) -> T | None:
+        return self._items.get(entity_id)
+
+    def save(self, entity_id: str, entity: T) -> None:
+        self._items[entity_id] = entity
+
+    def delete(self, entity_id: str) -> None:
+        self._items.pop(entity_id, None)

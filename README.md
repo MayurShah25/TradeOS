@@ -1,7 +1,7 @@
 # TradeOS
 
-**Version:** 0.1.0  
-**Status:** Architecture & Documentation Phase  
+**Version:** 0.2.2  
+**Status:** Documentation Baseline Locked — Implementation Ready  
 **Project Type:** Personal AI-Assisted Multi-Market Trading Operating System
 
 ## Overview
@@ -10,119 +10,129 @@ TradeOS is a modular, AI-assisted trading operating system designed for personal
 
 > **The system should improve trading discipline and decision quality without allowing intelligence to override risk controls.**
 
-TradeOS does not attempt to eliminate uncertainty from financial markets. It creates a systematic process for identifying opportunities, evaluating risk, executing approved decisions, and learning from outcomes.
+TradeOS is not intended to predict markets with certainty. It is intended to make better-structured decisions under uncertainty while preserving capital, enforcing deterministic safety boundaries, maintaining auditability, and learning from outcomes.
 
-## Project Vision
+## Core Principles
 
-TradeOS aims to:
+- **Capital preservation first.** No strategy, prediction, agent, or opportunity may override hard risk controls.
+- **Intelligence does not equal authority.** Agents provide analysis and recommendations; deterministic governance and safety boundaries control what the system may do.
+- **Deterministic work stays deterministic.** Calculations, validation, state management, reconciliation, and enforcement belong in deterministic services/engines where appropriate.
+- **Evidence before belief.** Strategies must earn promotion through testing and evidence.
+- **Explainability.** Decisions must preserve the evidence, reasoning outputs, risk decisions, and outcomes needed for audit and review.
+- **Modularity.** Markets, strategies, models, agents, brokers, and data providers should be replaceable through defined boundaries.
+- **Reasoning efficiency.** Use bounded workflows, structured inputs, selective model calls, summaries, and caching where justified.
+- **Safety before automation.** Progression is **Research → Backtest → Walk-Forward Validation → Paper Trading → Controlled Live Trading**.
+- **No trade is a valid outcome.** A rejected opportunity is a successful governance outcome when constraints are not satisfied.
 
-- Reduce emotional, revenge, and overtrading.
-- Enforce consistent risk management.
-- Identify and evaluate setups systematically.
-- Test strategies before exposing capital.
-- Support multiple markets without redesigning the core architecture.
-- Explain why a trade was considered, approved, rejected, or exited.
-- Learn from historical, paper, and controlled live outcomes.
-- Allow new strategies and markets to be added as modular components.
-- Keep AI context and infrastructure costs efficient.
-- Maintain complete auditability.
+The global constitutional rules are defined by `rules.md`; detailed documents refine implementation without weakening those rules.
 
-TradeOS is initially a **personal research, education, and controlled trading system**, not a commercial product.
+## Documentation Baseline
 
-## Core Philosophy
+The documentation baseline currently consists of:
 
-### Capital Preservation First
-No strategy, prediction, agent, or opportunity may override established risk controls.
+- `rules.md` — global constitutional rules.
+- `docs/DOCUMENTATION_GOVERNANCE.md` — documentation hierarchy, ownership, lifecycle, review, and change-control rules.
+- `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
+- `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
+- `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `28_EVENT_CONTRACT_GOVERNANCE.md` — domain, state, event, authority, reasoning, and governance architecture.
 
-### Evidence Before Belief
-Strategies earn their place through testing and evidence rather than popularity or intuition.
+**All numbered documents 01–28 are accounted for in the repository. No numbered documentation gap is currently known.**
 
-### Discipline Over Emotion
-The system follows predefined processes rather than fear, greed, FOMO, revenge, or loss chasing.
+The documentation set is treated as the baseline for implementation. Future documentation changes must follow the governance process and must not silently contradict canonical rules or contracts.
 
-### Explainability
-The system should explain why a setup was detected, what evidence supported or contradicted it, expected outcomes, identified risks, and actual results.
+## Documentation Map
 
-### Modularity
-Markets, strategies, models, agents, brokers, and data providers should be replaceable without redesigning the entire platform.
+| Range / File | Location | Purpose |
+|---|---|---|
+| Global rules | `rules.md` | Constitutional rules and non-negotiable boundaries |
+| Governance | `docs/DOCUMENTATION_GOVERNANCE.md` | Documentation hierarchy and change control |
+| 01–19 | `docs/architecture/` | Core architecture through testing |
+| 20 | `docs/contracts/` | Agent contracts |
+| 21 | `docs/configuration/` | Configuration |
+| 22 | `docs/architecture/` | Domain model |
+| 23 | `docs/architecture/` | State machines |
+| 24 | `docs/architecture/` | Event contracts |
+| 25 | `docs/architecture/` | Authority and permission model |
+| 26 | `docs/architecture/` | Reasoning efficiency and agent orchestration |
+| 27 | `docs/architecture/` | State-machine governance |
+| 28 | `docs/architecture/` | Event-contract governance |
 
-### Token Efficiency
-Agents receive only the information required for their task. Structured data, summaries, caching, deterministic calculations, and event-driven workflows are preferred.
+## Repository Structure — Current State
 
-### Safety Before Automation
-The intended progression is:
+```text
+TradeOS/
+├── README.md
+├── rules.md
+└── docs/
+    ├── DOCUMENTATION_GOVERNANCE.md
+    ├── architecture/
+    │   ├── 01_PROJECT_VISION.md
+    │   ├── 02_DESIGN_PRINCIPLES.md
+    │   ├── 03_ENGINEERING_PRINCIPLES.md
+    │   ├── 04_SYSTEM_ARCHITECTURE.md
+    │   ├── 05_AGENT_ARCHITECTURE.md
+    │   ├── 06_DATA_ARCHITECTURE.md
+    │   ├── 07_TRADING_WORKFLOWS.md
+    │   ├── 08_RISK_MANAGEMENT.md
+    │   ├── 09_PREDICTION_ENGINE.md
+    │   ├── 10_LEARNING_SYSTEM.md
+    │   ├── 11_BACKTESTING_AND_VALIDATION.md
+    │   ├── 12_EXECUTION_ARCHITECTURE.md
+    │   ├── 13_PORTFOLIO_ARCHITECTURE.md
+    │   ├── 14_MARKET_DATA_ARCHITECTURE.md
+    │   ├── 15_RESEARCH_ARCHITECTURE.md
+    │   ├── 16_STRATEGY_ARCHITECTURE.md
+    │   ├── 17_OBSERVABILITY_AND_AUDIT.md
+    │   ├── 18_SECURITY_AND_ACCESS_CONTROL.md
+    │   ├── 19_TESTING_ARCHITECTURE.md
+    │   ├── 22_DOMAIN_MODEL.md
+    │   ├── 23_STATE_MACHINES.md
+    │   ├── 24_EVENT_CONTRACTS.md
+    │   ├── 25_AUTHORITY_AND_PERMISSION_MODEL.md
+    │   ├── 26_REASONING_EFFICIENCY_AND_AGENT_ORCHESTRATION.md
+    │   ├── 27_STATE_MACHINE_GOVERNANCE.md
+    │   └── 28_EVENT_CONTRACT_GOVERNANCE.md
+    ├── contracts/
+    │   └── 20_AGENT_CONTRACTS.md
+    └── configuration/
+        └── 21_CONFIGURATION.md
+```
 
-**Research → Backtest → Walk-Forward Validation → Paper Trading → Controlled Live Trading**
+This is the **actual documentation repository structure**. Runtime implementation directories do not yet exist and will be introduced deliberately during the foundation phase.
 
-## Planned Market Coverage
+## Architectural Direction
 
-The architecture is intended to support:
+TradeOS uses specialized, bounded components rather than one unrestricted trading agent. The conceptual system includes orchestration, market-data ingestion and validation, research, technical/fundamental/news analysis, regime analysis, strategy evaluation, prediction, criticism, portfolio analysis, deterministic risk enforcement, contextual risk review, execution/OMS, learning, and coaching.
 
-- Indian equities — NSE / BSE
-- U.S. equities
-- Equity and index options
-- Cryptocurrency
-- Forex / currency pairs
-- Gold
-- Gold/INR
-- Commodity markets
-- Additional markets through modular adapters
+The central safety boundary is:
 
-The core architecture remains market-agnostic. Market-specific behavior belongs in adapters, market profiles, strategy modules, or specialist agents.
+```text
+Trade Proposal
+      ↓
+Deterministic Risk Engine
+      ↓
+Risk Review
+      ↓
+Risk Gate
+      ↓
+Execution Authorization
+      ↓
+Execution Service / OMS
+```
 
-## Multi-Agent Architecture
-
-Initial conceptual agents:
-
-- **Orchestrator Agent** — coordinates workflows.
-- **Market Data Agent** — validates and normalizes market information.
-- **Market Research Agent** — identifies market conditions and opportunities.
-- **Technical Analysis Agent** — evaluates indicators and price behavior.
-- **Fundamental Analysis Agent** — evaluates fundamentals where applicable.
-- **News & Sentiment Agent** — evaluates relevant news and sentiment.
-- **Strategy Agent** — evaluates strategies and generates trade theses.
-- **Prediction Agent** — produces probabilistic forecasts where appropriate.
-- **Critic Agent** — challenges proposed trades and searches for counter-evidence.
-- **Portfolio Agent** — evaluates portfolio exposure and correlation.
-- **Risk Agent** — enforces risk limits and has hard veto authority.
-- **Execution Agent** — handles broker/order execution.
-- **Backtesting Agent** — evaluates strategies against historical data.
-- **Learning Agent** — analyzes outcomes and identifies potential improvements.
-- **Coach Agent** — explains decisions and produces educational feedback.
-
-No agent has unrestricted authority.
-
-## Risk Governance
-
-Risk is separated from strategy intelligence.
-
-The architecture will support configurable controls for:
-
-- Risk per trade
-- Maximum daily loss
-- Maximum portfolio exposure
-- Maximum correlated exposure
-- Maximum drawdown
-- Position limits
-- Leverage limits
-- Liquidity requirements
-- Strategy-specific limits
-- Market-specific constraints
-
-The initial personal-testing target discussed is approximately **0.5% account risk per trade**, with dynamic risk reduction during drawdowns. Exact production parameters will be finalized in `docs/08_RISK_MANAGEMENT.md`.
-
-> **Risk controls have absolute veto authority over trading decisions.**
+No downstream component may overturn a hard deterministic risk rejection.
 
 ## Trade Lifecycle
 
 ```text
 Market Data
      ↓
-Research
+Research / Intelligence
      ↓
 Setup Detection
      ↓
-Strategy Analysis
+Strategy Proposal
      ↓
 Prediction / Probability
      ↓
@@ -130,44 +140,58 @@ Critic Review
      ↓
 Portfolio Review
      ↓
-Risk Validation
+Deterministic Risk Engine
      ↓
-Execution Decision
+Risk Review
      ↓
-Paper / Live Execution
+Risk Gate
+     ↓
+Execution Authorization
+     ↓
+Execution Service / OMS
+     ↓
+Broker Verification / Reconciliation
      ↓
 Trade Management
      ↓
 Exit
      ↓
-Journal
+Journal / Audit
      ↓
 Performance Analysis
      ↓
 Learning / Coaching
 ```
 
-At any stage, the opportunity may be rejected.
+At any stage, an opportunity may be rejected.
 
-**No trade is a valid outcome.**
+## Execution Integrity
 
-## Trade Management
+TradeOS explicitly distinguishes:
 
-When a trade develops favorably and its thesis remains valid, the system may use:
+```text
+Trade Proposal
+    ≠
+Order Intent
+    ≠
+Broker Order
+    ≠
+Fill
+    ≠
+Position
+```
 
-- Trailing stop-loss
-- Trailing take-profit
-- Dynamic profit protection
-- Partial profit-taking
-- Trend-based exits
+An intended order is not proof of execution. Ambiguous broker state must remain `UNKNOWN` until reconciled; the system must not blindly resubmit an order when broker-side state is uncertain.
 
-A stop may be tightened to reduce risk or protect profit.
+## Risk Governance
 
-A stop must **never be widened simply to avoid realizing a loss**.
+Risk controls include configurable boundaries for risk per trade, daily loss, portfolio exposure, correlated exposure, drawdown, position limits, leverage, liquidity, strategy-specific limits, and market-specific constraints.
 
-## Research and Strategy Development
+The documentation baseline preserves the principle that a hard risk rejection cannot be overturned downstream and that stops must never be widened simply to avoid realizing a loss.
 
-New strategies begin in an isolated research sandbox:
+## Research, Validation & Learning
+
+New strategies follow a governed progression:
 
 ```text
 Research Idea
@@ -189,207 +213,110 @@ Review
 Controlled Promotion
 ```
 
-Research agents may propose improvements but cannot silently modify production risk controls or live strategies.
+Backtesting must account for relevant transaction costs, slippage, liquidity, spreads, partial fills, market hours, corporate actions, data quality, and execution latency. Historical evaluation must avoid look-ahead bias and data leakage.
 
-## Learning System
-
-TradeOS is also intended to function as a trading learning platform.
-
-The system should record:
-
-- Setup identified
-- Supporting evidence
-- Indicators used
-- Prediction
-- Expected outcome
-- Actual outcome
-- Execution quality
-- Risk-management behavior
-- Lessons learned
-
-The Coach Agent converts these results into understandable learning reports.
-
-The Learning System may recommend improvements but must not automatically modify immutable risk controls.
+Learning follows a governed path from observation and logging through repeated evidence, validation, recommendation, approval, activation, and measurement. Learning may recommend improvements but must not silently modify immutable safety controls or deploy unvalidated behavior.
 
 ## Operating Modes
 
-### Research Mode
-No trading activity.
+- **Research Mode** — no trading activity.
+- **Backtest Mode** — historical simulation only.
+- **Paper Trading Mode** — real-time data with simulated execution.
+- **Assisted Live Mode** — trade proposals require human approval.
+- **Controlled Autonomous Mode** — execution remains inside explicit authorization and risk boundaries.
+- **Emergency / Kill-Switch Mode** — new trading is disabled and safety procedures are activated.
 
-### Backtest Mode
-Historical simulation only.
-
-### Paper Trading Mode
-Real-time market data with simulated execution.
-
-### Assisted Live Mode
-Trade proposals require human approval.
-
-### Controlled Autonomous Mode
-Execution is permitted only within explicit authorization and risk boundaries.
-
-### Emergency / Kill-Switch Mode
-New trading is disabled and safety procedures are activated.
-
-Operating mode is configuration-driven.
-
-## Backtesting and Validation
-
-Backtesting is necessary but not sufficient.
-
-TradeOS distinguishes:
-
-- Historical backtesting
-- Out-of-sample testing
-- Walk-forward testing
-- Robustness testing
-- Paper trading
-- Live performance
-
-Testing should account for transaction costs, slippage, liquidity, spreads, partial fills, market hours, corporate actions, data quality, and execution latency where applicable.
-
-Material differences between expected and live performance should trigger investigation.
-
-## Dashboard
-
-The planned dashboard will show:
-
-- Operating mode
-- Agent status
-- Market conditions
-- Candidate setups
-- Proposed trades
-- Risk decisions
-- Portfolio exposure
-- Open positions
-- Orders
-- Backtest results
-- Paper-trading results
-- Performance
-- Learning reports
-- System health
-- Decision history
+Operating mode is configuration-driven and auditable.
 
 ## Technology Direction
 
-Current planned technologies:
+The current architectural direction includes:
 
-- **Python** — primary development language.
-- **LangGraph** — multi-agent workflow orchestration.
-- **LangChain** — supporting LLM/application components where useful.
-- **PostgreSQL** — structured data storage.
-- **Redis or equivalent** — caching and short-lived state where justified.
-- **Streamlit or lightweight web frontend** — initial dashboard.
-- **Broker APIs** — market data and execution.
-- **AWS** — initial cloud infrastructure.
-- **GitHub** — source control and documentation.
-- **Codex / AI coding assistance** — implementation support.
+- Python
+- LangGraph
+- LangChain where useful
+- PostgreSQL
+- Redis or equivalent where justified
+- Streamlit or a lightweight web frontend for the initial dashboard
+- Broker APIs
+- AWS
+- GitHub
+- Codex / AI coding assistance
 
-These choices remain subject to architectural evaluation.
+These are architectural directions rather than an assertion that all infrastructure has already been implemented.
 
-## Repository Structure
+## Implementation Roadmap
 
-```text
-TradeOS/
-├── README.md
-├── rules.md
-├── docs/
-├── decisions/
-├── agents/
-├── core/
-├── markets/
-├── strategies/
-├── risk/
-├── portfolio/
-├── execution/
-├── backtesting/
-├── prediction/
-├── learning/
-├── dashboard/
-├── data/
-├── tests/
-└── config/
-```
-
-The detailed structure will be finalized before implementation.
-
-## Development Methodology
-
-### Phase 1 — Documentation
-Vision, requirements, architecture, agent contracts, data models, risk rules, workflows, and validation requirements.
+### Phase 1 — Documentation Baseline
+Completed as the prerequisite baseline represented by the current repository documentation set.
 
 ### Phase 2 — Foundation
-Configuration, logging, data models, storage, and testing framework.
+Implement configuration, logging, core domain/data models, storage boundaries, error handling, and the testing foundation.
 
 ### Phase 3 — First Market
-One market, one broker, deliberately narrow scope.
+Implement one market and one broker/data integration with deliberately narrow scope.
 
 ### Phase 4 — Strategy & Backtesting
-Strategy interface, backtesting engine, metrics, and validation.
+Implement strategy interfaces, historical simulation, metrics, robustness checks, and walk-forward validation.
 
 ### Phase 5 — Multi-Agent Intelligence
-Orchestrator and specialized agents.
+Implement the orchestrator and specialized bounded agents according to the contracts.
 
 ### Phase 6 — Paper Trading
-Real-time data with simulated execution.
+Introduce real-time data with simulated execution and reconciliation.
 
 ### Phase 7 — Dashboard & Learning
-Monitoring, journal, coach, learning reports, and analytics.
+Add monitoring, journal, coaching, learning reports, and analytics.
 
 ### Phase 8 — Controlled Live Trading
-Only after predefined validation gates are satisfied.
+Only after explicit validation gates, risk controls, reconciliation, testing, and governance requirements are satisfied.
 
 ## Security
 
-Secrets must never be committed to GitHub.
+Secrets must never be committed to GitHub. Broker credentials, API keys, cloud credentials, database passwords, and LLM-provider credentials must use environment variables or appropriate secrets management.
 
-This includes broker credentials, API keys, AWS credentials, database passwords, and LLM provider credentials.
+The system is **not ready for live trading** merely because the documentation phase is complete.
 
-Use environment variables or appropriate secrets management.
+## Current Readiness
 
-## Project Status
+### Documentation
+**READY / BASELINE LOCKED**
 
-**Current status: Architecture & Documentation**
+The repository currently contains the complete numbered documentation sequence **01–28**, plus the global rules and documentation-governance documents. No additional existing or new numbered document is required before beginning implementation based on the current documentation inventory.
 
-The project is intentionally **not ready for live trading**.
+### Coding
+**READY TO BEGIN — FOUNDATION FIRST**
 
-Current priority:
+The next implementation work should begin with the foundation layer and must follow the canonical contracts, configuration, risk, execution, testing, security, and audit requirements already documented.
 
-1. Complete documentation.
-2. Review architecture.
-3. Define agent contracts.
-4. Define data contracts.
-5. Define risk controls.
-6. Establish testing standards.
-7. Build the first narrow prototype.
-8. Validate before expanding.
+### Live Trading
+**NOT READY**
 
-## Important Principle
+Live trading remains gated behind implementation, testing, validation, paper trading, reconciliation, and explicit controlled-live authorization.
 
-TradeOS is not designed to predict markets with certainty.
+## Change & Documentation Governance
 
-It is designed to make **better-structured decisions under uncertainty**.
+The repository follows this documentation process:
 
-Predictions are probabilities, not guarantees.
+```text
+Discuss
+  ↓
+Agree
+  ↓
+Lock
+  ↓
+Update Canonical Document
+  ↓
+Update Dependencies
+  ↓
+Cross-Document Review
+```
+
+One concept should have one canonical owner and one authoritative definition. Documentation changes must preserve the hierarchy and must not silently weaken global rules or contracts.
 
 ## Disclaimer
 
-TradeOS is a personal research and trading-system development project.
-
-Financial markets involve substantial risk, including possible loss of capital. Historical backtests do not guarantee future results. Live trading should be introduced only after appropriate testing, validation, risk controls, and human review.
-
-## Documentation Status
-
-| Document | Status |
-|---|---|
-| README.md | Draft v0.1 |
-| rules.md | Draft |
-| 01 Project Vision | Approved direction |
-| 02 Design Principles | Approved direction |
-| 03 Engineering Principles | Approved direction |
-| 04 System Architecture | Approved direction |
-| 05 Agent Architecture | In progress |
-| Remaining documents | Planned |
+TradeOS is a personal research, education, and trading-system development project. Financial markets involve substantial risk, including possible loss of capital. Historical backtests do not guarantee future results. Live trading should be introduced only after appropriate testing, validation, risk controls, reconciliation, and appropriate human review.
 
 ---
 
