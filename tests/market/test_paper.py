@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from tradeos.market import MarketStatus, PaperMarketDataProvider
+from tradeos.market import AssetClass, Instrument, MarketStatus, PaperMarketDataProvider
 
 
 def test_single_equity_provider_returns_configured_data() -> None:
@@ -37,19 +37,14 @@ def test_unknown_symbol_is_rejected() -> None:
 
 
 def test_missing_quote_is_rejected() -> None:
-    provider = PaperMarketDataProvider((provider_instrument := provider_fixture(),), ())
-
-    with pytest.raises(KeyError, match="No paper quote configured"):
-        provider.get_quote(provider_instrument)
-
-
-def provider_fixture():
-    from tradeos.market import AssetClass, Instrument
-
-    return Instrument(
+    instrument = Instrument(
         instrument_id="US-EQUITY:AAPL",
         symbol="AAPL",
         asset_class=AssetClass.EQUITY,
         exchange="PAPER",
         currency="USD",
     )
+    provider = PaperMarketDataProvider((instrument,), ())
+
+    with pytest.raises(KeyError, match="No paper quote configured"):
+        provider.get_quote(instrument)
