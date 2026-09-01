@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 import pytest
@@ -8,7 +8,7 @@ from tradeos.execution.lifecycle import ExecutionEvent, ExecutionEventType
 from tradeos.portfolio import ExecutionPortfolioPipeline
 
 
-TIMESTAMP = datetime(2026, 1, 1, tzinfo=timezone.utc)
+TIMESTAMP = datetime(2026, 1, 1, tzinfo=UTC)
 
 
 def order() -> Order:
@@ -28,7 +28,9 @@ def event(status: OrderStatus, quantity: Decimal = Decimal(0)) -> ExecutionEvent
 def test_accepted_order_reconciles_without_position_change() -> None:
     pipeline = ExecutionPortfolioPipeline()
 
-    result = pipeline.process(order(), None, event(OrderStatus.ACCEPTED), OrderStatus.ACCEPTED)
+    result = pipeline.process(
+        order(), None, event(OrderStatus.ACCEPTED), OrderStatus.ACCEPTED
+    )
 
     assert result.status is OrderStatus.ACCEPTED
     assert result.reconciled is True
@@ -58,7 +60,9 @@ def test_filled_order_updates_position_after_reconciliation() -> None:
 def test_rejected_order_does_not_create_position() -> None:
     pipeline = ExecutionPortfolioPipeline()
 
-    result = pipeline.process(order(), None, event(OrderStatus.REJECTED), OrderStatus.REJECTED)
+    result = pipeline.process(
+        order(), None, event(OrderStatus.REJECTED), OrderStatus.REJECTED
+    )
 
     assert result.status is OrderStatus.REJECTED
     assert result.portfolio.position_for("AAPL") is None
