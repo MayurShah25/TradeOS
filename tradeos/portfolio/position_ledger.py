@@ -26,6 +26,10 @@ class PositionLedger:
         """Return the current position for an instrument."""
         return self._positions.get(instrument_id)
 
+    def positions(self) -> tuple[Position, ...]:
+        """Return an immutable snapshot of all current positions."""
+        return tuple(self._positions.values())
+
     def apply_fill(
         self,
         instrument_id: str,
