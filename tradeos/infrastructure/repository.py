@@ -16,8 +16,8 @@ class Repository(ABC, Generic[EntityT]):
         raise NotImplementedError
 
     @abstractmethod
-    def save(self, entity: EntityT) -> None:
-        """Persist an entity through the configured infrastructure adapter."""
+    def save(self, entity_id: str, entity: EntityT) -> None:
+        """Persist an entity under its stable identifier."""
         raise NotImplementedError
 
     @abstractmethod
