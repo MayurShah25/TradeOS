@@ -2,7 +2,7 @@
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -44,7 +44,7 @@ def audit_record(
         raise ValueError("audit identity fields are required")
 
     record = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "event_type": event_type,
         "action": action,
         "actor": actor,
