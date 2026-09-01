@@ -13,11 +13,16 @@ def test_new_order_can_be_rejected() -> None:
 
 
 def test_accepted_order_can_be_filled() -> None:
-    assert OrderStateMachine.transition(OrderStatus.ACCEPTED, OrderStatus.FILLED) is OrderStatus.FILLED
+    assert (
+        OrderStateMachine.transition(OrderStatus.ACCEPTED, OrderStatus.FILLED) is OrderStatus.FILLED
+    )
 
 
 def test_accepted_order_can_be_rejected() -> None:
-    assert OrderStateMachine.transition(OrderStatus.ACCEPTED, OrderStatus.REJECTED) is OrderStatus.REJECTED
+    assert (
+        OrderStateMachine.transition(OrderStatus.ACCEPTED, OrderStatus.REJECTED)
+        is OrderStatus.REJECTED
+    )
 
 
 @pytest.mark.parametrize(
