@@ -2,24 +2,24 @@
 
 import datetime
 import json
-import logging
+from logging import LogRecord, basicConfig, getLogger
 from typing import Any
 
 
-_RESERVED = set(logging.LogRecord(None, 0, "", 0, "", (), None).__dict__) | {"message"}
+_RESERVED = set(LogRecord(None, 0, "", 0, "", (), None).__dict__) | {"message"}
 
 
 def configure_logging(level: str = "INFO") -> None:
     """Configure the process logger with a deterministic structured formatter."""
-    logging.basicConfig(
+    basicConfig(
         level=level.upper(),
         format="%(message)s",
     )
 
 
-def get_logger(name: str) -> logging.Logger:
+def get_logger(name: str) -> Any:
     """Return a namespaced logger."""
-    return logging.getLogger(name)
+    return getLogger(name)
 
 
 def structured_fields(**fields: Any) -> dict[str, Any]:
