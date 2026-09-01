@@ -2,10 +2,6 @@
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import TypeVar
-
-
-StateT = TypeVar("StateT", bound=StrEnum)
 
 
 class InvalidTransitionError(ValueError):
