@@ -1,10 +1,6 @@
 """Persistence boundary for TradeOS domain objects."""
 
 from abc import ABC, abstractmethod
-from typing import TypeVar
-
-
-EntityT = TypeVar("EntityT")
 
 
 class Repository[T](ABC):
