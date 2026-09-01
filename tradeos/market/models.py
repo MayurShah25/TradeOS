@@ -44,4 +44,4 @@ class Quote:
     @property
     def mid(self) -> Decimal:
         """Return the midpoint between bid and ask."""
-        return (self.bid + self.ask) / Decimal("2")
+        return (self.bid + self.ask) / Decimal(2)
