@@ -20,9 +20,7 @@ class OrderStateMachine:
     }
 
     @classmethod
-    def transition(
-        cls, current: OrderStatus | None, target: OrderStatus
-    ) -> OrderStatus:
+    def transition(cls, current: OrderStatus | None, target: OrderStatus) -> OrderStatus:
         """Return target when the lifecycle transition is valid."""
         if target not in cls._TRANSITIONS.get(current, frozenset()):
             current_name = current.value if current else "NEW"
