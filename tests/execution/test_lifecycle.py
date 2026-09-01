@@ -36,9 +36,7 @@ def test_execution_event_accepts_valid_fill() -> None:
 
 
 def test_reconciliation_matches_observed_status() -> None:
-    result = ExecutionReconciler.reconcile(
-        "order-1", OrderStatus.FILLED, OrderStatus.FILLED
-    )
+    result = ExecutionReconciler.reconcile("order-1", OrderStatus.FILLED, OrderStatus.FILLED)
 
     assert result.matched is True
 
