@@ -1,5 +1,7 @@
 """Deterministic order lifecycle transition rules."""
 
+from typing import ClassVar
+
 from tradeos.execution.models import OrderStatus
 
 
@@ -10,7 +12,7 @@ class InvalidOrderTransition(ValueError):
 class OrderStateMachine:
     """Enforce the canonical paper-execution lifecycle."""
 
-    _TRANSITIONS: dict[OrderStatus | None, frozenset[OrderStatus]] = {
+    _TRANSITIONS: ClassVar[dict[OrderStatus | None, frozenset[OrderStatus]]] = {
         None: frozenset({OrderStatus.ACCEPTED, OrderStatus.REJECTED}),
         OrderStatus.ACCEPTED: frozenset({OrderStatus.FILLED, OrderStatus.REJECTED}),
         OrderStatus.FILLED: frozenset(),
