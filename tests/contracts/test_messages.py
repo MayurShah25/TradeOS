@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -10,7 +10,7 @@ def test_command_is_immutable() -> None:
         command_id="cmd-1",
         command_type="risk.evaluate",
         aggregate_id="proposal-1",
-        issued_at=datetime.now(timezone.utc),
+        issued_at=datetime.now(UTC),
         payload={"symbol": "AAPL"},
         correlation_id="corr-1",
     )
@@ -24,7 +24,7 @@ def test_event_defaults_and_causation() -> None:
         event_id="evt-1",
         event_type="risk.approved",
         aggregate_id="proposal-1",
-        occurred_at=datetime.now(timezone.utc),
+        occurred_at=datetime.now(UTC),
         payload={},
         correlation_id="corr-1",
         causation_id="cmd-1",
@@ -40,7 +40,7 @@ def test_event_version_must_be_positive() -> None:
             event_id="evt-1",
             event_type="risk.approved",
             aggregate_id="proposal-1",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload={},
             correlation_id="corr-1",
             version=0,
