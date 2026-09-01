@@ -1,11 +1,6 @@
 """In-memory repository adapter for deterministic tests and early foundation work."""
 
-from typing import TypeVar
-
 from tradeos.infrastructure.repository import Repository
-
-
-EntityT = TypeVar("EntityT")
 
 
 class InMemoryRepository[T](Repository[T]):
