@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from tradeos.execution import Order, OrderStateMachine, OrderStatus
-from tradeos.execution.lifecycle import ExecutionEvent, ExecutionReconciler
+from tradeos.execution.lifecycle import ExecutionEvent, ExecutionEventType, ExecutionReconciler
 
 from .portfolio_state import PortfolioState, PortfolioStateBuilder
 from .position_ledger import PositionLedger
@@ -44,7 +44,9 @@ class ExecutionPortfolioPipeline:
         event.validate()
         if event.order_id != order.order_id:
             raise ValueError("execution event order_id does not match order")
-        if event.status is not event.event_type:
+
+        expected_event_type = ExecutionEventType(event.status.value)
+        if event.event_type is not expected_event_type:
             raise ValueError("execution event status and event_type must agree")
 
         status = OrderStateMachine.transition(current_status, event.status)
