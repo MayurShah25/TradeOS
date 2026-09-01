@@ -21,7 +21,7 @@ def test_domain_models_and_defaults() -> None:
         proposal_id="proposal-1",
         instrument_id="AAPL",
         side="BUY",
-        quantity=Decimal("10"),
+        quantity=Decimal(10),
         created_at=now,
         strategy_id="strategy-1",
         strategy_version="1.0",
@@ -56,7 +56,7 @@ def test_domain_models_and_defaults() -> None:
     fill = Fill(
         fill_id="fill-1",
         order_id=order.order_id,
-        quantity=Decimal("10"),
+        quantity=Decimal(10),
         price=Decimal("200.00"),
         occurred_at=now,
     )
@@ -75,7 +75,7 @@ def test_domain_models_and_defaults() -> None:
     )
 
     assert proposal.status is TradeProposalStatus.PROPOSED
-    assert proposal.quantity == Decimal("10")
+    assert proposal.quantity == Decimal(10)
     assert decision.status is RiskDecisionStatus.APPROVED
     assert authorization.consumed is False
     assert intent.authorization_id == authorization.authorization_id
