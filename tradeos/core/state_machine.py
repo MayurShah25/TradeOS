@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Generic, TypeVar
+from typing import TypeVar
 
 
 StateT = TypeVar("StateT", bound=StrEnum)
@@ -13,16 +13,16 @@ class InvalidTransitionError(ValueError):
 
 
 @dataclass(frozen=True, slots=True)
-class Transition:
+class Transition[T: StrEnum]:
     """A validated state transition request."""
 
-    from_state: StateT
-    to_state: StateT
+    from_state: T
+    to_state: T
     actor: str
     reason: str
 
 
-class StateMachine(Generic[StateT]):
+class StateMachine[T: StrEnum]:
     """Small deterministic state-machine engine.
 
     The transition table is immutable after construction. The engine performs
@@ -30,21 +30,21 @@ class StateMachine(Generic[StateT]):
     actor and the surrounding application service must enforce permissions.
     """
 
-    def __init__(self, transitions: dict[StateT, frozenset[StateT]]) -> None:
+    def __init__(self, transitions: dict[T, frozenset[T]]) -> None:
         self._transitions = dict(transitions)
 
-    def can_transition(self, current: StateT, target: StateT) -> bool:
+    def can_transition(self, current: T, target: T) -> bool:
         """Return whether the transition is explicitly allowed."""
         return target in self._transitions.get(current, frozenset())
 
     def transition(
         self,
-        current: StateT,
-        target: StateT,
+        current: T,
+        target: T,
         *,
         actor: str,
         reason: str,
-    ) -> tuple[StateT, Transition]:
+    ) -> tuple[T, Transition[T]]:
         """Validate and return a transition without mutating external state."""
         if not actor.strip():
             raise ValueError("actor is required")
