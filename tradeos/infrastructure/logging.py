@@ -1,5 +1,10 @@
 """Structured logging foundation for TradeOS."""
 
+# Ruff's import sorter misclassifies this module because the file itself is named
+# ``logging.py`` and shadows the standard-library module name.
+# The imports below are intentionally explicit and stable.
+# ruff: noqa: I001
+
 import datetime
 import json
 from logging import Logger, LogRecord, basicConfig, getLogger
