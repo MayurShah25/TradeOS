@@ -11,7 +11,7 @@ from logging import Logger, LogRecord, basicConfig, getLogger
 from typing import Any
 
 
-_RESERVED = set(LogRecord(None, 0, "", 0, "", (), None).__dict__) | {"message"}
+_RESERVED = set(LogRecord("tradeos", 0, "", 0, "", (), None).__dict__) | {"message"}
 
 
 def configure_logging(level: str = "INFO") -> None:
