@@ -2,7 +2,7 @@
 
 import datetime
 import json
-from logging import LogRecord, Logger, basicConfig, getLogger
+from logging import Logger, LogRecord, basicConfig, getLogger
 from typing import Any
 
 
