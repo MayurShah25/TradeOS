@@ -2,8 +2,9 @@
 
 import datetime
 import json
-from logging import LogRecord, basicConfig, getLogger
 from typing import Any
+
+from logging import LogRecord, basicConfig, getLogger
 
 
 _RESERVED = set(LogRecord(None, 0, "", 0, "", (), None).__dict__) | {"message"}
