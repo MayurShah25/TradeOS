@@ -10,7 +10,7 @@ def make_order(order_id: str = "order-1") -> Order:
         order_id=order_id,
         instrument_id="US-EQUITY:AAPL",
         side=OrderSide.BUY,
-        quantity=Decimal("10"),
+        quantity=Decimal(10),
     )
 
 
@@ -37,7 +37,7 @@ def test_order_rejects_non_positive_quantity() -> None:
         order_id="order-invalid",
         instrument_id="US-EQUITY:AAPL",
         side=OrderSide.BUY,
-        quantity=Decimal("0"),
+        quantity=Decimal(0),
     )
 
     with pytest.raises(ValueError, match="quantity must be greater than zero"):
