@@ -2,9 +2,9 @@ name: TradeOS CI
 
 on:
   push:
-    branches: [docs]
+    branches: [main]
   pull_request:
-    branches: [docs]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -13,6 +13,7 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: ["3.12", "3.13"]
