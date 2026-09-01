@@ -19,7 +19,7 @@ def test_single_equity_provider_returns_configured_data() -> None:
     quote = provider.get_quote(instrument)
 
     assert instrument.instrument_id == "US-EQUITY:AAPL"
-    assert quote.mid == Decimal("200")
+    assert quote.mid == Decimal(200)
     assert provider.get_market_status(instrument) is MarketStatus.OPEN
 
 
