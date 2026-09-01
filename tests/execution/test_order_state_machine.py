@@ -5,29 +5,19 @@ from tradeos.execution.state_machine import InvalidOrderTransition, OrderStateMa
 
 
 def test_new_order_can_be_accepted() -> None:
-    assert (
-        OrderStateMachine.transition(None, OrderStatus.ACCEPTED) is OrderStatus.ACCEPTED
-    )
+    assert OrderStateMachine.transition(None, OrderStatus.ACCEPTED) is OrderStatus.ACCEPTED
 
 
 def test_new_order_can_be_rejected() -> None:
-    assert (
-        OrderStateMachine.transition(None, OrderStatus.REJECTED) is OrderStatus.REJECTED
-    )
+    assert OrderStateMachine.transition(None, OrderStatus.REJECTED) is OrderStatus.REJECTED
 
 
 def test_accepted_order_can_be_filled() -> None:
-    assert (
-        OrderStateMachine.transition(OrderStatus.ACCEPTED, OrderStatus.FILLED)
-        is OrderStatus.FILLED
-    )
+    assert OrderStateMachine.transition(OrderStatus.ACCEPTED, OrderStatus.FILLED) is OrderStatus.FILLED
 
 
 def test_accepted_order_can_be_rejected() -> None:
-    assert (
-        OrderStateMachine.transition(OrderStatus.ACCEPTED, OrderStatus.REJECTED)
-        is OrderStatus.REJECTED
-    )
+    assert OrderStateMachine.transition(OrderStatus.ACCEPTED, OrderStatus.REJECTED) is OrderStatus.REJECTED
 
 
 @pytest.mark.parametrize(
@@ -40,8 +30,6 @@ def test_accepted_order_can_be_rejected() -> None:
         (OrderStatus.REJECTED, OrderStatus.FILLED),
     ],
 )
-def test_invalid_transitions_are_rejected(
-    current: OrderStatus | None, target: OrderStatus
-) -> None:
+def test_invalid_transitions_are_rejected(current: OrderStatus | None, target: OrderStatus) -> None:
     with pytest.raises(InvalidOrderTransition):
         OrderStateMachine.transition(current, target)
