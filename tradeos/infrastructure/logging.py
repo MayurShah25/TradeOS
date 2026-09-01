@@ -1,8 +1,8 @@
 """Structured logging foundation for TradeOS."""
 
+import datetime
 import json
 import logging
-from datetime import UTC, datetime
 from typing import Any
 
 
@@ -44,7 +44,7 @@ def audit_record(
         raise ValueError("audit identity fields are required")
 
     record = {
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.datetime.now(datetime.UTC).isoformat(),
         "event_type": event_type,
         "action": action,
         "actor": actor,
