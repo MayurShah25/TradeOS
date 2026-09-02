@@ -3,6 +3,11 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
+from tradeos.execution import Order
+
+from .open_orders import OpenOrderLedger
+from .position_ledger import PositionLedger
+from .pre_trade_impact import PreTradeImpactCalculator
 from .risk_context import RiskContext
 
 
@@ -42,17 +47,40 @@ class PortfolioRiskControls:
     def evaluate(
         context: RiskContext,
         limits: PortfolioRiskLimits,
+        order: Order | None = None,
+        prices: dict[str, Decimal] | None = None,
     ) -> PortfolioRiskResult:
-        """Approve only when freshness and all configured hard limits pass."""
+        """Approve only when freshness and all applicable hard limits pass."""
         limits.validate()
         context.validate()
         reasons: list[str] = []
 
         if context.stale:
             reasons.append("portfolio risk context is stale")
-        if context.exposure.gross > limits.max_gross_exposure:
+
+        exposure = context.exposure
+        heat = context.heat
+        if order is not None:
+            if prices is None:
+                reasons.append("prices are required for pre-trade impact")
+            else:
+                account = context.portfolio.account
+                if account is None:
+                    reasons.append("account state is required")
+                else:
+                    impact = PreTradeImpactCalculator.calculate(
+                        PositionLedger.from_positions(context.portfolio.positions),
+                        OpenOrderLedger.from_orders(context.portfolio.open_orders),
+                        prices,
+                        account.equity,
+                        order,
+                    )
+                    exposure = impact.projected_exposure
+                    heat = impact.projected_heat
+
+        if exposure.gross > limits.max_gross_exposure:
             reasons.append("max_gross_exposure exceeded")
-        if context.heat.ratio > limits.max_portfolio_heat:
+        if heat.ratio > limits.max_portfolio_heat:
             reasons.append("max_portfolio_heat exceeded")
 
         account = context.portfolio.account
@@ -62,7 +90,7 @@ class PortfolioRiskControls:
             if account.equity <= 0:
                 reasons.append("equity must be positive")
             else:
-                leverage = context.exposure.gross / account.equity
+                leverage = exposure.gross / account.equity
                 if leverage > limits.max_leverage:
                     reasons.append("max_leverage exceeded")
             if account.available_margin < limits.min_available_margin:

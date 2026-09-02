@@ -29,6 +29,14 @@ class OpenOrderLedger:
     def __init__(self) -> None:
         self._orders: dict[str, OpenOrder] = {}
 
+    @classmethod
+    def from_orders(cls, orders: tuple[OpenOrder, ...]) -> "OpenOrderLedger":
+        """Restore a ledger from an immutable open-order snapshot."""
+        ledger = cls()
+        for open_order in orders:
+            ledger.add(open_order)
+        return ledger
+
     def add(self, open_order: OpenOrder) -> None:
         """Add an accepted order, rejecting duplicate order identifiers."""
         open_order.validate()

@@ -3,7 +3,7 @@
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
-from tradeos.execution import OrderSide
+from tradeos.execution import Order, OrderSide
 from tradeos.portfolio import (
     AccountStateBuilder,
     PortfolioRiskControls,
@@ -83,6 +83,35 @@ def test_minimum_available_margin_is_enforced() -> None:
 
     assert result.approved is False
     assert "minimum available margin violated" in result.reasons
+
+
+def test_pre_trade_order_is_evaluated_against_projected_exposure() -> None:
+    order = Order("order-1", "AAPL", OrderSide.BUY, Decimal(30))
+    limits = PortfolioRiskLimits(
+        max_gross_exposure=Decimal(4000),
+        max_portfolio_heat=Decimal("0.5"),
+        max_leverage=Decimal(1),
+        min_available_margin=Decimal(1000),
+    )
+
+    result = PortfolioRiskControls.evaluate(
+        _context(),
+        limits,
+        order=order,
+        prices={"AAPL": Decimal(120)},
+    )
+
+    assert result.approved is False
+    assert "max_gross_exposure exceeded" in result.reasons
+
+
+def test_pre_trade_order_requires_prices() -> None:
+    order = Order("order-1", "AAPL", OrderSide.BUY, Decimal(1))
+
+    result = PortfolioRiskControls.evaluate(_context(), _limits(), order=order)
+
+    assert result.approved is False
+    assert "prices are required for pre-trade impact" in result.reasons
 
 
 def test_limits_reject_negative_values() -> None:
