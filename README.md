@@ -35,9 +35,9 @@ The documentation baseline currently consists of:
 - `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
 - `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
 - `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
-- `docs/architecture/22_DOMAIN_MODEL.md` through `28_EVENT_CONTRACT_GOVERNANCE.md` — domain, state, event, authority, reasoning, and governance architecture.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md` — domain, state, event, authority, reasoning, governance, and paper-trading persistence architecture.
 
-**All numbered documents 01–28 are accounted for in the repository. No numbered documentation gap is currently known.**
+**All numbered documents 01–29 are accounted for in the repository. No numbered documentation gap is currently known.**
 
 The documentation set is treated as the baseline for implementation. Future documentation changes must follow the governance process and must not silently contradict canonical rules or contracts.
 
@@ -57,6 +57,7 @@ The documentation set is treated as the baseline for implementation. Future docu
 | 26 | `docs/architecture/` | Reasoning efficiency and agent orchestration |
 | 27 | `docs/architecture/` | State-machine governance |
 | 28 | `docs/architecture/` | Event-contract governance |
+| 29 | `docs/architecture/` | Paper-trading persistence and audit repository |
 
 ## Repository Structure — Current State
 
@@ -92,7 +93,8 @@ TradeOS/
     │   ├── 25_AUTHORITY_AND_PERMISSION_MODEL.md
     │   ├── 26_REASONING_EFFICIENCY_AND_AGENT_ORCHESTRATION.md
     │   ├── 27_STATE_MACHINE_GOVERNANCE.md
-    │   └── 28_EVENT_CONTRACT_GOVERNANCE.md
+    │   ├── 28_EVENT_CONTRACT_GOVERNANCE.md
+    │   └── 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
     ├── contracts/
     │   └── 20_AGENT_CONTRACTS.md
     └── configuration/
@@ -282,7 +284,7 @@ The system is **not ready for live trading** merely because the documentation ph
 ### Documentation
 **READY / BASELINE LOCKED**
 
-The repository currently contains the complete numbered documentation sequence **01–28**, plus the global rules and documentation-governance documents. No additional existing or new numbered document is required before beginning implementation based on the current documentation inventory.
+The repository currently contains the complete numbered documentation sequence **01–29**, plus the global rules and documentation-governance documents. No additional existing or new numbered document is required before continuing implementation based on the current documentation inventory.
 
 ### Coding
 **READY TO BEGIN — FOUNDATION FIRST**
