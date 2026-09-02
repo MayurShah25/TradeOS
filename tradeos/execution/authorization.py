@@ -110,6 +110,13 @@ class AuthorizationLedger:
             raise ValueError("authorization_id already exists")
         self._authorizations[authorization.authorization_id] = authorization
 
+    def get(self, authorization_id: str) -> ExecutionAuthorization:
+        """Return a registered authorization without changing its status."""
+        authorization = self._authorizations.get(authorization_id)
+        if authorization is None:
+            raise KeyError(f"unknown authorization: {authorization_id}")
+        return authorization
+
     def revoke(self, authorization_id: str) -> None:
         """Revoke an active authorization."""
         if authorization_id not in self._authorizations:
