@@ -221,11 +221,7 @@ class SqlitePaperRunAuditRepository:
             configuration_hash=row[7],
             started_at=SqlitePaperRunAuditRepository._decode_datetime(row[8]),
             status=PaperRunStatus(row[9]),
-            completed_at=(
-                None
-                if row[10] is None
-                else SqlitePaperRunAuditRepository._decode_datetime(row[10])
-            ),
+            completed_at=None if row[10] is None else SqlitePaperRunAuditRepository._decode_datetime(row[10]),
         )
 
     @staticmethod
