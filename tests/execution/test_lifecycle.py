@@ -41,7 +41,7 @@ def test_execution_event_requires_utc_timestamp() -> None:
         order_id="order-1",
         status=OrderStatus.ACCEPTED,
         event_type=ExecutionEventType.ACCEPTED,
-        timestamp=datetime(2026, 9, 2),
+        timestamp=datetime(2026, 9, 2, tzinfo=UTC),
     )
 
     with pytest.raises(ValueError, match="timezone-aware"):
