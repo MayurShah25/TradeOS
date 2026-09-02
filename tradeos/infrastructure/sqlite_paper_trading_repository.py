@@ -32,8 +32,13 @@ class SQLitePaperTradingRepository:
         self.close()
 
     def save_run(self, run: PaperTradingRun) -> None:
-        """Insert or replace a validated run snapshot."""
+        """Insert a run or persist a valid lifecycle transition."""
         run.validate()
+        existing = self.get_run(run.run_id)
+        if existing is not None and existing.status is not PaperRunStatus.OPEN:
+            if run != existing:
+                raise ValueError("closed paper run is immutable")
+            return
         self._connection.execute(
             """
             INSERT INTO paper_runs (
@@ -118,6 +123,11 @@ class SQLitePaperTradingRepository:
         event.validate()
         if self.get_run(event.run_id) is None:
             raise KeyError(event.run_id)
+        duplicate = self._connection.execute(
+            "SELECT 1 FROM audit_events WHERE event_id = ?", (event.event_id,)
+        ).fetchone()
+        if duplicate is not None:
+            raise ValueError("duplicate event_id")
         expected = self._connection.execute(
             "SELECT COUNT(*) AS count FROM audit_events WHERE run_id = ?", (event.run_id,)
         ).fetchone()["count"]
@@ -142,9 +152,7 @@ class SQLitePaperTradingRepository:
             self._connection.commit()
         except sqlite3.IntegrityError as exc:
             self._connection.rollback()
-            if "event_id" in str(exc):
-                raise ValueError("duplicate event_id") from exc
-            raise
+            raise ValueError("audit event conflicts with persisted history") from exc
 
     def audit_events(self, run_id: str) -> tuple[AuditEvent, ...]:
         """Return the complete immutable audit history for a run."""
