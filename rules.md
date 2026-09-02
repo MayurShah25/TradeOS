@@ -1,7 +1,7 @@
 # TradeOS Global Rules
 
-**Version:** 0.2.2  
-**Status:** Foundation / Architecture Phase  
+**Version:** 0.2.3  
+**Status:** Phase 3 Complete / Global Architecture Baseline  
 **Scope:** Applies to all TradeOS agents, strategies, models, workflows, and execution components.
 
 > This document is the global constitution of TradeOS. Local strategy preferences and agent instructions may be more restrictive, but they must never weaken these rules.
