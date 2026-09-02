@@ -211,11 +211,9 @@ class SqlitePaperRunAuditRepository:
 
     @staticmethod
     def _run_from_row(row: tuple[Any, ...]) -> PaperTradingRun:
-        completed_at = (
-            None
-            if row[10] is None
-            else SqlitePaperRunAuditRepository._decode_datetime(row[10])
-        )
+        completed_at = None
+        if row[10] is not None:
+            completed_at = SqlitePaperRunAuditRepository._decode_datetime(row[10])
         return PaperTradingRun(
             run_id=row[1],
             proposal_id=row[2],
