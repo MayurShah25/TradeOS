@@ -13,6 +13,7 @@ from .lifecycle import ReconciliationStatus
 from .models import Order, OrderSide, OrderStatus, OrderType
 from .paper_broker import PaperBroker
 from .paper_session import PaperTradingResult, PaperTradingSession
+from .persistent_repository import SqlitePaperRunAuditRepository
 from .ports import BrokerExecutionPort
 from .run_registry import PaperRunRegistry
 from .run_state import PaperRunStatus, PaperTradingRun
@@ -40,4 +41,5 @@ __all__ = [
     "PaperTradingRun",
     "PaperTradingSession",
     "ReconciliationStatus",
+    "SqlitePaperRunAuditRepository",
 ]
