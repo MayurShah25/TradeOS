@@ -79,11 +79,11 @@ def test_runs_are_filterable_and_keep_registration_order() -> None:
     registry.register(first)
     registry.register(second)
     registry.register(third)
-    registry.complete("run-3", START + dt.timedelta(seconds=1))
+    completed_third = registry.complete("run-3", START + dt.timedelta(seconds=1))
 
-    assert registry.runs(account_id="account-1") == (first, third)
-    assert registry.runs(status=PaperRunStatus.COMPLETED) == (third,)
-    assert registry.runs(instrument_id="instrument-1") == (first, second, third)
+    assert registry.runs(account_id="account-1") == (first, completed_third)
+    assert registry.runs(status=PaperRunStatus.COMPLETED) == (completed_third,)
+    assert registry.runs(instrument_id="instrument-1") == (first, second, completed_third)
 
 
 def test_empty_lookup_and_filters_are_rejected() -> None:
