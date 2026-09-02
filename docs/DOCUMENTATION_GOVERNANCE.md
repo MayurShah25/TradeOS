@@ -1,7 +1,7 @@
 # TradeOS Documentation Governance
 
-**Version:** 0.1.0  
-**Status:** Architecture Baseline  
+**Version:** 0.2.0  
+**Status:** Architecture Baseline — Phase 3 Complete  
 **Purpose:** Define the repository documentation hierarchy, authority boundaries, canonical references, and rules for maintaining consistency as TradeOS evolves.
 
 ---
@@ -32,14 +32,18 @@ TradeOS/
     │   ├── 25_AUTHORITY_AND_PERMISSION_MODEL.md
     │   ├── 26_REASONING_EFFICIENCY_AND_AGENT_ORCHESTRATION.md
     │   ├── 27_STATE_MACHINE_GOVERNANCE.md
-    │   └── 28_EVENT_CONTRACT_GOVERNANCE.md
+    │   ├── 28_EVENT_CONTRACT_GOVERNANCE.md
+    │   ├── 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
+    │   ├── 30_PAPER_TRADING_RECOVERY.md
+    │   ├── 31_EXECUTION_RECONCILIATION.md
+    │   └── 32_DURABLE_EXECUTION_RECONCILIATION.md
     ├── configuration/
     │   └── 21_CONFIGURATION.md
     └── contracts/
         └── 20_AGENT_CONTRACTS.md
 ```
 
-Implementation/runtime directories are intentionally not prescribed by this document. They will be defined by the implementation architecture before coding begins.
+Implementation/runtime directories are defined by the approved implementation architecture and may evolve while preserving logical boundaries.
 
 ---
 
@@ -47,22 +51,11 @@ Implementation/runtime directories are intentionally not prescribed by this docu
 
 ## `README.md` — Project Navigator
 
-The README explains:
-
-- What TradeOS is
-- Its high-level vision
-- Core principles
-- Current project phase
-- Documentation map
-- High-level development approach
-
-It must not become a duplicate of the detailed architecture.
+The README explains what TradeOS is, its high-level vision, core principles, current project phase, documentation map, and development approach. It must reflect repository reality without duplicating detailed architecture.
 
 ## `rules.md` — Global Invariants
 
-`rules.md` contains global instructions and non-negotiable constraints that apply across the system.
-
-Subsystem documents cannot weaken a global rule.
+`rules.md` contains global instructions and non-negotiable constraints that apply across the system. Subsystem documents cannot weaken a global rule.
 
 ## `docs/architecture/` — Architecture Specifications
 
@@ -70,15 +63,13 @@ Architecture documents describe system boundaries, responsibilities, workflows, 
 
 ## `docs/contracts/` — Formal Contracts
 
-Contracts define structured interfaces and behavioral expectations between agents, services, workflows, and other system components.
+Contracts define structured interfaces and behavioral expectations between agents, services, workflows, and system components.
 
 ## `docs/configuration/` — Configuration Architecture
 
 Configuration documents define configuration domains, precedence, validation, and operational behavior.
 
-## `22–28` — Canonical Governance / Contract Layer
-
-These documents establish canonical definitions and governance for their specific domains:
+## Canonical Governance / Contract Layer
 
 ```text
 22 → Domain Objects
@@ -88,6 +79,10 @@ These documents establish canonical definitions and governance for their specifi
 26 → Reasoning Efficiency & Agent Orchestration
 27 → State Machine Governance
 28 → Event Contract Governance
+29 → Paper-Trading Persistence & Audit
+30 → Safe Paper-Trading Recovery
+31 → Execution Reconciliation Semantics
+32 → Durable Execution Reconciliation
 ```
 
 ---
@@ -99,20 +94,15 @@ Each architectural concept has one authoritative document or contract owner.
 Examples:
 
 ```text
-TradeProposal
-→ 22_DOMAIN_MODEL.md
-
-Order lifecycle
-→ 23_STATE_MACHINES.md
-
-Event schema
-→ 24_EVENT_CONTRACTS.md
-
-Authorization / permission
-→ 25_AUTHORITY_AND_PERMISSION_MODEL.md
-
-Reasoning orchestration
-→ 26_REASONING_EFFICIENCY_AND_AGENT_ORCHESTRATION.md
+TradeProposal → 22_DOMAIN_MODEL.md
+Order lifecycle → 23_STATE_MACHINES.md
+Event schema → 24_EVENT_CONTRACTS.md
+Authorization / permission → 25_AUTHORITY_AND_PERMISSION_MODEL.md
+Reasoning orchestration → 26_REASONING_EFFICIENCY_AND_AGENT_ORCHESTRATION.md
+Paper-run persistence → 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
+Recovery inspection → 30_PAPER_TRADING_RECOVERY.md
+Execution reconciliation → 31_EXECUTION_RECONCILIATION.md
+Durable reconciliation → 32_DURABLE_EXECUTION_RECONCILIATION.md
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
@@ -121,7 +111,7 @@ A subsystem document may describe how it uses a concept but must not create a co
 
 # 5. Cross-Document Precedence
 
-When documents interact, precedence is determined by concept ownership.
+When documents interact, precedence is determined by concept ownership:
 
 ```text
 Global invariants
@@ -133,9 +123,7 @@ Governance rules for that domain
 Subsystem implementation guidance
 ```
 
-A subsystem document cannot override a canonical contract it does not own.
-
-If two documents appear contradictory, the contradiction must be resolved explicitly; contributors must not choose an interpretation silently.
+A subsystem document cannot override a canonical contract it does not own. Apparent contradictions must be resolved explicitly.
 
 ---
 
@@ -143,29 +131,13 @@ If two documents appear contradictory, the contradiction must be resolved explic
 
 > **No architecture document may silently redefine a concept owned by another canonical document. It must reference the canonical definition and specify only subsystem-specific behavior.**
 
-For example:
-
-`08_RISK_MANAGEMENT.md` may explain how Risk evaluates a `TradeProposal`, but the canonical `TradeProposal` definition belongs to `22_DOMAIN_MODEL.md`.
-
-`12_EXECUTION_ARCHITECTURE.md` may explain how Execution consumes an `ExecutionAuthorization`, but its canonical definition belongs to the appropriate domain/authority contract.
+For example, `08_RISK_MANAGEMENT.md` may explain how Risk evaluates a `TradeProposal`, but the canonical `TradeProposal` definition belongs to `22_DOMAIN_MODEL.md`.
 
 ---
 
 # 7. Repository Paths Must Be Canonical
 
-Documentation references must use the actual repository path.
-
-Do not reference hypothetical paths such as:
-
-```text
-agents/
-core/
-execution/
-```
-
-as though those implementation directories already exist.
-
-Future implementation paths may be introduced only when the implementation architecture defines them.
+Documentation references must use actual repository paths. Illustrative future paths must not be presented as implemented structures.
 
 ---
 
@@ -190,15 +162,13 @@ These are not interchangeable states.
 
 # 9. Documentation Status
 
-Architecture status should be explicit.
-
 Recommended vocabulary:
 
 - `Draft` — proposed and subject to change.
 - `Reviewed` — examined for consistency but not necessarily final.
-- `Locked` — architectural decision agreed and authoritative for the current phase.
+- `Locked` — authoritative for the current phase.
 - `Implemented` — corresponding functionality exists in code.
-- `Tested` — implementation has passed the defined test requirements.
+- `Tested` — implementation has passed defined test requirements.
 - `Production Ready` — explicitly approved for the applicable operating mode.
 
 A document being present in GitHub does not imply that its architecture is implemented.
@@ -207,17 +177,13 @@ A document being present in GitHub does not imply that its architecture is imple
 
 # 10. Numbering
 
-Existing document numbering is retained.
-
-Documents must not be renumbered merely to make the sequence contiguous.
-
-The current sequence intentionally reflects the evolution of the architecture and supporting contract documents.
+Existing document numbering is retained. Documents must not be renumbered merely to make the sequence contiguous. Numbering reflects the evolution of the architecture and supporting contract documents.
 
 ---
 
 # 11. Codex Reading Order
 
-Before implementing a subsystem, Codex should establish context in this order:
+Before implementing a subsystem, establish context in this order:
 
 ```text
 rules.md
@@ -235,7 +201,7 @@ Relevant agent contracts
 Implementation-specific specifications
 ```
 
-Codex must resolve conflicting requirements before generating implementation code.
+Conflicting requirements must be resolved before implementation.
 
 ---
 
@@ -265,9 +231,7 @@ Do not silently patch downstream documents while leaving the canonical definitio
 
 # 13. Avoid Documentation Drift
 
-When a canonical concept changes, search for references to it across the repository.
-
-Check at minimum:
+When a canonical concept changes, search for references across:
 
 ```text
 README.md
@@ -276,31 +240,17 @@ architecture documents
 contracts
 configuration
 agent definitions
-implementation code once coding begins
-tests once coding begins
+implementation code
+tests
 ```
 
-The objective is to prevent two documents from describing different versions of the same concept.
+The objective is one coherent definition of each concept.
 
 ---
 
-# 14. No Premature Runtime Structure
+# 14. Implementation Structure
 
-Documentation must not force implementation structure prematurely.
-
-Until runtime architecture is explicitly approved, repository descriptions should not assume a final:
-
-```text
-src/
-services/
-agents/
-execution/
-markets/
-```
-
-layout.
-
-This prevents Codex from treating an illustrative structure as an architectural requirement.
+The repository may use concrete runtime directories once implementation architecture establishes them. Physical structure may evolve without changing logical ownership or safety boundaries.
 
 ---
 
@@ -320,7 +270,7 @@ Implementation change
 Tests
 ```
 
-Commit messages should describe the architectural purpose of material documentation changes.
+Commit messages should describe the architectural purpose of material changes.
 
 ---
 
@@ -334,7 +284,7 @@ If a reasonable engineer or coding agent can read two documents and reach two in
 
 # 17. Current Locked Architecture Layer
 
-As of this baseline:
+The following documents are canonical and locked within their respective domains:
 
 ```text
 22  Domain Model                                  LOCKED
@@ -344,12 +294,35 @@ As of this baseline:
 26  Reasoning Efficiency & Agent Orchestration    LOCKED
 27  State Machine Governance                      LOCKED
 28  Event Contract Governance                     LOCKED
+29  Paper-Trading Persistence & Audit             IMPLEMENTED / TESTED
+30  Safe Paper-Trading Recovery                   IMPLEMENTED / TESTED
+31  Execution Reconciliation Semantics            IMPLEMENTED / TESTED
+32  Durable Execution Reconciliation              IMPLEMENTED / TESTED
 ```
 
-These documents must be treated as authoritative within their respective domains until a later governed architectural change supersedes them.
+These documents must be treated as authoritative until a later governed architectural change supersedes them.
 
 ---
 
-# 18. Core Rule
+# 18. Phase 3 Closure
+
+Phase 3 is complete for its approved paper-trading scope:
+
+- deterministic market-data and paper-execution boundaries
+- portfolio/risk context and hard pre-trade risk controls
+- execution authorization and single-use execution gateway
+- execution outcome reconciliation semantics
+- governed paper-trading session
+- immutable paper-run state and append-only audit
+- durable SQLite paper-run/audit persistence
+- safe recovery inspection
+- explicit `RECONCILIATION_REQUIRED` handling for ambiguous outcomes
+- durable reconciliation for verified outcomes
+
+Live broker connectivity, live financial exposure, automatic retry/resubmission of ambiguous orders, and controlled-live promotion remain out of scope.
+
+---
+
+# 19. Core Rule
 
 > **One concept, one canonical owner, one repository path, one authoritative definition. Subsystems may specialize behavior, but they must not create competing truths.**
