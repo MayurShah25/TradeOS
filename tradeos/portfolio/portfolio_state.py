@@ -32,7 +32,7 @@ class PortfolioState:
             self.account.validate()
         if self.timestamp.tzinfo is None or self.timestamp.utcoffset() is None:
             raise ValueError("timestamp must be timezone-aware")
-        if self.timestamp.astimezone(UTC) != self.timestamp:
+        if self.timestamp.tzinfo is not UTC:
             raise ValueError("timestamp must use UTC")
 
 
