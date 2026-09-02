@@ -40,4 +40,6 @@ def test_snapshot_rejects_non_utc_timestamp() -> None:
 def test_snapshot_rejects_naive_timestamp() -> None:
     ledger = PositionLedger()
     with pytest.raises(ValueError, match="timezone-aware"):
-        PortfolioStateBuilder.snapshot(ledger, timestamp=datetime.fromisoformat("2026-09-02T08:00:00"))
+        PortfolioStateBuilder.snapshot(
+            ledger, timestamp=datetime.fromisoformat("2026-09-02T08:00:00")
+        )
