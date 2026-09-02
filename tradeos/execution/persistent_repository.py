@@ -189,14 +189,9 @@ class SqlitePaperRunAuditRepository:
             "configuration_hash",
             "started_at",
         )
-        if any(
-            getattr(existing, field) != getattr(replacement, field) for field in fields
-        ):
+        if any(getattr(existing, field) != getattr(replacement, field) for field in fields):
             raise ValueError("run identity cannot change")
-        if (
-            existing.status is not PaperRunStatus.OPEN
-            and replacement.status is not existing.status
-        ):
+        if existing.status is not PaperRunStatus.OPEN and replacement.status is not existing.status:
             raise ValueError("closed run status cannot change")
 
     @staticmethod
@@ -226,11 +221,7 @@ class SqlitePaperRunAuditRepository:
             configuration_hash=row[7],
             started_at=SqlitePaperRunAuditRepository._decode_datetime(row[8]),
             status=PaperRunStatus(row[9]),
-            completed_at=(
-                None
-                if row[10] is None
-                else SqlitePaperRunAuditRepository._decode_datetime(row[10])
-            ),
+            completed_at=None if row[10] is None else SqlitePaperRunAuditRepository._decode_datetime(row[10]),
         )
 
     @staticmethod
