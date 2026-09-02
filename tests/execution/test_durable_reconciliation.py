@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from tradeos.execution import (
+    AuditEvent,
     AuditEventType,
     ExecutionEvent,
     ExecutionEventType,
@@ -19,6 +20,7 @@ from tradeos.execution import (
     ReconciliationStatus,
 )
 from tradeos.infrastructure import SQLitePaperTradingRepository
+from tradeos.portfolio.execution_pipeline import ExecutionPortfolioPipeline
 
 NOW = datetime(2026, 9, 2, 10, 0, tzinfo=UTC)
 
@@ -72,7 +74,7 @@ def _filled_event() -> ExecutionEvent:
 def _seed(repository: SQLitePaperTradingRepository) -> None:
     repository.save_run(_run())
     repository.append_audit_event(
-        __import__("tradeos.execution", fromlist=["AuditEvent"]).AuditEvent(
+        AuditEvent(
             event_id="run-reconcile:started",
             run_id="run-reconcile",
             event_type=AuditEventType.RECONCILIATION_REQUIRED,
@@ -93,7 +95,10 @@ def test_unknown_observation_remains_reconciliation_required(tmp_path: Path) -> 
         assert result.status is ReconciliationStatus.UNKNOWN
         assert result.run.status is PaperRunStatus.RECONCILIATION_REQUIRED
         assert result.portfolio_updated is False
-        assert repository.require_run("run-reconcile").status is PaperRunStatus.RECONCILIATION_REQUIRED
+        assert (
+            repository.require_run("run-reconcile").status
+            is PaperRunStatus.RECONCILIATION_REQUIRED
+        )
 
 
 def test_accepted_observation_durably_completes_run(tmp_path: Path) -> None:
@@ -118,10 +123,7 @@ def test_accepted_observation_durably_completes_run(tmp_path: Path) -> None:
 def test_filled_observation_updates_position_and_completes_run(tmp_path: Path) -> None:
     with SQLitePaperTradingRepository(tmp_path / "tradeos.sqlite3") as repository:
         _seed(repository)
-        pipeline = __import__(
-            "tradeos.portfolio.execution_pipeline",
-            fromlist=["ExecutionPortfolioPipeline"],
-        ).ExecutionPortfolioPipeline()
+        pipeline = ExecutionPortfolioPipeline()
         result = PaperTradingReconciliation(repository, pipeline).reconcile(
             "run-reconcile",
             _order(),
