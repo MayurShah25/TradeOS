@@ -7,8 +7,8 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from .authorized_gateway import AuthorizedExecutionGateway, ExecutionGatewayResult
 from .authorization import AuthorizationLedger
+from .authorized_gateway import AuthorizedExecutionGateway, ExecutionGatewayResult
 from .lifecycle import ExecutionEvent, ExecutionEventType
 from .models import Order, OrderStatus
 
