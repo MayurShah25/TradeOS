@@ -51,7 +51,9 @@ def _authorization(risk_decision_id: str = "risk-1") -> ExecutionAuthorization:
     )
 
 
-def _session(audit_trail: AuditTrail | None = None) -> tuple[PaperTradingSession, AuthorizationLedger]:
+def _session(
+    audit_trail: AuditTrail | None = None,
+) -> tuple[PaperTradingSession, AuthorizationLedger]:
     ledger = AuthorizationLedger()
     ledger.issue(_authorization())
     gateway = AuthorizedExecutionGateway(PaperBroker(), ledger)
