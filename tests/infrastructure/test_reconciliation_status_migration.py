@@ -1,8 +1,8 @@
 """Tests for the Phase 3.4 SQLite status migration."""
 
+import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
-import sqlite3
 
 from tradeos.execution import PaperRunStatus, PaperTradingRun
 from tradeos.infrastructure import SQLitePaperTradingRepository
