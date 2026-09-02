@@ -27,7 +27,9 @@ def make_run(run_id: str = "run-1", account_id: str = "account-1") -> PaperTradi
     )
 
 
-def make_event(run_id: str, sequence: int, event_type: AuditEventType = AuditEventType.RUN_STARTED) -> AuditEvent:
+def make_event(
+    run_id: str, sequence: int, event_type: AuditEventType = AuditEventType.RUN_STARTED
+) -> AuditEvent:
     return AuditEvent(
         event_id=f"{run_id}:{sequence}:{event_type.value}",
         run_id=run_id,
@@ -52,7 +54,9 @@ def test_runs_and_audit_survive_repository_reopen(tmp_path: pytest.TempPathFacto
         assert repository.audit_events(run.run_id)[1].event_type is AuditEventType.RUN_COMPLETED
 
 
-def test_runs_are_filterable_and_registration_order_is_durable(tmp_path: pytest.TempPathFactory) -> None:
+def test_runs_are_filterable_and_registration_order_is_durable(
+    tmp_path: pytest.TempPathFactory,
+) -> None:
     database = tmp_path / "tradeos.db"
     first = make_run("run-1", "account-1")
     second = make_run("run-2", "account-2")
