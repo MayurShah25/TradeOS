@@ -6,6 +6,7 @@ from pathlib import Path
 
 from tradeos.execution import PaperRunStatus, PaperTradingRun
 from tradeos.infrastructure import SQLitePaperTradingRepository
+
 NOW = datetime(2026, 9, 2, 10, 0, tzinfo=UTC)
 
 
