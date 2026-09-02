@@ -134,7 +134,9 @@ def test_filled_observation_updates_position_and_completes_run(tmp_path: Path) -
 
         assert result.run.status is PaperRunStatus.COMPLETED
         assert result.portfolio_updated is True
-        assert pipeline.ledger.positions()["AAPL"].quantity == Decimal(2)
+        position = pipeline.ledger.get("AAPL")
+        assert position is not None
+        assert position.quantity == Decimal(2)
 
 
 def test_reconciliation_requires_pending_run(tmp_path: Path) -> None:
