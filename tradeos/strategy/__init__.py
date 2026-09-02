@@ -1,5 +1,6 @@
 """Deterministic strategy contracts for TradeOS Phase 4."""
 
-from .strategies import Strategy
+from .strategies import MovingAverageCrossStrategy, Strategy
+from .types import HistoricalBar, Signal
 
-__all__ = ["Strategy"]
+__all__ = ["HistoricalBar", "MovingAverageCrossStrategy", "Signal", "Strategy"]
