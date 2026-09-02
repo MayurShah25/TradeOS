@@ -91,7 +91,12 @@ class PaperTradingSession:
         risk = PortfolioRiskControls.evaluate(context, limits, order, prices)
         if run is not None:
             self._record(
-                audit_trail, run, AuditEventType.RISK_EVALUATED, now, 1, {"approved": str(risk.approved)}
+                audit_trail,
+                run,
+                AuditEventType.RISK_EVALUATED,
+                now,
+                1,
+                {"approved": str(risk.approved)},
             )
         if not risk.approved:
             raise PermissionError("portfolio risk controls rejected the order")
@@ -156,7 +161,13 @@ class PaperTradingSession:
                 6,
                 {"status": completed.status.value},
             )
-            return PaperTradingResult(risk, execution, processing, completed, audit_trail.events(run.run_id))
+            return PaperTradingResult(
+                risk,
+                execution,
+                processing,
+                completed,
+                audit_trail.events(run.run_id),
+            )
         return PaperTradingResult(risk, execution, processing)
 
     @staticmethod
