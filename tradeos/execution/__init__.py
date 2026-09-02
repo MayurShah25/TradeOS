@@ -1,5 +1,6 @@
 """Paper-safe execution boundary for TradeOS."""
 
+from .audit import AuditEvent, AuditEventType, AuditTrail
 from .authorization import (
     AuthorizationLedger,
     AuthorizationStatus,
@@ -13,8 +14,12 @@ from .models import Order, OrderSide, OrderStatus, OrderType
 from .paper_broker import PaperBroker
 from .paper_session import PaperTradingResult, PaperTradingSession
 from .ports import BrokerExecutionPort
+from .run_state import PaperRunStatus, PaperTradingRun
 
 __all__ = [
+    "AuditEvent",
+    "AuditEventType",
+    "AuditTrail",
     "AuthorizationLedger",
     "AuthorizationStatus",
     "AuthorizedExecutionGateway",
@@ -28,7 +33,9 @@ __all__ = [
     "OrderStatus",
     "OrderType",
     "PaperBroker",
+    "PaperRunStatus",
     "PaperTradingResult",
+    "PaperTradingRun",
     "PaperTradingSession",
     "ReconciliationStatus",
 ]
