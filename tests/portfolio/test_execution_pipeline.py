@@ -7,7 +7,6 @@ from tradeos.execution import Order, OrderSide, OrderStatus
 from tradeos.execution.lifecycle import ExecutionEvent, ExecutionEventType
 from tradeos.portfolio import ExecutionPortfolioPipeline
 
-
 TIMESTAMP = datetime(2026, 1, 1, tzinfo=UTC)
 
 
