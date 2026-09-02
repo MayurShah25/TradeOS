@@ -11,6 +11,7 @@ from .authorized_gateway import AuthorizedExecutionGateway, ExecutionGatewayResu
 from .lifecycle import ReconciliationStatus
 from .models import Order, OrderSide, OrderStatus, OrderType
 from .paper_broker import PaperBroker
+from .paper_session import PaperTradingResult, PaperTradingSession
 from .ports import BrokerExecutionPort
 
 __all__ = [
@@ -27,5 +28,7 @@ __all__ = [
     "OrderStatus",
     "OrderType",
     "PaperBroker",
+    "PaperTradingResult",
+    "PaperTradingSession",
     "ReconciliationStatus",
 ]
