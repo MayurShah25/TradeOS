@@ -61,7 +61,9 @@ class RiskContextBuilder:
             open_order_ledger.add(open_order)
 
         exposure = ExposureCalculator.from_positions(
-            position_ledger, prices, open_order_ledger
+            position_ledger,
+            prices,
+            open_order_ledger,
         )
         heat = PortfolioHeat.calculate(exposure.gross, portfolio.account.equity)
         stale = as_of - portfolio.timestamp > max_age
