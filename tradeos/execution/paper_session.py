@@ -75,13 +75,8 @@ class PaperTradingSession:
         audit_trail = self._audit_trail
         if run is not None:
             run.validate()
-            account = context.portfolio.account
-            if account is None:
-                raise PermissionError("run account cannot be verified without an account")
             if run.risk_decision_id != risk_decision_id or run.authorization_id != authorization_id:
                 raise PermissionError("run identity does not match execution request")
-            if run.account_id != account.account_id:
-                raise PermissionError("run account does not match portfolio account")
             if run.instrument_id != order.instrument_id:
                 raise PermissionError("run instrument does not match order")
             if audit_trail is None:
@@ -105,6 +100,8 @@ class PaperTradingSession:
         if authorization.risk_decision_id != risk_decision_id:
             raise PermissionError("authorization does not match the risk decision")
         if run is not None:
+            if run.account_id != authorization.account_id:
+                raise PermissionError("run account does not match authorization account")
             self._record(audit_trail, run, AuditEventType.AUTHORIZATION_VERIFIED, now, 2, {})
 
         execution = self._gateway.execute(authorization_id, order, now)
@@ -161,6 +158,7 @@ class PaperTradingSession:
                 6,
                 {"status": completed.status.value},
             )
+            assert audit_trail is not None
             return PaperTradingResult(
                 risk,
                 execution,
