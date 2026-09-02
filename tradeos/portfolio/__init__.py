@@ -7,6 +7,7 @@ from .heat import PortfolioHeat
 from .open_orders import OpenOrder, OpenOrderLedger
 from .portfolio_state import PortfolioState, PortfolioStateBuilder
 from .position_ledger import Position, PositionLedger
+from .pre_trade_impact import PreTradeImpact, PreTradeImpactCalculator
 
 __all__ = [
     "AccountState",
@@ -22,4 +23,6 @@ __all__ = [
     "PortfolioStateBuilder",
     "Position",
     "PositionLedger",
+    "PreTradeImpact",
+    "PreTradeImpactCalculator",
 ]
