@@ -29,7 +29,12 @@ class SqlitePaperRunAuditRepository:
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         self.close()
 
     def save_run(self, run: PaperTradingRun) -> None:
@@ -172,7 +177,9 @@ class SqlitePaperRunAuditRepository:
         self._connection.commit()
 
     @staticmethod
-    def _validate_identity_unchanged(existing: PaperTradingRun, replacement: PaperTradingRun) -> None:
+    def _validate_identity_unchanged(
+        existing: PaperTradingRun, replacement: PaperTradingRun
+    ) -> None:
         fields = (
             "proposal_id",
             "risk_decision_id",
@@ -182,9 +189,15 @@ class SqlitePaperRunAuditRepository:
             "configuration_hash",
             "started_at",
         )
-        if any(getattr(existing, field) != getattr(replacement, field) for field in fields):
+        identity_changed = any(
+            getattr(existing, field) != getattr(replacement, field) for field in fields
+        )
+        if identity_changed:
             raise ValueError("run identity cannot change")
-        if existing.status is not PaperRunStatus.OPEN and replacement.status is not existing.status:
+        if (
+            existing.status is not PaperRunStatus.OPEN
+            and replacement.status is not existing.status
+        ):
             raise ValueError("closed run status cannot change")
 
     @staticmethod
