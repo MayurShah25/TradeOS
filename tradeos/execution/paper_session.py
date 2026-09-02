@@ -72,22 +72,26 @@ class PaperTradingSession:
         context.validate()
         if now.tzinfo is None or now.utcoffset() is None or now.tzinfo is not UTC:
             raise ValueError("now must use UTC")
+        audit_trail = self._audit_trail
         if run is not None:
             run.validate()
+            account = context.portfolio.account
+            if account is None:
+                raise PermissionError("run account cannot be verified without an account")
             if run.risk_decision_id != risk_decision_id or run.authorization_id != authorization_id:
                 raise PermissionError("run identity does not match execution request")
-            if run.account_id != context.portfolio.account.account_id:
+            if run.account_id != account.account_id:
                 raise PermissionError("run account does not match portfolio account")
             if run.instrument_id != order.instrument_id:
                 raise PermissionError("run instrument does not match order")
-            if self._audit_trail is None:
+            if audit_trail is None:
                 raise ValueError("audit_trail is required when run is supplied")
-            self._record(run, AuditEventType.RUN_STARTED, now, 0, {})
+            self._record(audit_trail, run, AuditEventType.RUN_STARTED, now, 0, {})
 
         risk = PortfolioRiskControls.evaluate(context, limits, order, prices)
         if run is not None:
             self._record(
-                run, AuditEventType.RISK_EVALUATED, now, 1, {"approved": str(risk.approved)}
+                audit_trail, run, AuditEventType.RISK_EVALUATED, now, 1, {"approved": str(risk.approved)}
             )
         if not risk.approved:
             raise PermissionError("portfolio risk controls rejected the order")
@@ -96,11 +100,12 @@ class PaperTradingSession:
         if authorization.risk_decision_id != risk_decision_id:
             raise PermissionError("authorization does not match the risk decision")
         if run is not None:
-            self._record(run, AuditEventType.AUTHORIZATION_VERIFIED, now, 2, {})
+            self._record(audit_trail, run, AuditEventType.AUTHORIZATION_VERIFIED, now, 2, {})
 
         execution = self._gateway.execute(authorization_id, order, now)
         if run is not None:
             self._record(
+                audit_trail,
                 run,
                 AuditEventType.EXECUTION_SUBMITTED,
                 now,
@@ -134,26 +139,37 @@ class PaperTradingSession:
         )
         if run is not None:
             self._record(
-                run, AuditEventType.EXECUTION_RECONCILED, now, 4, {"status": execution.status.value}
+                audit_trail,
+                run,
+                AuditEventType.EXECUTION_RECONCILED,
+                now,
+                4,
+                {"status": execution.status.value},
             )
-            self._record(run, AuditEventType.PORTFOLIO_UPDATED, now, 5, {})
+            self._record(audit_trail, run, AuditEventType.PORTFOLIO_UPDATED, now, 5, {})
             completed = run.complete(now)
             self._record(
-                run, AuditEventType.RUN_COMPLETED, now, 6, {"status": completed.status.value}
+                audit_trail,
+                run,
+                AuditEventType.RUN_COMPLETED,
+                now,
+                6,
+                {"status": completed.status.value},
             )
-            return PaperTradingResult(
-                risk, execution, processing, completed, self._audit_trail.events(run.run_id)
-            )
+            return PaperTradingResult(risk, execution, processing, completed, audit_trail.events(run.run_id))
         return PaperTradingResult(risk, execution, processing)
 
+    @staticmethod
     def _record(
-        self,
+        audit_trail: AuditTrail | None,
         run: PaperTradingRun,
         event_type: AuditEventType,
         occurred_at: datetime,
         sequence: int,
         payload: dict[str, str],
     ) -> None:
+        if audit_trail is None:
+            raise ValueError("audit_trail is required")
         event = AuditEvent(
             event_id=f"{run.run_id}:{sequence}:{event_type.value}",
             run_id=run.run_id,
@@ -162,4 +178,4 @@ class PaperTradingSession:
             sequence=sequence,
             payload=tuple(sorted(payload.items())),
         )
-        self._audit_trail.append(event)  # type: ignore[union-attr]
+        audit_trail.append(event)
