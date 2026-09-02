@@ -65,7 +65,7 @@ class RiskContextBuilder:
             prices,
             open_order_ledger,
         )
-        heat = PortfolioHeat.calculate(exposure.gross, portfolio.account.equity)
+        heat = PortfolioHeat.calculate(exposure, portfolio.account.equity)
         stale = as_of - portfolio.timestamp > max_age
         context = RiskContext(portfolio, exposure, heat, as_of, stale)
         context.validate()
