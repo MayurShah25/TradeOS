@@ -16,11 +16,7 @@ class PortfolioState:
     def position_for(self, instrument_id: str) -> Position | None:
         """Return the position for an instrument, if present."""
         return next(
-            (
-                position
-                for position in self.positions
-                if position.instrument_id == instrument_id
-            ),
+            (position for position in self.positions if position.instrument_id == instrument_id),
             None,
         )
 
