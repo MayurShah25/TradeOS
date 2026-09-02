@@ -3,12 +3,13 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from tradeos.execution import Order, OrderStateMachine, OrderStatus
+from tradeos.execution import Order, OrderStatus
 from tradeos.execution.lifecycle import (
     ExecutionEvent,
     ExecutionEventType,
     ExecutionReconciler,
 )
+from tradeos.execution.state_machine import OrderStateMachine
 
 from .portfolio_state import PortfolioState, PortfolioStateBuilder
 from .position_ledger import PositionLedger
