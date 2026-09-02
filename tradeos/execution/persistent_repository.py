@@ -29,12 +29,7 @@ class SqlitePaperRunAuditRepository:
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> None:
+    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None) -> None:
         self.close()
 
     def save_run(self, run: PaperTradingRun) -> None:
@@ -177,9 +172,7 @@ class SqlitePaperRunAuditRepository:
         self._connection.commit()
 
     @staticmethod
-    def _validate_identity_unchanged(
-        existing: PaperTradingRun, replacement: PaperTradingRun
-    ) -> None:
+    def _validate_identity_unchanged(existing: PaperTradingRun, replacement: PaperTradingRun) -> None:
         fields = (
             "proposal_id",
             "risk_decision_id",
