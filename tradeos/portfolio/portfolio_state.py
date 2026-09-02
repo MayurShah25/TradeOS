@@ -16,7 +16,11 @@ class PortfolioState:
     def position_for(self, instrument_id: str) -> Position | None:
         """Return the position for an instrument, if present."""
         return next(
-            (position for position in self.positions if position.instrument_id == instrument_id),
+            (
+                position
+                for position in self.positions
+                if position.instrument_id == instrument_id
+            ),
             None,
         )
 
@@ -28,7 +32,5 @@ class PortfolioStateBuilder:
     def snapshot(ledger: PositionLedger) -> PortfolioState:
         """Return an immutable snapshot of all current positions."""
         positions = tuple(ledger.positions())
-        realized_pnl = sum(
-            (position.realized_pnl for position in positions), Decimal(0)
-        )
+        realized_pnl = sum((position.realized_pnl for position in positions), Decimal(0))
         return PortfolioState(positions=positions, realized_pnl=realized_pnl)
