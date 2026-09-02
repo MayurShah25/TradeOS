@@ -26,9 +26,7 @@ def _context(
     account = AccountStateBuilder.snapshot(equity, Decimal(15000), available_margin)
     portfolio = PortfolioStateBuilder.snapshot(ledger, account, (), timestamp)
     as_of = timestamp + as_of_offset
-    return RiskContextBuilder.build(
-        portfolio, {"AAPL": Decimal(120)}, as_of, timedelta(minutes=5)
-    )
+    return RiskContextBuilder.build(portfolio, {"AAPL": Decimal(120)}, as_of, timedelta(minutes=5))
 
 
 def _limits() -> PortfolioRiskLimits:
@@ -48,9 +46,7 @@ def test_portfolio_risk_controls_approve_valid_context() -> None:
 
 
 def test_stale_context_is_authoritatively_rejected() -> None:
-    result = PortfolioRiskControls.evaluate(
-        _context(as_of_offset=timedelta(minutes=6)), _limits()
-    )
+    result = PortfolioRiskControls.evaluate(_context(as_of_offset=timedelta(minutes=6)), _limits())
 
     assert result.approved is False
     assert "portfolio risk context is stale" in result.reasons
