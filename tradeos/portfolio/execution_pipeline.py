@@ -54,9 +54,7 @@ class ExecutionPortfolioPipeline:
             raise ValueError("execution event status and event_type must agree")
 
         status = OrderStateMachine.transition(current_status, event.status)
-        reconciliation = ExecutionReconciler.reconcile(
-            order.order_id, status, observed_status
-        )
+        reconciliation = ExecutionReconciler.reconcile(order.order_id, status, observed_status)
         if not reconciliation.matched:
             raise ValueError("execution reconciliation mismatch")
 
