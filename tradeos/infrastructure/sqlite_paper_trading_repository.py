@@ -36,7 +36,10 @@ class SQLitePaperTradingRepository:
         """Insert a run or persist a valid lifecycle transition."""
         run.validate()
         existing = self.get_run(run.run_id)
-        if existing is not None and existing.status is not PaperRunStatus.OPEN:
+        if existing is not None and existing.status in (
+            PaperRunStatus.COMPLETED,
+            PaperRunStatus.FAILED,
+        ):
             if run != existing:
                 raise ValueError("closed paper run is immutable")
             return
@@ -190,7 +193,9 @@ class SQLitePaperTradingRepository:
                 instrument_id TEXT NOT NULL,
                 configuration_hash TEXT NOT NULL,
                 started_at TEXT NOT NULL,
-                status TEXT NOT NULL CHECK (status IN ('OPEN', 'COMPLETED', 'FAILED')),
+                status TEXT NOT NULL CHECK (
+                    status IN ('OPEN', 'RECONCILIATION_REQUIRED', 'COMPLETED', 'FAILED')
+                ),
                 completed_at TEXT
             );
 
@@ -213,7 +218,73 @@ class SQLitePaperTradingRepository:
                 ON audit_events(run_id, sequence);
             """
         )
+        self._migrate_reconciliation_status()
         self._connection.commit()
+
+    def _migrate_reconciliation_status(self) -> None:
+        row = self._connection.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'paper_runs'"
+        ).fetchone()
+        if row is None or "RECONCILIATION_REQUIRED" in (row["sql"] or ""):
+            return
+
+        self._connection.execute("PRAGMA foreign_keys = OFF")
+        try:
+            self._connection.executescript(
+                """
+                ALTER TABLE audit_events RENAME TO audit_events_legacy;
+                ALTER TABLE paper_runs RENAME TO paper_runs_legacy;
+
+                CREATE TABLE paper_runs (
+                    run_id TEXT PRIMARY KEY,
+                    proposal_id TEXT NOT NULL,
+                    risk_decision_id TEXT NOT NULL,
+                    authorization_id TEXT NOT NULL,
+                    account_id TEXT NOT NULL,
+                    instrument_id TEXT NOT NULL,
+                    configuration_hash TEXT NOT NULL,
+                    started_at TEXT NOT NULL,
+                    status TEXT NOT NULL CHECK (
+                        status IN ('OPEN', 'RECONCILIATION_REQUIRED', 'COMPLETED', 'FAILED')
+                    ),
+                    completed_at TEXT
+                );
+
+                INSERT INTO paper_runs
+                    (run_id, proposal_id, risk_decision_id, authorization_id,
+                     account_id, instrument_id, configuration_hash,
+                     started_at, status, completed_at)
+                SELECT run_id, proposal_id, risk_decision_id, authorization_id,
+                       account_id, instrument_id, configuration_hash,
+                       started_at, status, completed_at
+                FROM paper_runs_legacy;
+
+                CREATE TABLE audit_events (
+                    event_id TEXT PRIMARY KEY,
+                    run_id TEXT NOT NULL,
+                    event_type TEXT NOT NULL,
+                    occurred_at TEXT NOT NULL,
+                    sequence INTEGER NOT NULL CHECK (sequence >= 0),
+                    payload TEXT NOT NULL DEFAULT '',
+                    FOREIGN KEY (run_id) REFERENCES paper_runs(run_id),
+                    UNIQUE (run_id, sequence)
+                );
+
+                INSERT INTO audit_events
+                    (event_id, run_id, event_type, occurred_at, sequence, payload)
+                SELECT event_id, run_id, event_type, occurred_at, sequence, payload
+                FROM audit_events_legacy;
+
+                DROP TABLE audit_events_legacy;
+                DROP TABLE paper_runs_legacy;
+
+                CREATE INDEX idx_paper_runs_account ON paper_runs(account_id);
+                CREATE INDEX idx_paper_runs_instrument ON paper_runs(instrument_id);
+                CREATE INDEX idx_audit_events_run ON audit_events(run_id, sequence);
+                """
+            )
+        finally:
+            self._connection.execute("PRAGMA foreign_keys = ON")
 
 
 def _encode_datetime(value: datetime | None) -> str | None:
