@@ -40,6 +40,8 @@ Each assessment contains:
 
 Runs that are already `COMPLETED` or `FAILED` are not returned as interrupted runs.
 
+Creating an assessment is read-only: inspecting recovery state must not mutate the persisted run or audit history.
+
 ## Ambiguous Execution
 
 If the last persisted event is before or around broker submission, persistence cannot prove that no broker-side action occurred. Therefore recovery must treat the run as requiring reconciliation rather than issuing another order.
@@ -66,4 +68,5 @@ Recovery tests must verify:
 - persisted audit history is returned in sequence order;
 - runs without audit history remain recoverable and require reconciliation;
 - closed runs are excluded;
-- recovery performs no execution or retry action.
+- recovery performs no execution or retry action;
+- recovery inspection does not mutate persisted state.
