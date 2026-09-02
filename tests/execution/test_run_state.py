@@ -30,6 +30,18 @@ def test_run_validates_and_completes_immutably() -> None:
     assert completed.completed_at == START + dt.timedelta(seconds=1)
 
 
+def test_run_can_require_reconciliation_without_being_terminal() -> None:
+    run = make_run()
+    pending = run.require_reconciliation()
+
+    assert run.status is PaperRunStatus.OPEN
+    assert pending.status is PaperRunStatus.RECONCILIATION_REQUIRED
+    assert pending.completed_at is None
+
+    completed = pending.complete(START + dt.timedelta(seconds=1))
+    assert completed.status is PaperRunStatus.COMPLETED
+
+
 def test_run_can_fail_without_being_treated_as_open() -> None:
     failed = make_run().fail(START + dt.timedelta(seconds=1))
 
@@ -42,6 +54,13 @@ def test_closed_run_cannot_transition_again() -> None:
 
     with pytest.raises(ValueError, match="already closed"):
         completed.fail(START + dt.timedelta(seconds=2))
+
+
+def test_reconciliation_required_run_cannot_require_reconciliation_twice() -> None:
+    pending = make_run().require_reconciliation()
+
+    with pytest.raises(ValueError, match="not open"):
+        pending.require_reconciliation()
 
 
 def test_completion_before_start_is_rejected() -> None:
