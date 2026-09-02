@@ -144,10 +144,10 @@ def test_session_rejects_authorization_bound_to_different_risk_decision() -> Non
     assert ledger.status("auth-1").value == "ACTIVE"
 
 
-def test_session_requires_price_for_filled_execution() -> None:
+def test_session_rejects_missing_price_before_execution() -> None:
     session, ledger = _session()
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError, match="missing price"):
         session.execute(
             "auth-1",
             "risk-1",
