@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 
@@ -61,8 +61,6 @@ def test_audit_trail_keeps_runs_separate() -> None:
 
 
 def test_audit_event_rejects_non_utc_timestamp() -> None:
-    from datetime import timedelta, timezone
-
     timestamp = NOW.astimezone(timezone(timedelta(hours=1)))
     invalid = AuditEvent(
         event_id="event-1",
