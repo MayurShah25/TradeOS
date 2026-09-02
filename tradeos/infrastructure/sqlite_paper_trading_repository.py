@@ -232,6 +232,10 @@ class SQLitePaperTradingRepository:
         try:
             self._connection.executescript(
                 """
+                DROP INDEX IF EXISTS idx_paper_runs_account;
+                DROP INDEX IF EXISTS idx_paper_runs_instrument;
+                DROP INDEX IF EXISTS idx_audit_events_run;
+
                 ALTER TABLE audit_events RENAME TO audit_events_legacy;
                 ALTER TABLE paper_runs RENAME TO paper_runs_legacy;
 
