@@ -89,9 +89,7 @@ class ExecutionAuthorization:
             return False
         if order.quantity != self.approved_quantity:
             return False
-        if self.min_price is not None or self.max_price is not None:
-            return False
-        return True
+        return self.min_price is None and self.max_price is None
 
 
 class AuthorizationLedger:
