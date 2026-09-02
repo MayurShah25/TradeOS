@@ -75,6 +75,14 @@ class PaperTradingSession:
             raise PermissionError("authorization does not match the risk decision")
 
         execution = self._gateway.execute(authorization_id, order, now)
+        accepted_event = ExecutionEvent(
+            order_id=order.order_id,
+            status=OrderStatus.ACCEPTED,
+            event_type=ExecutionEventType.ACCEPTED,
+            timestamp=now,
+        )
+        self._portfolio_pipeline.process(order, None, accepted_event, OrderStatus.ACCEPTED)
+
         event_type = ExecutionEventType(execution.status.value)
         filled_quantity = order.quantity if execution.status is OrderStatus.FILLED else Decimal(0)
         event = ExecutionEvent(
@@ -86,7 +94,7 @@ class PaperTradingSession:
         )
         processing = self._portfolio_pipeline.process(
             order,
-            None,
+            OrderStatus.ACCEPTED,
             event,
             execution.status,
             prices[order.instrument_id] if execution.status is OrderStatus.FILLED else None,
