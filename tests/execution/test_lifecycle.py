@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 import pytest
@@ -41,10 +41,10 @@ def test_execution_event_requires_utc_timestamp() -> None:
         order_id="order-1",
         status=OrderStatus.ACCEPTED,
         event_type=ExecutionEventType.ACCEPTED,
-        timestamp=datetime(2026, 9, 2, tzinfo=UTC),
+        timestamp=datetime(2026, 9, 2, tzinfo=UTC + timedelta(hours=5, minutes=30)),
     )
 
-    with pytest.raises(ValueError, match="timezone-aware"):
+    with pytest.raises(ValueError, match="UTC"):
         event.validate()
 
 
