@@ -13,11 +13,12 @@ from .authorized_gateway import (
     ExecutionGatewayResult,
     ExecutionOutcomeUnknownError,
 )
-from .lifecycle import ReconciliationStatus
+from .lifecycle import ExecutionEvent, ExecutionEventType, ReconciliationStatus
 from .models import Order, OrderSide, OrderStatus, OrderType
 from .paper_broker import PaperBroker
 from .paper_session import PaperTradingResult, PaperTradingSession
 from .ports import BrokerExecutionPort, PaperTradingPersistencePort
+from .reconciliation import PaperReconciliationResult, PaperTradingReconciliation
 from .recovery import PaperRunRecoveryAssessment, PaperTradingRecovery
 from .run_registry import PaperRunRegistry
 from .run_state import PaperRunStatus, PaperTradingRun
@@ -32,6 +33,8 @@ __all__ = [
     "BrokerExecutionPort",
     "ExecutionAuthorization",
     "ExecutionAuthorizationPolicy",
+    "ExecutionEvent",
+    "ExecutionEventType",
     "ExecutionGatewayResult",
     "ExecutionOutcomeUnknownError",
     "OperatingMode",
@@ -40,10 +43,12 @@ __all__ = [
     "OrderStatus",
     "OrderType",
     "PaperBroker",
+    "PaperReconciliationResult",
     "PaperRunRecoveryAssessment",
     "PaperRunRegistry",
     "PaperRunStatus",
     "PaperTradingPersistencePort",
+    "PaperTradingReconciliation",
     "PaperTradingRecovery",
     "PaperTradingResult",
     "PaperTradingRun",
