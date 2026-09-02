@@ -96,8 +96,7 @@ def test_unknown_observation_remains_reconciliation_required(tmp_path: Path) -> 
         assert result.run.status is PaperRunStatus.RECONCILIATION_REQUIRED
         assert result.portfolio_updated is False
         assert (
-            repository.require_run("run-reconcile").status
-            is PaperRunStatus.RECONCILIATION_REQUIRED
+            repository.require_run("run-reconcile").status is PaperRunStatus.RECONCILIATION_REQUIRED
         )
 
 
