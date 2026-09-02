@@ -23,7 +23,12 @@ def _context(
     timestamp = datetime(2026, 9, 2, 8, 0, tzinfo=UTC)
     ledger = PositionLedger()
     ledger.apply_fill("AAPL", OrderSide.BUY, Decimal(10), Decimal(100))
-    account = AccountStateBuilder.snapshot(equity, Decimal(15000), available_margin)
+    account = AccountStateBuilder.snapshot(
+        cash=Decimal(9000),
+        buying_power=Decimal(18000),
+        equity=equity,
+        available_margin=available_margin,
+    )
     portfolio = PortfolioStateBuilder.snapshot(ledger, account, (), timestamp)
     as_of = timestamp + as_of_offset
     return RiskContextBuilder.build(portfolio, {"AAPL": Decimal(120)}, as_of, timedelta(minutes=5))
