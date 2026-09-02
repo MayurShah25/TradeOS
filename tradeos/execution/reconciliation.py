@@ -3,14 +3,16 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
-
-from tradeos.portfolio.execution_pipeline import ExecutionPortfolioPipeline
+from typing import TYPE_CHECKING
 
 from .audit import AuditEvent, AuditEventType
 from .lifecycle import ExecutionEvent, ExecutionEventType, ReconciliationStatus
 from .models import Order, OrderStatus
 from .ports import PaperTradingPersistencePort
 from .run_state import PaperRunStatus, PaperTradingRun
+
+if TYPE_CHECKING:
+    from tradeos.portfolio.execution_pipeline import ExecutionPortfolioPipeline
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,6 +34,8 @@ class PaperTradingReconciliation:
         persistence: PaperTradingPersistencePort,
         portfolio_pipeline: ExecutionPortfolioPipeline | None = None,
     ) -> None:
+        from tradeos.portfolio.execution_pipeline import ExecutionPortfolioPipeline
+
         self._persistence = persistence
         self._portfolio_pipeline = portfolio_pipeline or ExecutionPortfolioPipeline()
 
