@@ -129,7 +129,9 @@ class PaperTradingSession:
             self._portfolio_pipeline.process(order, None, accepted_event, OrderStatus.ACCEPTED)
 
             event_type = ExecutionEventType(execution.status.value)
-            filled_quantity = order.quantity if execution.status is OrderStatus.FILLED else Decimal(0)
+            filled_quantity = (
+                order.quantity if execution.status is OrderStatus.FILLED else Decimal(0)
+            )
             event = ExecutionEvent(
                 order_id=order.order_id,
                 status=execution.status,
