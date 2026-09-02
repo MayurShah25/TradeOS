@@ -1,10 +1,9 @@
 """Tests for the deterministic execution authorization boundary."""
 
+import pytest
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
-
-import pytest
 
 from tradeos.execution import (
     AuthorizationLedger,
