@@ -19,21 +19,23 @@ def _context(
     as_of_offset: timedelta = timedelta(0),
     equity: Decimal = Decimal(10000),
     available_margin: Decimal = Decimal(5000),
-) :
+):
     timestamp = datetime(2026, 9, 2, 8, 0, tzinfo=UTC)
     ledger = PositionLedger()
     ledger.apply_fill("AAPL", OrderSide.BUY, Decimal(10), Decimal(100))
     account = AccountStateBuilder.snapshot(equity, Decimal(15000), available_margin)
     portfolio = PortfolioStateBuilder.snapshot(ledger, account, (), timestamp)
     as_of = timestamp + as_of_offset
-    return RiskContextBuilder.build(portfolio, {"AAPL": Decimal(120)}, as_of, timedelta(minutes=5))
+    return RiskContextBuilder.build(
+        portfolio, {"AAPL": Decimal(120)}, as_of, timedelta(minutes=5)
+    )
 
 
 def _limits() -> PortfolioRiskLimits:
     return PortfolioRiskLimits(
         max_gross_exposure=Decimal(5000),
         max_portfolio_heat=Decimal("0.5"),
-        max_leverage=Decimal("1"),
+        max_leverage=Decimal(1),
         min_available_margin=Decimal(1000),
     )
 
@@ -72,7 +74,7 @@ def test_minimum_available_margin_is_enforced() -> None:
     limits = PortfolioRiskLimits(
         max_gross_exposure=Decimal(5000),
         max_portfolio_heat=Decimal("0.5"),
-        max_leverage=Decimal("1"),
+        max_leverage=Decimal(1),
         min_available_margin=Decimal(6000),
     )
 
