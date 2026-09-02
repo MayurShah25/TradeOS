@@ -1,6 +1,7 @@
 """Deterministic registry for governed paper-trading runs."""
 
 from collections.abc import Iterable
+from datetime import datetime
 
 from .run_state import PaperRunStatus, PaperTradingRun
 
@@ -38,13 +39,13 @@ class PaperRunRegistry:
             raise KeyError(run.run_id)
         self._runs[run.run_id] = run
 
-    def complete(self, run_id: str, completed_at) -> PaperTradingRun:
+    def complete(self, run_id: str, completed_at: datetime) -> PaperTradingRun:
         """Close an open run as completed and return the new snapshot."""
         completed = self.require(run_id).complete(completed_at)
         self.update(completed)
         return completed
 
-    def fail(self, run_id: str, completed_at) -> PaperTradingRun:
+    def fail(self, run_id: str, completed_at: datetime) -> PaperTradingRun:
         """Close an open run as failed and return the new snapshot."""
         failed = self.require(run_id).fail(completed_at)
         self.update(failed)
