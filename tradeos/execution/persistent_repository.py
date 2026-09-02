@@ -6,7 +6,8 @@ import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from types import TracebackType
+from typing import Any, Self
 
 from .audit import AuditEvent, AuditEventType
 from .run_registry import PaperRunRegistry
@@ -25,10 +26,10 @@ class SqlitePaperRunAuditRepository:
         """Close the underlying database connection."""
         self._connection.close()
 
-    def __enter__(self) -> "SqlitePaperRunAuditRepository":
+    def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None:
+    def __exit__(self, exc_type: type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None) -> None:
         self.close()
 
     def save_run(self, run: PaperTradingRun) -> None:
