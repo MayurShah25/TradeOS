@@ -22,6 +22,20 @@ class PositionLedger:
     def __init__(self) -> None:
         self._positions: dict[str, Position] = {}
 
+    @classmethod
+    def from_positions(cls, positions: tuple[Position, ...]) -> "PositionLedger":
+        """Restore a ledger from an immutable position snapshot."""
+        ledger = cls()
+        for position in positions:
+            if not position.instrument_id:
+                raise ValueError("instrument_id must not be empty")
+            if position.average_price < 0:
+                raise ValueError("average_price cannot be negative")
+            if position.instrument_id in ledger._positions:
+                raise ValueError(f"duplicate position for {position.instrument_id}")
+            ledger._positions[position.instrument_id] = position
+        return ledger
+
     def get(self, instrument_id: str) -> Position | None:
         """Return the current position for an instrument."""
         return self._positions.get(instrument_id)
