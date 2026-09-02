@@ -12,6 +12,7 @@ from .authorization import AuthorizationLedger
 from .authorized_gateway import AuthorizedExecutionGateway, ExecutionGatewayResult
 from .lifecycle import ExecutionEvent, ExecutionEventType
 from .models import Order, OrderStatus
+from .ports import PaperTradingPersistencePort
 from .run_state import PaperTradingRun
 
 if TYPE_CHECKING:
@@ -46,13 +47,15 @@ class PaperTradingSession:
         authorization_ledger: AuthorizationLedger,
         portfolio_pipeline: ExecutionPortfolioPipeline | None = None,
         audit_trail: AuditTrail | None = None,
+        persistence: PaperTradingPersistencePort | None = None,
     ) -> None:
         from tradeos.portfolio.execution_pipeline import ExecutionPortfolioPipeline
 
         self._gateway = gateway
         self._authorization_ledger = authorization_ledger
         self._portfolio_pipeline = portfolio_pipeline or ExecutionPortfolioPipeline()
-        self._audit_trail = audit_trail
+        self._persistence = persistence
+        self._audit_trail = audit_trail or (AuditTrail() if persistence is not None else None)
 
     def execute(
         self,
@@ -81,104 +84,126 @@ class PaperTradingSession:
                 raise PermissionError("run instrument does not match order")
             if audit_trail is None:
                 raise ValueError("audit_trail is required when run is supplied")
-            self._record(audit_trail, run, AuditEventType.RUN_STARTED, now, 0, {})
+            self._persist_run(run)
 
-        risk = PortfolioRiskControls.evaluate(context, limits, order, prices)
-        if run is not None:
-            self._record(
-                audit_trail,
-                run,
-                AuditEventType.RISK_EVALUATED,
-                now,
-                1,
-                {"approved": str(risk.approved)},
+        try:
+            if run is not None:
+                self._record(audit_trail, run, AuditEventType.RUN_STARTED, now, {})
+
+            risk = PortfolioRiskControls.evaluate(context, limits, order, prices)
+            if run is not None:
+                self._record(
+                    audit_trail,
+                    run,
+                    AuditEventType.RISK_EVALUATED,
+                    now,
+                    {"approved": str(risk.approved)},
+                )
+            if not risk.approved:
+                raise PermissionError("portfolio risk controls rejected the order")
+
+            authorization = self._authorization_ledger.get(authorization_id)
+            if authorization.risk_decision_id != risk_decision_id:
+                raise PermissionError("authorization does not match the risk decision")
+            if run is not None:
+                if run.account_id != authorization.account_id:
+                    raise PermissionError("run account does not match authorization account")
+                self._record(audit_trail, run, AuditEventType.AUTHORIZATION_VERIFIED, now, {})
+
+            execution = self._gateway.execute(authorization_id, order, now)
+            if run is not None:
+                self._record(
+                    audit_trail,
+                    run,
+                    AuditEventType.EXECUTION_SUBMITTED,
+                    now,
+                    {"order_id": order.order_id, "status": execution.status.value},
+                )
+
+            accepted_event = ExecutionEvent(
+                order_id=order.order_id,
+                status=OrderStatus.ACCEPTED,
+                event_type=ExecutionEventType.ACCEPTED,
+                timestamp=now,
             )
-        if not risk.approved:
-            raise PermissionError("portfolio risk controls rejected the order")
+            self._portfolio_pipeline.process(order, None, accepted_event, OrderStatus.ACCEPTED)
 
-        authorization = self._authorization_ledger.get(authorization_id)
-        if authorization.risk_decision_id != risk_decision_id:
-            raise PermissionError("authorization does not match the risk decision")
-        if run is not None:
-            if run.account_id != authorization.account_id:
-                raise PermissionError("run account does not match authorization account")
-            self._record(audit_trail, run, AuditEventType.AUTHORIZATION_VERIFIED, now, 2, {})
-
-        execution = self._gateway.execute(authorization_id, order, now)
-        if run is not None:
-            self._record(
-                audit_trail,
-                run,
-                AuditEventType.EXECUTION_SUBMITTED,
-                now,
-                3,
-                {"order_id": order.order_id, "status": execution.status.value},
+            event_type = ExecutionEventType(execution.status.value)
+            filled_quantity = (
+                order.quantity if execution.status is OrderStatus.FILLED else Decimal(0)
             )
-
-        accepted_event = ExecutionEvent(
-            order_id=order.order_id,
-            status=OrderStatus.ACCEPTED,
-            event_type=ExecutionEventType.ACCEPTED,
-            timestamp=now,
-        )
-        self._portfolio_pipeline.process(order, None, accepted_event, OrderStatus.ACCEPTED)
-
-        event_type = ExecutionEventType(execution.status.value)
-        filled_quantity = order.quantity if execution.status is OrderStatus.FILLED else Decimal(0)
-        event = ExecutionEvent(
-            order_id=order.order_id,
-            status=execution.status,
-            event_type=event_type,
-            timestamp=now,
-            filled_quantity=filled_quantity,
-        )
-        processing = self._portfolio_pipeline.process(
-            order,
-            OrderStatus.ACCEPTED,
-            event,
-            execution.status,
-            prices[order.instrument_id] if execution.status is OrderStatus.FILLED else None,
-        )
-        if run is not None:
-            self._record(
-                audit_trail,
-                run,
-                AuditEventType.EXECUTION_RECONCILED,
-                now,
-                4,
-                {"status": execution.status.value},
+            event = ExecutionEvent(
+                order_id=order.order_id,
+                status=execution.status,
+                event_type=event_type,
+                timestamp=now,
+                filled_quantity=filled_quantity,
             )
-            self._record(audit_trail, run, AuditEventType.PORTFOLIO_UPDATED, now, 5, {})
-            completed = run.complete(now)
-            self._record(
-                audit_trail,
-                run,
-                AuditEventType.RUN_COMPLETED,
-                now,
-                6,
-                {"status": completed.status.value},
+            processing = self._portfolio_pipeline.process(
+                order,
+                OrderStatus.ACCEPTED,
+                event,
+                execution.status,
+                prices[order.instrument_id] if execution.status is OrderStatus.FILLED else None,
             )
-            assert audit_trail is not None
-            return PaperTradingResult(
-                risk,
-                execution,
-                processing,
-                completed,
-                audit_trail.events(run.run_id),
-            )
-        return PaperTradingResult(risk, execution, processing)
+            if run is not None:
+                self._record(
+                    audit_trail,
+                    run,
+                    AuditEventType.EXECUTION_RECONCILED,
+                    now,
+                    {"status": execution.status.value},
+                )
+                self._record(audit_trail, run, AuditEventType.PORTFOLIO_UPDATED, now, {})
+                completed = run.complete(now)
+                self._record(
+                    audit_trail,
+                    run,
+                    AuditEventType.RUN_COMPLETED,
+                    now,
+                    {"status": completed.status.value},
+                )
+                self._persist_run(completed)
+                assert audit_trail is not None
+                return PaperTradingResult(
+                    risk,
+                    execution,
+                    processing,
+                    completed,
+                    audit_trail.events(run.run_id),
+                )
+            return PaperTradingResult(risk, execution, processing)
+        except Exception:
+            if run is not None:
+                self._persist_failure(run, now)
+            raise
 
-    @staticmethod
+    def _persist_run(self, run: PaperTradingRun) -> None:
+        if self._persistence is not None:
+            self._persistence.save_run(run)
+
+    def _persist_failure(self, run: PaperTradingRun, now: datetime) -> None:
+        try:
+            failed = run.fail(now)
+            audit_trail = self._audit_trail
+            if audit_trail is not None:
+                self._record(audit_trail, run, AuditEventType.RUN_FAILED, now, {})
+            self._persist_run(failed)
+        except Exception:  # noqa: BLE001
+            # Preserve the original execution exception; recovery can inspect the open run.
+            return
+
     def _record(
+        self,
         audit_trail: AuditTrail | None,
         run: PaperTradingRun,
         event_type: AuditEventType,
         occurred_at: datetime,
-        sequence: int,
         payload: dict[str, str],
     ) -> None:
         if audit_trail is None:
             raise ValueError("audit_trail is required")
+        sequence = len(audit_trail.events(run.run_id))
         event = AuditEvent(
             event_id=f"{run.run_id}:{sequence}:{event_type.value}",
             run_id=run.run_id,
@@ -188,3 +213,5 @@ class PaperTradingSession:
             payload=tuple(sorted(payload.items())),
         )
         audit_trail.append(event)
+        if self._persistence is not None:
+            self._persistence.append_audit_event(event)
