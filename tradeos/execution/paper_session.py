@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 
 from .audit import AuditEvent, AuditEventType, AuditTrail
 from .authorization import AuthorizationLedger
