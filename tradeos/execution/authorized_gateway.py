@@ -35,9 +35,10 @@ class AuthorizedExecutionGateway:
         if now.tzinfo is None or now.utcoffset() is None or now.tzinfo is not UTC:
             raise ValueError("now must use UTC")
 
-        authorization = self._ledger.consume(authorization_id)
+        authorization = self._ledger.get(authorization_id)
         if not authorization.permits(order, now):
             raise PermissionError("authorization does not permit this order")
 
+        self._ledger.consume(authorization_id)
         status = self._broker.submit(order)
         return ExecutionGatewayResult(authorization_id, order.order_id, status)
