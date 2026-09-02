@@ -42,11 +42,11 @@ class PaperTradingRecovery:
 
 
 def _recovery_reason(run: PaperTradingRun, events: tuple[AuditEvent, ...]) -> str:
-    if run.status is PaperRunStatus.RECONCILIATION_REQUIRED:
-        return "run has an unresolved execution outcome; explicit reconciliation is required"
     if not events:
         return "run has no persisted audit history"
     last = events[-1]
     if last.event_type is AuditEventType.RECONCILIATION_REQUIRED:
         return "run has an unknown execution outcome; explicit reconciliation is required"
+    if run.status is PaperRunStatus.RECONCILIATION_REQUIRED:
+        return "run has an unresolved execution outcome; explicit reconciliation is required"
     return f"run interrupted after {last.event_type.value}; explicit reconciliation is required"
