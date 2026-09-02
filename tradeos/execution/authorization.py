@@ -62,7 +62,11 @@ class ExecutionAuthorization:
             raise ValueError("min_price must be positive")
         if self.max_price is not None and self.max_price <= 0:
             raise ValueError("max_price must be positive")
-        if self.min_price is not None and self.max_price is not None and self.min_price > self.max_price:
+        if (
+            self.min_price is not None
+            and self.max_price is not None
+            and self.min_price > self.max_price
+        ):
             raise ValueError("min_price cannot exceed max_price")
         if self.approved_stop_price is not None and self.approved_stop_price <= 0:
             raise ValueError("approved_stop_price must be positive")
