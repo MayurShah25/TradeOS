@@ -5,6 +5,11 @@ from .execution_pipeline import ExecutionPortfolioPipeline, ExecutionProcessingR
 from .exposure import ExposureCalculator, ExposureSnapshot
 from .heat import PortfolioHeat
 from .open_orders import OpenOrder, OpenOrderLedger
+from .portfolio_risk_controls import (
+    PortfolioRiskControls,
+    PortfolioRiskLimits,
+    PortfolioRiskResult,
+)
 from .portfolio_state import PortfolioState, PortfolioStateBuilder
 from .position_ledger import Position, PositionLedger
 from .pre_trade_impact import PreTradeImpact, PreTradeImpactCalculator
@@ -21,6 +26,9 @@ __all__ = [
     "OpenOrder",
     "OpenOrderLedger",
     "PortfolioHeat",
+    "PortfolioRiskControls",
+    "PortfolioRiskLimits",
+    "PortfolioRiskResult",
     "PortfolioState",
     "PortfolioStateBuilder",
     "Position",
