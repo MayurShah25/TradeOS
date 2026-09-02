@@ -6,7 +6,9 @@ from decimal import Decimal
 
 from .exposure import ExposureCalculator, ExposureSnapshot
 from .heat import PortfolioHeat
+from .open_orders import OpenOrderLedger
 from .portfolio_state import PortfolioState
+from .position_ledger import PositionLedger
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,30 +55,16 @@ class RiskContextBuilder:
         if portfolio.account is None:
             raise ValueError("account state is required for risk context")
 
-        from .open_orders import OpenOrderLedger
-
-        position_ledger = _ledger_from_positions(portfolio)
+        position_ledger = PositionLedger.from_positions(portfolio.positions)
         open_order_ledger = OpenOrderLedger()
         for open_order in portfolio.open_orders:
             open_order_ledger.add(open_order)
 
         exposure = ExposureCalculator.from_positions(
-            position_ledger,
-            prices,
-            open_order_ledger,
+            position_ledger, prices, open_order_ledger
         )
         heat = PortfolioHeat.calculate(exposure.gross, portfolio.account.equity)
         stale = as_of - portfolio.timestamp > max_age
         context = RiskContext(portfolio, exposure, heat, as_of, stale)
         context.validate()
         return context
-
-
-def _ledger_from_positions(portfolio: PortfolioState):
-    """Build a position ledger without changing the source snapshot."""
-    from .position_ledger import PositionLedger
-
-    ledger = PositionLedger()
-    for position in portfolio.positions:
-        ledger.apply(position)
-    return ledger
