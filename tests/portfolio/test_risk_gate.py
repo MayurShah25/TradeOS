@@ -3,11 +3,11 @@ from decimal import Decimal
 from tradeos.execution import Order, OrderSide
 from tradeos.portfolio.open_orders import OpenOrderLedger
 from tradeos.portfolio.position_ledger import PositionLedger
-from tradeos.portfolio.pre_trade_impact import PreTradeImpactCalculator
+from tradeos.portfolio.pre_trade_impact import PreTradeImpact, PreTradeImpactCalculator
 from tradeos.portfolio.risk_gate import RiskDecision, RiskGate, RiskLimits
 
 
-def make_impact() -> object:
+def make_impact() -> PreTradeImpact:
     return PreTradeImpactCalculator.calculate(
         PositionLedger(),
         OpenOrderLedger(),
