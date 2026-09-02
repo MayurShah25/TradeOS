@@ -60,15 +60,25 @@ class PaperTradingRun:
     def complete(self, completed_at: datetime) -> "PaperTradingRun":
         """Return a completed run without mutating the original."""
         self._validate_transition(completed_at)
-        return PaperTradingRun(
-            **{**self.__dict__, "status": PaperRunStatus.COMPLETED, "completed_at": completed_at}
-        )
+        return self._closed(PaperRunStatus.COMPLETED, completed_at)
 
     def fail(self, completed_at: datetime) -> "PaperTradingRun":
         """Return a failed run without mutating the original."""
         self._validate_transition(completed_at)
+        return self._closed(PaperRunStatus.FAILED, completed_at)
+
+    def _closed(self, status: PaperRunStatus, completed_at: datetime) -> "PaperTradingRun":
         return PaperTradingRun(
-            **{**self.__dict__, "status": PaperRunStatus.FAILED, "completed_at": completed_at}
+            run_id=self.run_id,
+            proposal_id=self.proposal_id,
+            risk_decision_id=self.risk_decision_id,
+            authorization_id=self.authorization_id,
+            account_id=self.account_id,
+            instrument_id=self.instrument_id,
+            configuration_hash=self.configuration_hash,
+            started_at=self.started_at,
+            status=status,
+            completed_at=completed_at,
         )
 
     def _validate_transition(self, completed_at: datetime) -> None:
