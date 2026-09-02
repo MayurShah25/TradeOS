@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from .audit import AuditEvent, AuditEventType, AuditTrail
 from .authorization import AuthorizationLedger
@@ -187,7 +187,7 @@ class PaperTradingSession:
             if audit_trail is not None:
                 self._record(audit_trail, run, AuditEventType.RUN_FAILED, now, {})
             self._persist_run(failed)
-        except Exception:
+        except Exception:  # noqa: BLE001
             # Preserve the original execution exception; recovery can inspect the open run.
             return
 
