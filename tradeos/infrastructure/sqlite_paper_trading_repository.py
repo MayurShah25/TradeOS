@@ -2,21 +2,16 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
 
 from tradeos.execution import AuditEvent, AuditEventType, PaperRunStatus, PaperTradingRun
 
 
 class SQLitePaperTradingRepository:
-    """Durable local repository for paper runs and their audit histories.
-
-    The adapter is intentionally deterministic and dependency-free. SQLite provides
-    durable storage for local paper trading while keeping the domain independent of
-    the storage technology.
-    """
+    """Durable local repository for paper runs and their audit histories."""
 
     def __init__(self, database_path: str | Path) -> None:
         self._path = str(database_path)
@@ -67,7 +62,7 @@ class SQLitePaperTradingRepository:
                 run.configuration_hash,
                 _encode_datetime(run.started_at),
                 run.status.value,
-                _encode_datetime(run.completed_at) if run.completed_at else None,
+                _encode_datetime(run.completed_at),
             ),
         )
         self._connection.commit()
@@ -141,7 +136,7 @@ class SQLitePaperTradingRepository:
                     event.event_type.value,
                     _encode_datetime(event.occurred_at),
                     event.sequence,
-                    "\n".join(f"{key}={value}" for key, value in event.payload),
+                    json.dumps(dict(event.payload), sort_keys=True),
                 ),
             )
             self._connection.commit()
@@ -245,16 +240,14 @@ def _decode_run(row: sqlite3.Row) -> PaperTradingRun:
 
 
 def _decode_event(row: sqlite3.Row) -> AuditEvent:
-    payload: list[tuple[str, str]] = []
-    if row["payload"]:
-        for item in row["payload"].split("\n"):
-            key, value = item.split("=", 1)
-            payload.append((key, value))
-    return AuditEvent(
+    payload = tuple(sorted(json.loads(row["payload"]).items())) if row["payload"] else ()
+    event = AuditEvent(
         event_id=row["event_id"],
         run_id=row["run_id"],
         event_type=AuditEventType(row["event_type"]),
         occurred_at=_decode_datetime(row["occurred_at"]),
         sequence=row["sequence"],
-        payload=tuple(payload),
+        payload=payload,
     )
+    event.validate()
+    return event
