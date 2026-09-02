@@ -55,9 +55,7 @@ def test_assisted_live_requires_human_approval() -> None:
 
 
 def test_policy_accepts_paper_authorization_after_risk_approval() -> None:
-    authorization = ExecutionAuthorizationPolicy.issue(
-        _authorization(), risk_approved=True
-    )
+    authorization = ExecutionAuthorizationPolicy.issue(_authorization(), risk_approved=True)
 
     assert authorization.authorization_id == "auth-1"
 
