@@ -8,6 +8,7 @@ from .open_orders import OpenOrder, OpenOrderLedger
 from .portfolio_state import PortfolioState, PortfolioStateBuilder
 from .position_ledger import Position, PositionLedger
 from .pre_trade_impact import PreTradeImpact, PreTradeImpactCalculator
+from .risk_gate import RiskDecision, RiskGate, RiskLimits, RiskResult
 
 __all__ = [
     "AccountState",
@@ -25,4 +26,8 @@ __all__ = [
     "PositionLedger",
     "PreTradeImpact",
     "PreTradeImpactCalculator",
+    "RiskDecision",
+    "RiskGate",
+    "RiskLimits",
+    "RiskResult",
 ]
