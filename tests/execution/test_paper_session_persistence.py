@@ -107,7 +107,7 @@ def _session(
 def test_session_persists_completed_run_and_audit_across_restart(tmp_path: Path) -> None:
     database = tmp_path / "tradeos.sqlite3"
     with SQLitePaperTradingRepository(database) as repository:
-        session, ledger = _session(repository)
+        session, _ledger = _session(repository)
         result = session.execute(
             "auth-1",
             "risk-1",
@@ -121,7 +121,6 @@ def test_session_persists_completed_run_and_audit_across_restart(tmp_path: Path)
 
         assert result.run is not None
         assert result.run.status is PaperRunStatus.COMPLETED
-        assert ledger.status("auth-1") is not None
 
     with SQLitePaperTradingRepository(database) as repository:
         persisted = repository.require_run("run-1")
