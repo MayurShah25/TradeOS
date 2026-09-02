@@ -6,6 +6,8 @@ from decimal import Decimal
 import pytest
 
 from tradeos.execution import (
+    AuditEventType,
+    AuditTrail,
     AuthorizationLedger,
     AuthorizedExecutionGateway,
     ExecutionAuthorization,
@@ -13,6 +15,7 @@ from tradeos.execution import (
     Order,
     OrderSide,
     PaperBroker,
+    PaperTradingRun,
     PaperTradingSession,
 )
 from tradeos.portfolio import (
@@ -48,11 +51,11 @@ def _authorization(risk_decision_id: str = "risk-1") -> ExecutionAuthorization:
     )
 
 
-def _session() -> tuple[PaperTradingSession, AuthorizationLedger]:
+def _session(audit_trail: AuditTrail | None = None) -> tuple[PaperTradingSession, AuthorizationLedger]:
     ledger = AuthorizationLedger()
     ledger.issue(_authorization())
     gateway = AuthorizedExecutionGateway(PaperBroker(), ledger)
-    return PaperTradingSession(gateway, ledger), ledger
+    return PaperTradingSession(gateway, ledger, audit_trail=audit_trail), ledger
 
 
 def _context():
@@ -84,6 +87,19 @@ def _limits() -> PortfolioRiskLimits:
     )
 
 
+def _run() -> PaperTradingRun:
+    return PaperTradingRun(
+        run_id="run-1",
+        proposal_id="proposal-1",
+        risk_decision_id="risk-1",
+        authorization_id="auth-1",
+        account_id="account-1",
+        instrument_id="AAPL",
+        configuration_hash="config-hash",
+        started_at=NOW,
+    )
+
+
 def test_session_sequences_risk_authorization_execution_and_reconciliation() -> None:
     session, ledger = _session()
 
@@ -101,6 +117,37 @@ def test_session_sequences_risk_authorization_execution_and_reconciliation() -> 
     assert result.execution.status.value == "FILLED"
     assert result.processing.reconciled is True
     assert result.processing.portfolio.position_for("AAPL").quantity == Decimal(2)
+    assert ledger.status("auth-1").value == "CONSUMED"
+
+
+def test_session_records_complete_governed_run_audit() -> None:
+    audit = AuditTrail()
+    session, ledger = _session(audit)
+
+    result = session.execute(
+        "auth-1",
+        "risk-1",
+        _order(),
+        _context(),
+        _limits(),
+        {"AAPL": Decimal(100)},
+        NOW,
+        run=_run(),
+    )
+
+    assert result.run is not None
+    assert result.run.status.value == "COMPLETED"
+    assert tuple(event.event_type for event in result.audit_events) == (
+        AuditEventType.RUN_STARTED,
+        AuditEventType.RISK_EVALUATED,
+        AuditEventType.AUTHORIZATION_VERIFIED,
+        AuditEventType.EXECUTION_SUBMITTED,
+        AuditEventType.EXECUTION_RECONCILED,
+        AuditEventType.PORTFOLIO_UPDATED,
+        AuditEventType.RUN_COMPLETED,
+    )
+    assert tuple(event.sequence for event in result.audit_events) == tuple(range(7))
+    assert audit.events("run-1") == result.audit_events
     assert ledger.status("auth-1").value == "CONSUMED"
 
 
