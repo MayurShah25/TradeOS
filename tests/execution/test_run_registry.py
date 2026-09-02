@@ -2,7 +2,7 @@ import datetime as dt
 
 import pytest
 
-from tradeos.execution import PaperRunRegistry, PaperRunStatus, PaperTradingRun
+from tradeos.execution import PaperRunRegistry, PaperRunStatus, PaperTradingRun  # noqa: I001
 
 
 START = dt.datetime(2026, 1, 1, 10, tzinfo=dt.UTC)
