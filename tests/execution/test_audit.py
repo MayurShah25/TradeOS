@@ -1,11 +1,11 @@
-from datetime import UTC, datetime, timedelta, timezone
+import datetime as dt
 
 import pytest
 
 from tradeos.execution import AuditEvent, AuditEventType, AuditTrail
 
 
-NOW = datetime(2026, 1, 1, 10, tzinfo=UTC)
+NOW = dt.datetime(2026, 1, 1, 10, tzinfo=dt.UTC)
 
 
 def event(event_id: str, sequence: int) -> AuditEvent:
@@ -61,7 +61,7 @@ def test_audit_trail_keeps_runs_separate() -> None:
 
 
 def test_audit_event_rejects_non_utc_timestamp() -> None:
-    timestamp = NOW.astimezone(timezone(timedelta(hours=1)))
+    timestamp = NOW.astimezone(dt.timezone(dt.timedelta(hours=1)))
     invalid = AuditEvent(
         event_id="event-1",
         run_id="run-1",
