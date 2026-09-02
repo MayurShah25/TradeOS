@@ -1,7 +1,7 @@
 """Immutable portfolio snapshots from explicit portfolio state inputs."""
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from .account_state import AccountState
@@ -17,7 +17,7 @@ class PortfolioState:
     realized_pnl: Decimal
     account: AccountState | None = None
     open_orders: tuple[OpenOrder, ...] = ()
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def position_for(self, instrument_id: str) -> Position | None:
         """Return the position for an instrument, if present."""
@@ -32,7 +32,7 @@ class PortfolioState:
             self.account.validate()
         if self.timestamp.tzinfo is None or self.timestamp.utcoffset() is None:
             raise ValueError("timestamp must be timezone-aware")
-        if self.timestamp.astimezone(timezone.utc) != self.timestamp:
+        if self.timestamp.astimezone(UTC) != self.timestamp:
             raise ValueError("timestamp must use UTC")
 
 
@@ -49,7 +49,7 @@ class PortfolioStateBuilder:
         """Return a validated immutable portfolio snapshot."""
         positions = tuple(ledger.positions())
         realized_pnl = sum((position.realized_pnl for position in positions), Decimal(0))
-        snapshot_time = timestamp if timestamp is not None else datetime.now(timezone.utc)
+        snapshot_time = timestamp if timestamp is not None else datetime.now(UTC)
         state = PortfolioState(
             positions=positions,
             realized_pnl=realized_pnl,
