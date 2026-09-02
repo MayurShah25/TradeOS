@@ -55,6 +55,17 @@ def test_run_update_is_persistent_and_filterable(tmp_path: Path) -> None:
         assert repository.list_runs(status=PaperRunStatus.COMPLETED) == (completed,)
 
 
+def test_closed_run_cannot_be_rewritten(tmp_path: Path) -> None:
+    database = tmp_path / "tradeos.sqlite3"
+    run = make_run()
+    completed = run.complete(START + dt.timedelta(seconds=5))
+    with SQLitePaperTradingRepository(database) as repository:
+        repository.save_run(completed)
+        with pytest.raises(ValueError, match="immutable"):
+            repository.save_run(run)
+        repository.save_run(completed)
+
+
 def test_audit_history_is_append_only_and_survives_reopen(tmp_path: Path) -> None:
     database = tmp_path / "tradeos.sqlite3"
     run = make_run()
