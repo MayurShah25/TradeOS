@@ -1,5 +1,6 @@
 """Tests for the deterministic execution authorization boundary."""
 
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
@@ -105,12 +106,7 @@ def test_authorization_ledger_rejects_duplicate_and_consumed_revoke() -> None:
 
 
 def test_authorization_rejects_invalid_expiry() -> None:
-    authorization = ExecutionAuthorization(
-        **{
-            **_authorization().__dict__,
-            "expires_at": NOW,
-        }
-    )
+    authorization = replace(_authorization(), expires_at=NOW)
 
     with pytest.raises(ValueError, match="expires_at"):
         authorization.validate()
