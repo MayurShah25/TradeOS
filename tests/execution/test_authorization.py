@@ -16,7 +16,6 @@ from tradeos.execution import (
     OrderSide,
 )
 
-
 NOW = datetime(2026, 9, 2, 9, 0, tzinfo=UTC)
 
 
