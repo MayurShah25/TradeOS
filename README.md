@@ -1,7 +1,7 @@
 # TradeOS
 
 **Version:** 0.2.2  
-**Status:** Documentation Baseline Locked — Implementation Ready  
+**Status:** Phase 3 Paper Trading Foundation Implemented — Recovery Safety In Progress  
 **Project Type:** Personal AI-Assisted Multi-Market Trading Operating System
 
 ## Overview
@@ -35,9 +35,9 @@ The documentation baseline currently consists of:
 - `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
 - `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
 - `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
-- `docs/architecture/22_DOMAIN_MODEL.md` through `29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md` — domain, state, event, authority, reasoning, governance, and paper-trading persistence architecture.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `30_PAPER_TRADING_RECOVERY.md` — domain, state, event, authority, reasoning, governance, persistence, and recovery architecture.
 
-**All numbered documents 01–29 are accounted for in the repository. No numbered documentation gap is currently known.**
+**All numbered documents 01–30 are accounted for in the repository. No numbered documentation gap is currently known.**
 
 The documentation set is treated as the baseline for implementation. Future documentation changes must follow the governance process and must not silently contradict canonical rules or contracts.
 
@@ -58,6 +58,7 @@ The documentation set is treated as the baseline for implementation. Future docu
 | 27 | `docs/architecture/` | State-machine governance |
 | 28 | `docs/architecture/` | Event-contract governance |
 | 29 | `docs/architecture/` | Paper-trading persistence and audit repository |
+| 30 | `docs/architecture/` | Safe paper-trading recovery |
 
 ## Repository Structure — Current State
 
@@ -65,6 +66,24 @@ The documentation set is treated as the baseline for implementation. Future docu
 TradeOS/
 ├── README.md
 ├── rules.md
+├── tradeos/
+│   ├── config/
+│   ├── contracts/
+│   ├── core/
+│   ├── domain/
+│   ├── execution/
+│   ├── infrastructure/
+│   ├── market/
+│   └── portfolio/
+├── tests/
+│   ├── config/
+│   ├── contracts/
+│   ├── core/
+│   ├── domain/
+│   ├── execution/
+│   ├── infrastructure/
+│   ├── market/
+│   └── portfolio/
 └── docs/
     ├── DOCUMENTATION_GOVERNANCE.md
     ├── architecture/
@@ -94,14 +113,15 @@ TradeOS/
     │   ├── 26_REASONING_EFFICIENCY_AND_AGENT_ORCHESTRATION.md
     │   ├── 27_STATE_MACHINE_GOVERNANCE.md
     │   ├── 28_EVENT_CONTRACT_GOVERNANCE.md
-    │   └── 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
+    │   ├── 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
+    │   └── 30_PAPER_TRADING_RECOVERY.md
     ├── contracts/
     │   └── 20_AGENT_CONTRACTS.md
     └── configuration/
         └── 21_CONFIGURATION.md
 ```
 
-This is the **actual documentation repository structure**. Runtime implementation directories do not yet exist and will be introduced deliberately during the foundation phase.
+This reflects the current repository structure, including the implemented foundation, tests, and documentation baseline.
 
 ## Architectural Direction
 
@@ -253,10 +273,10 @@ These are architectural directions rather than an assertion that all infrastruct
 Completed as the prerequisite baseline represented by the current repository documentation set.
 
 ### Phase 2 — Foundation
-Implement configuration, logging, core domain/data models, storage boundaries, error handling, and the testing foundation.
+The core configuration, domain, portfolio, execution, testing, and infrastructure foundation is implemented incrementally behind explicit contracts and safety boundaries.
 
-### Phase 3 — First Market
-Implement one market and one broker/data integration with deliberately narrow scope.
+### Phase 3 — Paper Trading Foundation
+**In progress.** Durable paper-run persistence, append-only audit history, persistent session integration, restart coverage, failure persistence, and safe interrupted-run recovery inspection are now implemented. Real broker/live execution remains out of scope.
 
 ### Phase 4 — Strategy & Backtesting
 Implement strategy interfaces, historical simulation, metrics, robustness checks, and walk-forward validation.
@@ -264,8 +284,8 @@ Implement strategy interfaces, historical simulation, metrics, robustness checks
 ### Phase 5 — Multi-Agent Intelligence
 Implement the orchestrator and specialized bounded agents according to the contracts.
 
-### Phase 6 — Paper Trading
-Introduce real-time data with simulated execution and reconciliation.
+### Phase 6 — Paper Trading Operations
+Introduce broader real-time data workflows, simulated execution operations, reconciliation workflows, and operational monitoring.
 
 ### Phase 7 — Dashboard & Learning
 Add monitoring, journal, coaching, learning reports, and analytics.
@@ -284,12 +304,12 @@ The system is **not ready for live trading** merely because the documentation ph
 ### Documentation
 **READY / BASELINE LOCKED**
 
-The repository currently contains the complete numbered documentation sequence **01–29**, plus the global rules and documentation-governance documents. No additional existing or new numbered document is required before continuing implementation based on the current documentation inventory.
+The repository currently contains the complete numbered documentation sequence **01–30**, plus the global rules and documentation-governance documents. No numbered documentation gap is currently known.
 
 ### Coding
-**READY TO BEGIN — FOUNDATION FIRST**
+**PHASE 3 — RECOVERY SAFETY IN PROGRESS**
 
-The next implementation work should begin with the foundation layer and must follow the canonical contracts, configuration, risk, execution, testing, security, and audit requirements already documented.
+The durable paper-trading repository and session integration are implemented and covered by CI. The current increment adds read-only recovery inspection for interrupted `OPEN` runs and requires explicit reconciliation before any further action.
 
 ### Live Trading
 **NOT READY**

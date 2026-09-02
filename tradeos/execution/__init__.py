@@ -14,6 +14,7 @@ from .models import Order, OrderSide, OrderStatus, OrderType
 from .paper_broker import PaperBroker
 from .paper_session import PaperTradingResult, PaperTradingSession
 from .ports import BrokerExecutionPort, PaperTradingPersistencePort
+from .recovery import PaperRunRecoveryAssessment, PaperTradingRecovery
 from .run_registry import PaperRunRegistry
 from .run_state import PaperRunStatus, PaperTradingRun
 
@@ -34,9 +35,11 @@ __all__ = [
     "OrderStatus",
     "OrderType",
     "PaperBroker",
+    "PaperRunRecoveryAssessment",
     "PaperRunRegistry",
     "PaperRunStatus",
     "PaperTradingPersistencePort",
+    "PaperTradingRecovery",
     "PaperTradingResult",
     "PaperTradingRun",
     "PaperTradingSession",
