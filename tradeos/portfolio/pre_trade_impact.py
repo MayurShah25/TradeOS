@@ -3,10 +3,10 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from tradeos.execution import Order, OrderSide
+from tradeos.execution import Order, OrderStatus
 from tradeos.portfolio.exposure import ExposureCalculator, ExposureSnapshot
 from tradeos.portfolio.heat import PortfolioHeat
-from tradeos.portfolio.open_orders import OpenOrderLedger
+from tradeos.portfolio.open_orders import OpenOrder, OpenOrderLedger
 from tradeos.portfolio.position_ledger import PositionLedger
 
 
@@ -48,11 +48,7 @@ class PreTradeImpactCalculator:
         projected_orders = OpenOrderLedger()
         for open_order in open_orders.orders():
             projected_orders.add(open_order)
-        projected_orders.add(
-            __import__("tradeos.portfolio.open_orders", fromlist=["OpenOrder"]).OpenOrder(
-                order, __import__("tradeos.execution", fromlist=["OrderStatus"]).OrderStatus.ACCEPTED
-            )
-        )
+        projected_orders.add(OpenOrder(order, OrderStatus.ACCEPTED))
         projected = ExposureCalculator.from_positions(positions, prices, projected_orders)
         projected_heat = PortfolioHeat.calculate(projected, equity)
         return PreTradeImpact(current, projected, current_heat, projected_heat)
