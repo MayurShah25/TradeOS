@@ -1,6 +1,5 @@
 """Deterministic registry for governed paper-trading runs."""
 
-from collections.abc import Iterable
 from datetime import datetime
 
 from .run_state import PaperRunStatus, PaperTradingRun
@@ -63,11 +62,11 @@ class PaperRunRegistry:
             raise ValueError("account_id must not be empty")
         if instrument_id == "":
             raise ValueError("instrument_id must not be empty")
-        values: Iterable[PaperTradingRun] = self._runs.values()
+        values = list(self._runs.values())
         if status is not None:
-            values = (run for run in values if run.status is status)
+            values = [run for run in values if run.status is status]
         if account_id is not None:
-            values = (run for run in values if run.account_id == account_id)
+            values = [run for run in values if run.account_id == account_id]
         if instrument_id is not None:
-            values = (run for run in values if run.instrument_id == instrument_id)
+            values = [run for run in values if run.instrument_id == instrument_id]
         return tuple(values)
