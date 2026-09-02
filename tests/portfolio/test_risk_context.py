@@ -17,9 +17,7 @@ from tradeos.portfolio import (
 def _portfolio(timestamp: datetime):
     ledger = PositionLedger()
     ledger.apply_fill("AAPL", OrderSide.BUY, Decimal(10), Decimal(100))
-    account = AccountStateBuilder.snapshot(
-        Decimal(9000), Decimal(18000), Decimal(10000)
-    )
+    account = AccountStateBuilder.snapshot(Decimal(9000), Decimal(18000), Decimal(10000))
     return PortfolioStateBuilder.snapshot(ledger, account, (), timestamp)
 
 
@@ -57,9 +55,7 @@ def test_risk_context_requires_account() -> None:
     portfolio = PortfolioStateBuilder.snapshot(ledger, timestamp=timestamp)
 
     with pytest.raises(ValueError, match="account state is required"):
-        RiskContextBuilder.build(
-            portfolio, {}, timestamp, timedelta(minutes=5)
-        )
+        RiskContextBuilder.build(portfolio, {}, timestamp, timedelta(minutes=5))
 
 
 def test_risk_context_rejects_invalid_time_window() -> None:
@@ -67,7 +63,10 @@ def test_risk_context_rejects_invalid_time_window() -> None:
 
     with pytest.raises(ValueError, match="max_age"):
         RiskContextBuilder.build(
-            _portfolio(timestamp), {"AAPL": Decimal(100)}, timestamp, timedelta(days=-1)
+            _portfolio(timestamp),
+            {"AAPL": Decimal(100)},
+            timestamp,
+            timedelta(days=-1),
         )
 
 
