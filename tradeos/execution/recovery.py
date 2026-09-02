@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from .audit import AuditEvent
 from .ports import PaperTradingPersistencePort
-from .run_state import PaperTradingRun
+from .run_state import PaperRunStatus, PaperTradingRun
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,11 +25,9 @@ class PaperTradingRecovery:
 
     def inspect_open_runs(self) -> tuple[PaperRunRecoveryAssessment, ...]:
         """Return every open run with its persisted audit history."""
-        runs = self._persistence.list_runs()
+        runs = self._persistence.list_runs(status=PaperRunStatus.OPEN)
         assessments: list[PaperRunRecoveryAssessment] = []
         for run in runs:
-            if run.status.value != "OPEN":
-                continue
             events = self._persistence.audit_events(run.run_id)
             assessments.append(
                 PaperRunRecoveryAssessment(
