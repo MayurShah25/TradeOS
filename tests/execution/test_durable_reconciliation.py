@@ -95,10 +95,7 @@ def test_unknown_observation_remains_reconciliation_required(tmp_path: Path) -> 
         assert result.status is ReconciliationStatus.UNKNOWN
         assert result.run.status is PaperRunStatus.RECONCILIATION_REQUIRED
         assert result.portfolio_updated is False
-        assert (
-            repository.require_run("run-reconcile").status
-            is PaperRunStatus.RECONCILIATION_REQUIRED
-        )
+        assert repository.require_run("run-reconcile").status is PaperRunStatus.RECONCILIATION_REQUIRED
 
 
 def test_accepted_observation_durably_completes_run(tmp_path: Path) -> None:
@@ -111,13 +108,8 @@ def test_accepted_observation_durably_completes_run(tmp_path: Path) -> None:
         assert result.status is ReconciliationStatus.MATCHED
         assert result.run.status is PaperRunStatus.COMPLETED
         assert result.portfolio_updated is True
-        assert (
-            repository.require_run("run-reconcile").status
-            is PaperRunStatus.COMPLETED
-        )
-        assert tuple(
-            event.event_type for event in repository.audit_events("run-reconcile")
-        ) == (
+        assert repository.require_run("run-reconcile").status is PaperRunStatus.COMPLETED
+        assert tuple(event.event_type for event in repository.audit_events("run-reconcile")) == (
             AuditEventType.RECONCILIATION_REQUIRED,
             AuditEventType.EXECUTION_RECONCILED,
             AuditEventType.PORTFOLIO_UPDATED,
