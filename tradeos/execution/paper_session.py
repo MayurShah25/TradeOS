@@ -33,7 +33,7 @@ class PaperTradingResult:
 
     risk: PortfolioRiskResult
     execution: ExecutionGatewayResult
-    processing: ExecutionProcessingResult
+    processing: ExecutionProcessingResult | None = None
     run: PaperTradingRun | None = None
     audit_events: tuple[AuditEvent, ...] = ()
 
@@ -86,6 +86,7 @@ class PaperTradingSession:
                 raise ValueError("audit_trail is required when run is supplied")
             self._persist_run(run)
 
+        execution: ExecutionGatewayResult | None = None
         try:
             if run is not None:
                 self._record(audit_trail, run, AuditEventType.RUN_STARTED, now, {})
@@ -119,6 +120,9 @@ class PaperTradingSession:
                     now,
                     {"order_id": order.order_id, "status": execution.status.value},
                 )
+
+            if execution.status is OrderStatus.UNKNOWN:
+                return self._handle_unknown_execution(run, audit_trail, now, risk, execution)
 
             accepted_event = ExecutionEvent(
                 order_id=order.order_id,
@@ -174,9 +178,40 @@ class PaperTradingSession:
                 )
             return PaperTradingResult(risk, execution, processing)
         except Exception:
-            if run is not None:
+            if run is not None and (
+                execution is None or execution.status is not OrderStatus.UNKNOWN
+            ):
                 self._persist_failure(run, now)
             raise
+
+    def _handle_unknown_execution(
+        self,
+        run: PaperTradingRun | None,
+        audit_trail: AuditTrail | None,
+        now: datetime,
+        risk: PortfolioRiskResult,
+        execution: ExecutionGatewayResult,
+    ) -> PaperTradingResult:
+        if run is None:
+            return PaperTradingResult(risk, execution)
+        if audit_trail is None:
+            raise ValueError("audit_trail is required")
+        self._record(
+            audit_trail,
+            run,
+            AuditEventType.RECONCILIATION_REQUIRED,
+            now,
+            {"status": execution.status.value, "order_id": execution.order_id},
+        )
+        pending = run.require_reconciliation()
+        self._persist_run(pending)
+        return PaperTradingResult(
+            risk,
+            execution,
+            None,
+            pending,
+            audit_trail.events(run.run_id),
+        )
 
     def _persist_run(self, run: PaperTradingRun) -> None:
         if self._persistence is not None:

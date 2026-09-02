@@ -117,6 +117,7 @@ def test_session_sequences_risk_authorization_execution_and_reconciliation() -> 
 
     assert result.risk.approved is True
     assert result.execution.status.value == "FILLED"
+    assert result.processing is not None
     assert result.processing.reconciled is True
     assert result.processing.portfolio.position_for("AAPL").quantity == Decimal(2)
     assert ledger.status("auth-1").value == "CONSUMED"

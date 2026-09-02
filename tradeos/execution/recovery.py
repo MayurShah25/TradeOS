@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from .audit import AuditEvent
+from .audit import AuditEvent, AuditEventType
 from .ports import PaperTradingPersistencePort
 from .run_state import PaperRunStatus, PaperTradingRun
 
@@ -24,24 +24,29 @@ class PaperTradingRecovery:
         self._persistence = persistence
 
     def inspect_open_runs(self) -> tuple[PaperRunRecoveryAssessment, ...]:
-        """Return every open run with its persisted audit history."""
+        """Return runs that remain open or explicitly require reconciliation."""
         runs = self._persistence.list_runs(status=PaperRunStatus.OPEN)
+        pending = self._persistence.list_runs(status=PaperRunStatus.RECONCILIATION_REQUIRED)
         assessments: list[PaperRunRecoveryAssessment] = []
-        for run in runs:
+        for run in (*runs, *pending):
             events = self._persistence.audit_events(run.run_id)
             assessments.append(
                 PaperRunRecoveryAssessment(
                     run=run,
                     audit_events=events,
                     requires_reconciliation=True,
-                    reason=_recovery_reason(events),
+                    reason=_recovery_reason(run, events),
                 )
             )
         return tuple(assessments)
 
 
-def _recovery_reason(events: tuple[AuditEvent, ...]) -> str:
+def _recovery_reason(run: PaperTradingRun, events: tuple[AuditEvent, ...]) -> str:
     if not events:
         return "run has no persisted audit history"
     last = events[-1]
+    if last.event_type is AuditEventType.RECONCILIATION_REQUIRED:
+        return "run has an unknown execution outcome; explicit reconciliation is required"
+    if run.status is PaperRunStatus.RECONCILIATION_REQUIRED:
+        return "run has an unresolved execution outcome; explicit reconciliation is required"
     return f"run interrupted after {last.event_type.value}; explicit reconciliation is required"

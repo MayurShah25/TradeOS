@@ -24,6 +24,7 @@ class OrderStatus(StrEnum):
     ACCEPTED = "ACCEPTED"
     FILLED = "FILLED"
     REJECTED = "REJECTED"
+    UNKNOWN = "UNKNOWN"
 
 
 @dataclass(frozen=True, slots=True)

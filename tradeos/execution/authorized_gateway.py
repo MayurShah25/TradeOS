@@ -8,6 +8,10 @@ from .models import Order, OrderStatus
 from .ports import BrokerExecutionPort
 
 
+class ExecutionOutcomeUnknownError(RuntimeError):
+    """Signal that broker submission may have succeeded but confirmation is unavailable."""
+
+
 @dataclass(frozen=True, slots=True)
 class ExecutionGatewayResult:
     """Immutable result of an authorized execution attempt."""
@@ -30,7 +34,7 @@ class AuthorizedExecutionGateway:
         order: Order,
         now: datetime,
     ) -> ExecutionGatewayResult:
-        """Validate authorization scope, consume it once, then submit the order."""
+        """Validate authorization, consume it once, then submit the order."""
         order.validate()
         if now.tzinfo is None or now.utcoffset() is None or now.tzinfo is not UTC:
             raise ValueError("now must use UTC")
@@ -40,5 +44,8 @@ class AuthorizedExecutionGateway:
             raise PermissionError("authorization does not permit this order")
 
         self._ledger.consume(authorization_id)
-        status = self._broker.submit(order)
+        try:
+            status = self._broker.submit(order)
+        except ExecutionOutcomeUnknownError:
+            return ExecutionGatewayResult(authorization_id, order.order_id, OrderStatus.UNKNOWN)
         return ExecutionGatewayResult(authorization_id, order.order_id, status)

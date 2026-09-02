@@ -8,7 +8,11 @@ from .authorization import (
     ExecutionAuthorizationPolicy,
     OperatingMode,
 )
-from .authorized_gateway import AuthorizedExecutionGateway, ExecutionGatewayResult
+from .authorized_gateway import (
+    AuthorizedExecutionGateway,
+    ExecutionGatewayResult,
+    ExecutionOutcomeUnknownError,
+)
 from .lifecycle import ReconciliationStatus
 from .models import Order, OrderSide, OrderStatus, OrderType
 from .paper_broker import PaperBroker
@@ -29,6 +33,7 @@ __all__ = [
     "ExecutionAuthorization",
     "ExecutionAuthorizationPolicy",
     "ExecutionGatewayResult",
+    "ExecutionOutcomeUnknownError",
     "OperatingMode",
     "Order",
     "OrderSide",

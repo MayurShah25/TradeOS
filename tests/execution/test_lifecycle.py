@@ -36,6 +36,30 @@ def test_execution_event_accepts_valid_fill() -> None:
     event.validate()
 
 
+def test_unknown_execution_event_is_valid_without_fill() -> None:
+    event = ExecutionEvent(
+        order_id="order-1",
+        status=OrderStatus.UNKNOWN,
+        event_type=ExecutionEventType.UNKNOWN,
+        timestamp=datetime.now(UTC),
+    )
+
+    event.validate()
+
+
+def test_unknown_execution_event_cannot_claim_a_fill() -> None:
+    event = ExecutionEvent(
+        order_id="order-1",
+        status=OrderStatus.UNKNOWN,
+        event_type=ExecutionEventType.UNKNOWN,
+        timestamp=datetime.now(UTC),
+        filled_quantity=Decimal(1),
+    )
+
+    with pytest.raises(ValueError, match="filled_quantity"):
+        event.validate()
+
+
 def test_execution_event_requires_utc_timestamp() -> None:
     event = ExecutionEvent(
         order_id="order-1",
@@ -64,6 +88,13 @@ def test_reconciliation_flags_mismatched_observed_status() -> None:
 
 def test_reconciliation_distinguishes_unknown_observed_status() -> None:
     result = ExecutionReconciler.reconcile("order-1", OrderStatus.FILLED, None)
+
+    assert result.status is ReconciliationStatus.UNKNOWN
+    assert result.matched is False
+
+
+def test_reconciliation_treats_explicit_unknown_as_unknown() -> None:
+    result = ExecutionReconciler.reconcile("order-1", OrderStatus.FILLED, OrderStatus.UNKNOWN)
 
     assert result.status is ReconciliationStatus.UNKNOWN
     assert result.matched is False

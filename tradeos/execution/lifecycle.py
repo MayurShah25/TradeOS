@@ -14,6 +14,7 @@ class ExecutionEventType(StrEnum):
     ACCEPTED = "ACCEPTED"
     FILLED = "FILLED"
     REJECTED = "REJECTED"
+    UNKNOWN = "UNKNOWN"
 
 
 class ReconciliationStatus(StrEnum):
@@ -46,6 +47,10 @@ class ExecutionEvent:
             raise ValueError("filled_quantity must not be negative")
         if self.status is OrderStatus.FILLED and self.filled_quantity <= 0:
             raise ValueError("filled order must have positive filled_quantity")
+        if self.status is OrderStatus.UNKNOWN and self.filled_quantity != 0:
+            raise ValueError("unknown order cannot have a filled_quantity")
+        if self.status is not OrderStatus.UNKNOWN and self.event_type.value != self.status.value:
+            raise ValueError("execution event type must match order status")
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,7 +64,7 @@ class ReconciliationResult:
     @property
     def status(self) -> ReconciliationStatus:
         """Return matched, mismatched, or unknown without conflating absence with failure."""
-        if self.observed_status is None:
+        if self.observed_status is None or self.observed_status is OrderStatus.UNKNOWN:
             return ReconciliationStatus.UNKNOWN
         if self.expected_status is self.observed_status:
             return ReconciliationStatus.MATCHED
