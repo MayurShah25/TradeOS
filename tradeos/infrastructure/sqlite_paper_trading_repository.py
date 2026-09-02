@@ -6,6 +6,7 @@ import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Self
 
 from tradeos.execution import AuditEvent, AuditEventType, PaperRunStatus, PaperTradingRun
 
@@ -25,7 +26,7 @@ class SQLitePaperTradingRepository:
         """Close the underlying database connection."""
         self._connection.close()
 
-    def __enter__(self) -> "SQLitePaperTradingRepository":
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
