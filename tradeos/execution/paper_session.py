@@ -86,6 +86,7 @@ class PaperTradingSession:
                 raise ValueError("audit_trail is required when run is supplied")
             self._persist_run(run)
 
+        execution: ExecutionGatewayResult | None = None
         try:
             if run is not None:
                 self._record(audit_trail, run, AuditEventType.RUN_STARTED, now, {})
@@ -177,7 +178,9 @@ class PaperTradingSession:
                 )
             return PaperTradingResult(risk, execution, processing)
         except Exception:
-            if run is not None:
+            if run is not None and (
+                execution is None or execution.status is not OrderStatus.UNKNOWN
+            ):
                 self._persist_failure(run, now)
             raise
 
