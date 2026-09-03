@@ -1,6 +1,6 @@
 """Tests for deterministic Phase 4 strategies."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -9,7 +9,7 @@ from tradeos.strategy import HistoricalBar, MovingAverageCrossStrategy, Signal
 
 def bar(close: float) -> HistoricalBar:
     """Build a minimal historical bar for strategy tests."""
-    timestamp = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    timestamp = datetime(2026, 1, 1, tzinfo=UTC)
     return HistoricalBar(timestamp, close, close, close, close, 100.0)
 
 
