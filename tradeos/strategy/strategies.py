@@ -40,13 +40,17 @@ class MovingAverageCrossStrategy:
         closes = [bar.close for bar in history]
         current_short_average = sum(closes[-self.short_window :]) / self.short_window
         current_long_average = sum(closes[-self.long_window :]) / self.long_window
-        previous_short_average = (
-            sum(closes[-self.short_window - 1 : -1]) / self.short_window
-        )
+        previous_short_average = sum(closes[-self.short_window - 1 : -1]) / self.short_window
         previous_long_average = sum(closes[-self.long_window - 1 : -1]) / self.long_window
 
-        if previous_short_average <= previous_long_average and current_short_average > current_long_average:
+        if (
+            previous_short_average <= previous_long_average
+            and current_short_average > current_long_average
+        ):
             return Signal.BUY
-        if previous_short_average >= previous_long_average and current_short_average < current_long_average:
+        if (
+            previous_short_average >= previous_long_average
+            and current_short_average < current_long_average
+        ):
             return Signal.SELL
         return Signal.HOLD
