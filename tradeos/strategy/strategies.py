@@ -45,8 +45,8 @@ class MovingAverageCrossStrategy:
         )
         previous_long_average = sum(closes[-self.long_window - 1 : -1]) / self.long_window
 
-        if previous_short_average <= previous_long_average < current_short_average:
+        if previous_short_average <= previous_long_average and current_short_average > current_long_average:
             return Signal.BUY
-        if previous_short_average >= previous_long_average > current_short_average:
+        if previous_short_average >= previous_long_average and current_short_average < current_long_average:
             return Signal.SELL
         return Signal.HOLD
