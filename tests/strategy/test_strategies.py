@@ -19,22 +19,22 @@ def test_moving_average_cross_returns_hold_until_long_window_is_available() -> N
     assert strategy.signal([bar(10), bar(11)]) is Signal.HOLD
 
 
-def test_moving_average_cross_returns_buy_when_short_average_is_higher() -> None:
+def test_moving_average_cross_returns_buy_on_bullish_crossover() -> None:
     strategy = MovingAverageCrossStrategy(short_window=2, long_window=3)
 
-    assert strategy.signal([bar(8), bar(9), bar(12)]) is Signal.BUY
+    assert strategy.signal([bar(10), bar(10), bar(10), bar(12)]) is Signal.BUY
 
 
-def test_moving_average_cross_returns_sell_when_short_average_is_lower() -> None:
+def test_moving_average_cross_returns_sell_on_bearish_crossover() -> None:
     strategy = MovingAverageCrossStrategy(short_window=2, long_window=3)
 
-    assert strategy.signal([bar(12), bar(11), bar(8)]) is Signal.SELL
+    assert strategy.signal([bar(10), bar(10), bar(10), bar(8)]) is Signal.SELL
 
 
 def test_moving_average_cross_returns_hold_when_averages_are_equal() -> None:
     strategy = MovingAverageCrossStrategy(short_window=2, long_window=3)
 
-    assert strategy.signal([bar(9), bar(9), bar(9)]) is Signal.HOLD
+    assert strategy.signal([bar(9), bar(9), bar(9), bar(9)]) is Signal.HOLD
 
 
 @pytest.mark.parametrize(
