@@ -33,16 +33,20 @@ class MovingAverageCrossStrategy:
             raise ValueError("long_window must be greater than short_window")
 
     def signal(self, history: Sequence[HistoricalBar]) -> Signal:
-        """Return BUY or SELL on a crossover, otherwise HOLD."""
-        if len(history) < self.long_window:
+        """Return BUY or SELL only when the moving averages actually cross."""
+        if len(history) < self.long_window + 1:
             return Signal.HOLD
 
         closes = [bar.close for bar in history]
-        short_average = sum(closes[-self.short_window :]) / self.short_window
-        long_average = sum(closes[-self.long_window :]) / self.long_window
+        current_short_average = sum(closes[-self.short_window :]) / self.short_window
+        current_long_average = sum(closes[-self.long_window :]) / self.long_window
+        previous_short_average = (
+            sum(closes[-self.short_window - 1 : -1]) / self.short_window
+        )
+        previous_long_average = sum(closes[-self.long_window - 1 : -1]) / self.long_window
 
-        if short_average > long_average:
+        if previous_short_average <= previous_long_average < current_short_average:
             return Signal.BUY
-        if short_average < long_average:
+        if previous_short_average >= previous_long_average > current_short_average:
             return Signal.SELL
         return Signal.HOLD
