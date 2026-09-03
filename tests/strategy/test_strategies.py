@@ -41,8 +41,6 @@ def test_moving_average_cross_returns_hold_when_averages_are_equal() -> None:
     ("short_window", "long_window"),
     [(0, 2), (2, 2), (3, 2)],
 )
-def test_moving_average_cross_rejects_invalid_windows(
-    short_window: int, long_window: int
-) -> None:
+def test_moving_average_cross_rejects_invalid_windows(short_window: int, long_window: int) -> None:
     with pytest.raises(ValueError):
         MovingAverageCrossStrategy(short_window=short_window, long_window=long_window)
