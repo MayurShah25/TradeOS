@@ -21,7 +21,11 @@ class BacktestEngine:
             if signal is Signal.BUY and entry_timestamp is None:
                 entry_timestamp = bar.timestamp
                 entry_price = bar.close
-            elif signal is Signal.SELL and entry_timestamp is not None:
+            elif (
+                signal is Signal.SELL
+                and entry_timestamp is not None
+                and entry_price is not None
+            ):
                 trades.append(
                     BacktestTrade(
                         entry_timestamp,
