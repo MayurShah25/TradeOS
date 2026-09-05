@@ -41,9 +41,7 @@ def test_backtest_metrics_calculate_pnl_return_and_win_rate() -> None:
 
 
 def test_backtest_metrics_aggregate_multiple_trades() -> None:
-    request = BacktestRequest(
-        bars([3, 3, 2, 4, 4, 3, 5, 5, 2, 2, 6]), initial_capital=100.0
-    )
+    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 5, 5, 2, 2, 6]), initial_capital=100.0)
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
@@ -89,9 +87,7 @@ def test_backtest_metrics_return_zeroes_for_no_closed_trades() -> None:
 
 
 def test_backtest_metrics_calculate_profit_factor_for_mixed_results() -> None:
-    request = BacktestRequest(
-        bars([3, 3, 2, 4, 4, 3, 5, 5, 2, 2, 6]), initial_capital=100.0
-    )
+    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 5, 5, 2, 2, 6]), initial_capital=100.0)
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
@@ -121,8 +117,6 @@ def test_backtest_metrics_calculate_profit_factor_for_mixed_results() -> None:
 
 
 @pytest.mark.parametrize("initial_capital", [0.0, -1.0])
-def test_backtest_request_rejects_non_positive_initial_capital(
-    initial_capital: float,
-) -> None:
+def test_backtest_request_rejects_non_positive_initial_capital(initial_capital: float) -> None:
     with pytest.raises(ValueError, match="initial_capital"):
         BacktestRequest((), initial_capital=initial_capital)
