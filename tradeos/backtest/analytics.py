@@ -19,6 +19,8 @@ class BacktestMetrics:
     win_rate: float
     profit_factor: float
     average_trade_pnl: float
+    equity_curve: tuple[float, ...]
+    drawdown_curve: tuple[float, ...]
     max_drawdown: float
 
 
@@ -40,11 +42,16 @@ def calculate_metrics(result: BacktestResult) -> BacktestMetrics:
 
     equity = result.initial_capital
     peak_equity = equity
+    equity_curve = [equity]
+    drawdown_curve = [0.0]
     max_drawdown = 0.0
     for pnl in pnls:
         equity += pnl
         peak_equity = max(peak_equity, equity)
-        max_drawdown = max(max_drawdown, peak_equity - equity)
+        drawdown = peak_equity - equity
+        max_drawdown = max(max_drawdown, drawdown)
+        equity_curve.append(equity)
+        drawdown_curve.append(drawdown)
 
     return BacktestMetrics(
         trade_count=trade_count,
@@ -57,5 +64,7 @@ def calculate_metrics(result: BacktestResult) -> BacktestMetrics:
         win_rate=win_rate,
         profit_factor=profit_factor,
         average_trade_pnl=average_trade_pnl,
+        equity_curve=tuple(equity_curve),
+        drawdown_curve=tuple(drawdown_curve),
         max_drawdown=max_drawdown,
     )
