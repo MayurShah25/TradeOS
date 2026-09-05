@@ -33,7 +33,9 @@ def calculate_metrics(result: BacktestResult) -> BacktestMetrics:
     realized_pnl = sum(pnls)
     total_return = realized_pnl / result.initial_capital
     win_rate = winning_trades / trade_count if trade_count else 0.0
-    profit_factor = gross_profit / gross_loss if gross_loss else float("inf") if gross_profit else 0.0
+    profit_factor = (
+        gross_profit / gross_loss if gross_loss else float("inf") if gross_profit else 0.0
+    )
     average_trade_pnl = realized_pnl / trade_count if trade_count else 0.0
 
     equity = result.initial_capital
