@@ -1,10 +1,20 @@
 """Tests for deterministic Phase 4 backtest analytics."""
 
+from datetime import UTC, datetime, timedelta
+
 import pytest
 
-from tests.backtest.test_engine import bars
 from tradeos.backtest import BacktestEngine, BacktestRequest, calculate_metrics
-from tradeos.strategy import MovingAverageCrossStrategy
+from tradeos.strategy import HistoricalBar, MovingAverageCrossStrategy
+
+
+def bars(closes: list[float]) -> tuple[HistoricalBar, ...]:
+    """Build timestamped historical bars from close prices."""
+    start = datetime(2026, 1, 1, tzinfo=UTC)
+    return tuple(
+        HistoricalBar(start + timedelta(days=index), close, close, close, close, 100.0)
+        for index, close in enumerate(closes)
+    )
 
 
 def test_backtest_metrics_calculate_pnl_return_and_win_rate() -> None:
