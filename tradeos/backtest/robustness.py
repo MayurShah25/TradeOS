@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from tradeos.backtest.engine import BacktestEngine
 from tradeos.backtest.types import BacktestRequest, BacktestResult, ExecutionCostModel
-from tradeos.strategy.types import Strategy
+from tradeos.strategy.strategies import Strategy
 
 
 @dataclass(frozen=True, slots=True)
