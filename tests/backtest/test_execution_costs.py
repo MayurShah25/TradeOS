@@ -30,9 +30,7 @@ def run_trade(cost_model: ExecutionCostModel) -> BacktestResult:
         initial_capital=100.0,
         cost_model=cost_model,
     )
-    return BacktestEngine().run(
-        request, MovingAverageCrossStrategy(short_window=2, long_window=3)
-    )
+    return BacktestEngine().run(request, MovingAverageCrossStrategy(short_window=2, long_window=3))
 
 
 def test_zero_cost_preserves_raw_and_effective_prices() -> None:
