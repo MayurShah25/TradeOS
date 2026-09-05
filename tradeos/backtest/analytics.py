@@ -12,9 +12,13 @@ class BacktestMetrics:
     trade_count: int
     winning_trades: int
     losing_trades: int
+    gross_profit: float
+    gross_loss: float
     realized_pnl: float
     total_return: float
     win_rate: float
+    profit_factor: float
+    average_trade_pnl: float
     max_drawdown: float
 
 
@@ -24,9 +28,13 @@ def calculate_metrics(result: BacktestResult) -> BacktestMetrics:
     trade_count = len(pnls)
     winning_trades = sum(pnl > 0 for pnl in pnls)
     losing_trades = sum(pnl < 0 for pnl in pnls)
+    gross_profit = sum(pnl for pnl in pnls if pnl > 0)
+    gross_loss = sum(-pnl for pnl in pnls if pnl < 0)
     realized_pnl = sum(pnls)
     total_return = realized_pnl / result.initial_capital
     win_rate = winning_trades / trade_count if trade_count else 0.0
+    profit_factor = gross_profit / gross_loss if gross_loss else float("inf") if gross_profit else 0.0
+    average_trade_pnl = realized_pnl / trade_count if trade_count else 0.0
 
     equity = result.initial_capital
     peak_equity = equity
@@ -40,8 +48,12 @@ def calculate_metrics(result: BacktestResult) -> BacktestMetrics:
         trade_count=trade_count,
         winning_trades=winning_trades,
         losing_trades=losing_trades,
+        gross_profit=gross_profit,
+        gross_loss=gross_loss,
         realized_pnl=realized_pnl,
         total_return=total_return,
         win_rate=win_rate,
+        profit_factor=profit_factor,
+        average_trade_pnl=average_trade_pnl,
         max_drawdown=max_drawdown,
     )
