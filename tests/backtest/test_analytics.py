@@ -2,10 +2,9 @@
 
 import pytest
 
+from tests.backtest.test_engine import bars
 from tradeos.backtest import BacktestEngine, BacktestRequest, calculate_metrics
 from tradeos.strategy import MovingAverageCrossStrategy
-
-from tests.backtest.test_engine import bars
 
 
 def test_backtest_metrics_calculate_pnl_return_and_win_rate() -> None:
