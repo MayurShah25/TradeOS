@@ -2,7 +2,7 @@
 
 from .analytics import BacktestMetrics, calculate_metrics
 from .engine import BacktestEngine
-from .types import BacktestRequest, BacktestResult, BacktestTrade
+from .types import BacktestRequest, BacktestResult, BacktestTrade, ExecutionCostModel
 
 __all__ = [
     "BacktestEngine",
@@ -10,5 +10,6 @@ __all__ = [
     "BacktestRequest",
     "BacktestResult",
     "BacktestTrade",
+    "ExecutionCostModel",
     "calculate_metrics",
 ]

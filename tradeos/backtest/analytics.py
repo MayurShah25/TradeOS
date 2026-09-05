@@ -20,7 +20,7 @@ class BacktestMetrics:
 
 def calculate_metrics(result: BacktestResult) -> BacktestMetrics:
     """Calculate deterministic performance metrics from a backtest result."""
-    pnls = tuple(trade.exit_price - trade.entry_price for trade in result.trades)
+    pnls = tuple(trade.net_pnl for trade in result.trades)
     trade_count = len(pnls)
     winning_trades = sum(pnl > 0 for pnl in pnls)
     losing_trades = sum(pnl < 0 for pnl in pnls)

@@ -12,6 +12,7 @@ class BacktestEngine:
         trades: list[BacktestTrade] = []
         entry_timestamp = None
         entry_price = None
+        entry_slippage = 0.0
         history = []
 
         for bar in request.bars:
@@ -21,19 +22,25 @@ class BacktestEngine:
             if signal is Signal.BUY and entry_timestamp is None:
                 entry_timestamp = bar.timestamp
                 entry_price = bar.close
+                entry_slippage = request.cost_model.buy_price(bar.close) - bar.close
             elif signal is Signal.SELL and entry_timestamp is not None and entry_price is not None:
                 closed_entry_timestamp = entry_timestamp
                 closed_entry_price = entry_price
+                exit_slippage = request.cost_model.sell_price(bar.close) - bar.close
                 trades.append(
                     BacktestTrade(
                         closed_entry_timestamp,
                         closed_entry_price,
                         bar.timestamp,
                         bar.close,
+                        entry_slippage,
+                        exit_slippage,
+                        request.cost_model.commission_per_order * 2,
                     )
                 )
                 entry_timestamp = None
                 entry_price = None
+                entry_slippage = 0.0
 
         return BacktestResult(
             strategy_id=strategy.strategy_id,
