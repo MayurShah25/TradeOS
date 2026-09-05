@@ -58,8 +58,8 @@ def test_slippage_only_costs_reduce_realized_pnl() -> None:
     result = run_trade(ExecutionCostModel(slippage_bps=100))
     trade = result.trades[0]
 
-    assert trade.effective_entry_price == 4.04
-    assert trade.effective_exit_price == 2.97
+    assert trade.effective_entry_price == pytest.approx(4.04)
+    assert trade.effective_exit_price == pytest.approx(2.97)
     assert trade.commission == 0
     assert trade.net_pnl == pytest.approx(-1.07)
     assert calculate_metrics(result).realized_pnl == pytest.approx(-1.07)
@@ -69,8 +69,8 @@ def test_combined_commission_and_slippage_are_applied() -> None:
     result = run_trade(ExecutionCostModel(commission_per_order=0.5, slippage_bps=100))
     trade = result.trades[0]
 
-    assert trade.effective_entry_price == 4.04
-    assert trade.effective_exit_price == 2.97
+    assert trade.effective_entry_price == pytest.approx(4.04)
+    assert trade.effective_exit_price == pytest.approx(2.97)
     assert trade.commission == 1.0
     assert trade.net_pnl == pytest.approx(-2.07)
     assert calculate_metrics(result).realized_pnl == pytest.approx(-2.07)
