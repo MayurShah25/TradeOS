@@ -38,6 +38,7 @@ class BacktestEngine:
         return BacktestResult(
             strategy_id=strategy.strategy_id,
             strategy_version=strategy.version,
+            initial_capital=request.initial_capital,
             trades=tuple(trades),
             open_entry_timestamp=entry_timestamp,
             open_entry_price=entry_price,

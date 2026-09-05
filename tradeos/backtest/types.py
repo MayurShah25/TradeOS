@@ -12,6 +12,11 @@ class BacktestRequest:
     """Immutable input for a deterministic historical backtest."""
 
     bars: tuple[HistoricalBar, ...]
+    initial_capital: float = 100_000.0
+
+    def __post_init__(self) -> None:
+        if self.initial_capital <= 0:
+            raise ValueError("initial_capital must be greater than zero")
 
 
 class BacktestTrade(NamedTuple):
@@ -29,6 +34,7 @@ class BacktestResult:
 
     strategy_id: str
     strategy_version: str
+    initial_capital: float
     trades: tuple[BacktestTrade, ...]
     open_entry_timestamp: datetime | None
     open_entry_price: float | None
