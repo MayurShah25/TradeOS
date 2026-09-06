@@ -1,13 +1,39 @@
 """Tests for deterministic walk-forward performance aggregation."""
 
 from dataclasses import replace
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from tests.backtest.test_walk_forward import FixedSignalStrategy, bars
 from tradeos.backtest import BacktestRequest
 from tradeos.backtest.walk_forward import WalkForwardRequest, WalkForwardValidator
 from tradeos.backtest.walk_forward_analytics import calculate_walk_forward_metrics
+from tradeos.strategy import HistoricalBar, Signal
+
+
+class FixedSignalStrategy:
+    """Small deterministic strategy fixture for walk-forward analytics tests."""
+
+    strategy_id = "fixed-signal"
+    version = "1.0.0"
+
+    def signal(self, history: tuple[HistoricalBar, ...] | list[HistoricalBar]) -> Signal:
+        """Buy on the fourth bar and sell on the fifth bar."""
+        if len(history) == 4:
+            return Signal.BUY
+        if len(history) == 5:
+            return Signal.SELL
+        return Signal.HOLD
+
+
+def bars() -> tuple[HistoricalBar, ...]:
+    """Build a deterministic series with two out-of-sample windows."""
+    start = datetime(2026, 1, 1, tzinfo=UTC)
+    prices = (10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 12.0)
+    return tuple(
+        HistoricalBar(start + timedelta(days=index), price, price, price, price, 100.0)
+        for index, price in enumerate(prices)
+    )
 
 
 def walk_forward_folds():
