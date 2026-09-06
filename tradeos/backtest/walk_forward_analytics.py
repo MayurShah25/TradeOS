@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from tradeos.backtest.analytics import BacktestMetrics, calculate_metrics
+from tradeos.backtest.analytics import calculate_metrics
 from tradeos.backtest.walk_forward import WalkForwardFold
 
 
