@@ -25,7 +25,7 @@ class FixedSignalStrategy:
 def bars() -> tuple[HistoricalBar, ...]:
     """Build a minimal deterministic price series."""
     return tuple(
-        HistoricalBar(datetime(2026, 1, index, tzinfo=UTC), price, price, price, price, 100.0)
+        HistoricalBar(datetime(2026, 1, index + 1, tzinfo=UTC), price, price, price, price, 100.0)
         for index, price in enumerate((10.0, 10.0, 12.0))
     )
 
