@@ -46,9 +46,7 @@ def evaluate_walk_forward_gate(
     profitable_fold_ratio = metrics.profitable_fold_count / metrics.fold_count
 
     if metrics.fold_count < config.min_fold_count:
-        failures.append(
-            f"fold_count {metrics.fold_count} is below minimum {config.min_fold_count}"
-        )
+        failures.append(f"fold_count {metrics.fold_count} is below minimum {config.min_fold_count}")
     if metrics.total_return < config.min_total_return:
         failures.append(
             f"total_return {metrics.total_return} is below minimum {config.min_total_return}"
