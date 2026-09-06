@@ -7,16 +7,26 @@ from tradeos.strategy import Signal, Strategy
 class BacktestEngine:
     """Run a deterministic, long-only strategy simulation."""
 
-    def run(self, request: BacktestRequest, strategy: Strategy) -> BacktestResult:
+    def run(
+        self,
+        request: BacktestRequest,
+        strategy: Strategy,
+        start_index: int = 0,
+    ) -> BacktestResult:
         """Evaluate strategy signals and simulate entries and exits at bar closes."""
+        if not 0 <= start_index < len(request.bars) if request.bars else start_index != 0:
+            raise ValueError("start_index must reference a bar in the request")
+
         trades: list[BacktestTrade] = []
         entry_timestamp = None
         entry_price = None
         entry_slippage = 0.0
         history = []
 
-        for bar in request.bars:
+        for index, bar in enumerate(request.bars):
             history.append(bar)
+            if index < start_index:
+                continue
             signal = strategy.signal(history)
 
             if signal is Signal.BUY and entry_timestamp is None:
