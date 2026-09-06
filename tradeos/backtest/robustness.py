@@ -14,6 +14,10 @@ class RobustnessScenario:
     name: str
     cost_model: ExecutionCostModel
 
+    def __post_init__(self) -> None:
+        if not self.name.strip():
+            raise ValueError("scenario name must not be blank")
+
 
 @dataclass(frozen=True, slots=True)
 class RobustnessResult:
@@ -36,6 +40,13 @@ class RobustnessAnalyzer:
         scenarios: tuple[RobustnessScenario, ...],
     ) -> tuple[RobustnessResult, ...]:
         """Run the same strategy and data under each explicit cost scenario."""
+        if not scenarios:
+            raise ValueError("at least one robustness scenario is required")
+
+        names = tuple(scenario.name for scenario in scenarios)
+        if len(names) != len(set(names)):
+            raise ValueError("robustness scenario names must be unique")
+
         return tuple(
             RobustnessResult(
                 scenario,
