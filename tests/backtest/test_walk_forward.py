@@ -41,6 +41,7 @@ def test_walk_forward_runs_sequential_out_of_sample_folds() -> None:
     folds = WalkForwardValidator().run(request, FixedSignalStrategy(), validation)
 
     assert len(folds) == 2
+    assert tuple(fold.fold_index for fold in folds) == (0, 1)
     assert (folds[0].train_end_index, folds[0].test_start_index, folds[0].test_end_index) == (
         2,
         3,
