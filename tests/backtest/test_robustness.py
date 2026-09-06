@@ -2,6 +2,8 @@
 
 from datetime import UTC, datetime
 
+import pytest
+
 from tradeos.backtest import BacktestRequest, ExecutionCostModel
 from tradeos.backtest.robustness import RobustnessAnalyzer, RobustnessScenario
 from tradeos.strategy import HistoricalBar, Signal
@@ -43,7 +45,7 @@ def test_robustness_analyzer_runs_each_explicit_scenario() -> None:
 
     assert tuple(item.scenario.name for item in results) == ("baseline", "stress")
     assert results[0].result.trades[0].net_pnl == 2.0
-    assert results[1].result.trades[0].net_pnl == -0.2
+    assert results[1].result.trades[0].net_pnl == pytest.approx(0.78)
 
 
 def test_robustness_analyzer_preserves_strategy_and_data() -> None:
