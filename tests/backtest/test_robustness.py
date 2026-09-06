@@ -34,7 +34,9 @@ def test_robustness_analyzer_runs_each_explicit_scenario() -> None:
     request = BacktestRequest(bars(), initial_capital=100.0)
     scenarios = (
         RobustnessScenario("baseline", ExecutionCostModel()),
-        RobustnessScenario("stress", ExecutionCostModel(commission_per_order=0.5, slippage_bps=100)),
+        RobustnessScenario(
+            "stress", ExecutionCostModel(commission_per_order=0.5, slippage_bps=100)
+        ),
     )
 
     results = RobustnessAnalyzer().run(request, FixedSignalStrategy(), scenarios)
