@@ -42,7 +42,9 @@ def calculate_walk_forward_metrics(
     gross_profit = sum(item.gross_profit for item in metrics)
     gross_loss = sum(item.gross_loss for item in metrics)
     winning_trades = sum(item.winning_trades for item in metrics)
-    profit_factor = gross_profit / gross_loss if gross_loss else float("inf") if gross_profit else 0.0
+    profit_factor = (
+        gross_profit / gross_loss if gross_loss else float("inf") if gross_profit else 0.0
+    )
     average_trade_pnl = realized_pnl / total_trade_count if total_trade_count else 0.0
     fold_returns = tuple(item.total_return for item in metrics)
     profitable_fold_count = sum(item.realized_pnl > 0 for item in metrics)
