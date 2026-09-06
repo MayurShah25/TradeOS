@@ -4,12 +4,12 @@ from dataclasses import replace
 
 import pytest
 
+from tests.backtest.test_walk_forward_analytics import walk_forward_folds
 from tradeos.backtest.walk_forward_analytics import calculate_walk_forward_metrics
 from tradeos.backtest.walk_forward_validation import (
     WalkForwardValidationConfig,
     evaluate_walk_forward_gate,
 )
-from tests.backtest.test_walk_forward_analytics import walk_forward_folds
 
 
 def test_walk_forward_gate_passes_when_all_thresholds_are_met() -> None:
