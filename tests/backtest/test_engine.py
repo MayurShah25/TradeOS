@@ -52,8 +52,8 @@ def test_backtest_preserves_open_long_position_when_no_sell_occurs() -> None:
 def test_backtest_ignores_repeated_buy_and_sell_while_flat() -> None:
     request = BacktestRequest(
         bars(
-            [3, 3, 2, 4, 4, 3, 5, 5],
-            opens=[3, 3, 2, 4, 4, 4, 3, 5],
+            [3, 3, 2, 4, 4, 3, 2, 2, 6, 6, 1, 1],
+            opens=[3, 3, 2, 4, 4, 4, 3, 2, 6, 5, 1, 2],
         )
     )
     strategy = MovingAverageCrossStrategy(short_window=2, long_window=3)
