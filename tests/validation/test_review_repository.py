@@ -120,6 +120,7 @@ def test_sqlite_repository_rejects_review_and_audit_mutation(tmp_path) -> None:
     with SQLitePromotionReviewRepository(database) as repository:
         repository.save(review)
         repository.append_audit_event(event)
+        repository.append_audit_event(event)
 
         with pytest.raises(ValueError, match="immutable"):
             repository.save(make_review(review_id="review-1", evidence_id="different"))
