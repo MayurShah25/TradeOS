@@ -99,6 +99,6 @@ def test_evidence_requires_timezone_aware_timestamp() -> None:
             dataset_version="dataset-1",
             configuration_version="config-1",
             code_version="commit-1",
-            generated_at=datetime(2026, 1, 1, tzinfo=UTC),
+            generated_at=datetime(2026, 1, 1, tzinfo=UTC).replace(tzinfo=None),
             gate_results=((ValidationStage.BACKTEST, True),),
         )
