@@ -134,11 +134,11 @@ def test_failed_result_is_preserved_as_limitation() -> None:
 
 
 def test_oos_gate_requires_matching_fold_results() -> None:
-    metrics, _, _, _ = build_results()
+    _, _, walk_metrics, _ = build_results()
 
     with pytest.raises(ValueError, match="fold_returns"):
         evaluate_out_of_sample_gate(
-            metrics,
-            metrics.fold_returns[:-1],
+            walk_metrics,
+            walk_metrics.fold_returns[:-1],
             OutOfSampleValidationConfig(),
         )
