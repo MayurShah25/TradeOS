@@ -124,7 +124,7 @@ def test_sqlite_repository_rejects_review_and_audit_mutation(tmp_path) -> None:
         with pytest.raises(ValueError, match="immutable"):
             repository.save(make_review(review_id="review-1", evidence_id="different"))
 
-        with pytest.raises(ValueError, match="immutable"):
+        with pytest.raises(ValueError, match="evidence"):
             repository.append_audit_event(
                 make_event(event_id="event-1", evidence_id="different-evidence")
             )
