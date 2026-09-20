@@ -36,9 +36,7 @@ class MultiTradeStrategy:
         return Signal.HOLD
 
 
-def bars(
-    closes: list[float], opens: list[float] | None = None
-) -> tuple[HistoricalBar, ...]:
+def bars(closes: list[float], opens: list[float] | None = None) -> tuple[HistoricalBar, ...]:
     """Build timestamped historical bars from close prices and optional opens."""
     start = datetime(2026, 1, 1, tzinfo=UTC)
     open_prices = opens or closes
@@ -56,9 +54,7 @@ def bars(
 
 
 def test_backtest_records_buy_then_sell_as_one_trade() -> None:
-    request = BacktestRequest(
-        bars([10, 10, 10, 10, 10, 10, 10], opens=[10, 10, 10, 10, 10, 4, 3])
-    )
+    request = BacktestRequest(bars([10, 10, 10, 10, 10, 10, 10], opens=[10, 10, 10, 10, 10, 4, 3]))
     result = BacktestEngine().run(request, FixedSignalStrategy())
 
     assert len(result.trades) == 1
@@ -71,9 +67,7 @@ def test_backtest_records_buy_then_sell_as_one_trade() -> None:
 
 
 def test_backtest_preserves_open_long_position_when_no_sell_occurs() -> None:
-    request = BacktestRequest(
-        bars([10, 10, 10, 10, 10, 10], opens=[10, 10, 10, 10, 10, 4])
-    )
+    request = BacktestRequest(bars([10, 10, 10, 10, 10, 10], opens=[10, 10, 10, 10, 10, 4]))
     result = BacktestEngine().run(request, FixedSignalStrategy())
 
     assert result.trades == ()
