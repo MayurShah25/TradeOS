@@ -26,7 +26,9 @@ def bars(closes: list[float], opens: list[float] | None = None) -> tuple[Histori
 
 
 def test_backtest_metrics_calculate_pnl_return_and_win_rate() -> None:
-    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 2], opens=[3, 3, 2, 4, 4, 4, 3]), initial_capital=100.0)
+    request = BacktestRequest(
+        bars([3, 3, 2, 4, 4, 3, 2], opens=[3, 3, 2, 4, 4, 4, 3]), initial_capital=100.0
+    )
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
@@ -49,7 +51,13 @@ def test_backtest_metrics_calculate_pnl_return_and_win_rate() -> None:
 
 
 def test_backtest_metrics_aggregate_multiple_trades() -> None:
-    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 2, 2, 6, 6, 1, 1], opens=[3, 3, 2, 4, 4, 4, 3, 2, 6, 5, 1, 2]), initial_capital=100.0)
+    request = BacktestRequest(
+        bars(
+            [3, 3, 2, 4, 4, 3, 2, 2, 6, 6, 1, 1],
+            opens=[3, 3, 2, 4, 4, 4, 3, 2, 6, 5, 1, 2],
+        ),
+        initial_capital=100.0,
+    )
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
