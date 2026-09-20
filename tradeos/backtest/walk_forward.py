@@ -23,7 +23,9 @@ class WalkForwardRequest:
         if self.step_bars < 1:
             raise ValueError("step_bars must be at least 1")
         if self.step_bars < self.test_bars:
-            raise ValueError("step_bars must be at least test_bars for non-overlapping test windows")
+            raise ValueError(
+                "step_bars must be at least test_bars for non-overlapping test windows"
+            )
 
 
 @dataclass(frozen=True, slots=True)
