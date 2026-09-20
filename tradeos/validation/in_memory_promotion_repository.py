@@ -45,10 +45,7 @@ class InMemoryPromotionTransitionRepository(PromotionTransitionRepository):
         transition = self.get(event.transition_id)
         if transition is None:
             raise ValueError("audit event references unknown transition")
-        if (
-            transition.review_id != event.review_id
-            or transition.evidence_id != event.evidence_id
-        ):
+        if transition.review_id != event.review_id or transition.evidence_id != event.evidence_id:
             raise ValueError("audit event lineage does not match transition")
         existing = self._audit_events.get(event.event_id)
         if existing is not None and existing != event:
