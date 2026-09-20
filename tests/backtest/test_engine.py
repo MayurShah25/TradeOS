@@ -24,7 +24,7 @@ def bars(closes: list[float], opens: list[float] | None = None) -> tuple[Histori
 
 
 def test_backtest_records_buy_then_sell_as_one_trade() -> None:
-    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 5], opens=[3, 3, 2, 4, 4, 4, 3]))
+    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 2], opens=[3, 3, 2, 4, 4, 4, 3]))
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
@@ -61,9 +61,11 @@ def test_backtest_ignores_repeated_buy_and_sell_while_flat() -> None:
     second = BacktestEngine().run(request, strategy)
 
     assert first == second
-    assert len(first.trades) == 1
+    assert len(first.trades) == 2
     assert first.trades[0].entry_price == 4
     assert first.trades[0].exit_price == 3
+    assert first.trades[1].entry_price == 5
+    assert first.trades[1].exit_price == 2
 
 
 def test_backtest_does_not_use_current_bar_for_signal_generation() -> None:
