@@ -4,7 +4,12 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
 
-from tradeos.validation.evidence import PromotionEligibility, ValidationEvidence
+from tradeos.validation.evidence import (
+    PromotionEligibility,
+    ValidationEvidence,
+    ValidationStage,
+    evaluate_promotion_eligibility,
+)
 
 
 class PromotionReviewDecision(StrEnum):
@@ -56,14 +61,14 @@ class PromotionReview:
             raise ValueError("rationale must not be blank")
 
     @classmethod
-    def pending(cls, review_id: str, evidence: ValidationEvidence) -> "PromotionReview":
-        """Create a review handoff without granting approval."""
-        from tradeos.validation.evidence import evaluate_promotion_eligibility
-
-        eligibility = evaluate_promotion_eligibility(
-            evidence,
-            tuple(stage for stage, _ in evidence.gate_results),
-        )
+    def pending(
+        cls,
+        review_id: str,
+        evidence: ValidationEvidence,
+        required_stages: tuple[ValidationStage, ...],
+    ) -> "PromotionReview":
+        """Create a review handoff using an explicit governance gate set."""
+        eligibility = evaluate_promotion_eligibility(evidence, required_stages)
         return cls(
             review_id=review_id,
             evidence_id=evidence.evidence_id,
