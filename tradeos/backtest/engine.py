@@ -13,7 +13,7 @@ class BacktestEngine:
         strategy: Strategy,
         start_index: int = 0,
     ) -> BacktestResult:
-        """Evaluate strategy signals and simulate entries and exits at bar closes."""
+        """Evaluate prior-bar signals and simulate execution at the next bar open."""
         if not 0 <= start_index < len(request.bars) if request.bars else start_index != 0:
             raise ValueError("start_index must reference a bar in the request")
 
@@ -24,25 +24,26 @@ class BacktestEngine:
         history = []
 
         for index, bar in enumerate(request.bars):
-            history.append(bar)
             if index < start_index:
+                history.append(bar)
                 continue
+
             signal = strategy.signal(history)
 
             if signal is Signal.BUY and entry_timestamp is None:
                 entry_timestamp = bar.timestamp
-                entry_price = bar.close
-                entry_slippage = request.cost_model.buy_price(bar.close) - bar.close
+                entry_price = bar.open
+                entry_slippage = request.cost_model.buy_price(bar.open) - bar.open
             elif signal is Signal.SELL and entry_timestamp is not None and entry_price is not None:
                 closed_entry_timestamp = entry_timestamp
                 closed_entry_price = entry_price
-                exit_slippage = request.cost_model.sell_price(bar.close) - bar.close
+                exit_slippage = request.cost_model.sell_price(bar.open) - bar.open
                 trades.append(
                     BacktestTrade(
                         closed_entry_timestamp,
                         closed_entry_price,
                         bar.timestamp,
-                        bar.close,
+                        bar.open,
                         entry_slippage,
                         exit_slippage,
                         request.cost_model.commission_per_order * 2,
@@ -51,6 +52,8 @@ class BacktestEngine:
                 entry_timestamp = None
                 entry_price = None
                 entry_slippage = 0.0
+
+            history.append(bar)
 
         return BacktestResult(
             strategy_id=strategy.strategy_id,
