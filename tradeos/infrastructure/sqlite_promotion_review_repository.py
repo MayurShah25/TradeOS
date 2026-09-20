@@ -88,8 +88,11 @@ class SQLitePromotionReviewRepository(PromotionReviewRepository):
 
     def append_audit_event(self, event: PromotionReviewAuditEvent) -> None:
         """Append an immutable audit event, allowing only idempotent re-save."""
-        if self.get(event.review_id) is None:
+        review = self.get(event.review_id)
+        if review is None:
             raise ValueError("audit event references unknown review")
+        if review.evidence_id != event.evidence_id:
+            raise ValueError("audit event evidence does not match review")
         existing = self._connection.execute(
             "SELECT * FROM promotion_review_audit WHERE event_id = ?", (event.event_id,)
         ).fetchone()
