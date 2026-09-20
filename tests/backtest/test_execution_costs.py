@@ -34,7 +34,7 @@ def bars(closes: list[float], opens: list[float] | None = None) -> tuple[Histori
 def run_trade(cost_model: ExecutionCostModel) -> BacktestResult:
     """Run the deterministic fixture with the supplied execution costs."""
     request = BacktestRequest(
-        bars([3, 3, 2, 4, 4, 3, 5], opens=[3, 3, 2, 4, 4, 4, 3]),
+        bars([3, 3, 2, 4, 4, 3, 2], opens=[3, 3, 2, 4, 4, 4, 3]),
         initial_capital=100.0,
         cost_model=cost_model,
     )
