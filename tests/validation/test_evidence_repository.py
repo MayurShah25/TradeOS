@@ -42,9 +42,9 @@ def test_in_memory_repository_preserves_evidence_and_lineage() -> None:
 
     assert repository.get(evidence.evidence_id) == evidence
     assert repository.list_for_strategy("moving-average-cross") == (evidence,)
-    assert repository.list_for_strategy(
-        "moving-average-cross", strategy_version="1.0.0"
-    ) == (evidence,)
+    assert repository.list_for_strategy("moving-average-cross", strategy_version="1.0.0") == (
+        evidence,
+    )
 
 
 def test_in_memory_repository_rejects_replacement() -> None:
