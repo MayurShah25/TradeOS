@@ -99,9 +99,7 @@ def test_builder_uses_actual_research_results() -> None:
         robustness_config=RobustnessValidationConfig(min_total_return=0.0),
         walk_forward_metrics=walk_metrics,
         walk_forward_gate=walk_gate,
-        out_of_sample_config=OutOfSampleValidationConfig(
-            min_fold_count=2, min_fold_return=0.0
-        ),
+        out_of_sample_config=OutOfSampleValidationConfig(min_fold_count=2, min_fold_return=0.0),
     )
 
     assert evidence.result_for(ValidationStage.BACKTEST) is True
