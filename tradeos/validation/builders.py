@@ -6,10 +6,10 @@ from math import isfinite
 
 from tradeos.backtest import (
     BacktestMetrics,
-    calculate_metrics,
     RobustnessResult,
     WalkForwardMetrics,
     WalkForwardValidationResult,
+    calculate_metrics,
 )
 from tradeos.validation.evidence import (
     ValidationEvidence,
