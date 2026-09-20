@@ -14,19 +14,27 @@ from tradeos.backtest import (
 from tradeos.strategy import HistoricalBar, MovingAverageCrossStrategy
 
 
-def bars(closes: list[float]) -> tuple[HistoricalBar, ...]:
-    """Build timestamped historical bars from close prices."""
+def bars(closes: list[float], opens: list[float] | None = None) -> tuple[HistoricalBar, ...]:
+    """Build timestamped historical bars from close prices and optional opens."""
     start = datetime(2026, 1, 1, tzinfo=UTC)
+    open_prices = opens or closes
     return tuple(
-        HistoricalBar(start + timedelta(days=index), close, close, close, close, 100.0)
-        for index, close in enumerate(closes)
+        HistoricalBar(
+            start + timedelta(days=index),
+            open_price,
+            close,
+            open_price,
+            open_price,
+            100.0,
+        )
+        for index, (open_price, close) in enumerate(zip(open_prices, closes, strict=True))
     )
 
 
 def run_trade(cost_model: ExecutionCostModel) -> BacktestResult:
     """Run the deterministic fixture with the supplied execution costs."""
     request = BacktestRequest(
-        bars([3, 3, 2, 4, 4, 3, 5]),
+        bars([3, 3, 2, 4, 4, 3, 5], opens=[3, 3, 2, 4, 4, 4, 3]),
         initial_capital=100.0,
         cost_model=cost_model,
     )
