@@ -1,7 +1,7 @@
 # TradeOS Documentation Governance
 
-**Version:** 0.2.0  
-**Status:** Architecture Baseline — Phase 3 Complete  
+**Version:** 0.2.3  
+**Status:** Architecture Baseline — Phase 5.5  
 **Purpose:** Define the repository documentation hierarchy, authority boundaries, canonical references, and rules for maintaining consistency as TradeOS evolves.
 
 ---
@@ -36,7 +36,12 @@ TradeOS/
     │   ├── 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
     │   ├── 30_PAPER_TRADING_RECOVERY.md
     │   ├── 31_EXECUTION_RECONCILIATION.md
-    │   └── 32_DURABLE_EXECUTION_RECONCILIATION.md
+    │   ├── 32_DURABLE_EXECUTION_RECONCILIATION.md
+    │   ├── 33_VALIDATION_EVIDENCE_AND_PROMOTION_BOUNDARY.md
+    │   ├── 34_VALIDATION_EVIDENCE_FROM_RESEARCH_RESULTS.md
+    │   ├── 35_VALIDATION_EVIDENCE_PERSISTENCE_AND_LINEAGE.md
+    │   ├── 36_VALIDATION_REVIEW_AND_AUDIT_BOUNDARY.md
+    │   └── 37_DURABLE_PROMOTION_REVIEW_AND_GOVERNANCE_AUDIT.md
     ├── configuration/
     │   └── 21_CONFIGURATION.md
     └── contracts/
@@ -103,6 +108,8 @@ Paper-run persistence → 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
 Recovery inspection → 30_PAPER_TRADING_RECOVERY.md
 Execution reconciliation → 31_EXECUTION_RECONCILIATION.md
 Durable reconciliation → 32_DURABLE_EXECUTION_RECONCILIATION.md
+Validation evidence → 33–35 validation architecture
+Promotion review → 36–37 validation governance architecture
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
