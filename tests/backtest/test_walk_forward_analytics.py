@@ -19,9 +19,9 @@ class FixedSignalStrategy:
 
     def signal(self, history: tuple[HistoricalBar, ...] | list[HistoricalBar]) -> Signal:
         """Buy on the fourth bar and sell on the fifth bar."""
-        if len(history) == 4:
+        if len(history) == 3:
             return Signal.BUY
-        if len(history) == 5:
+        if len(history) == 4:
             return Signal.SELL
         return Signal.HOLD
 
@@ -29,10 +29,11 @@ class FixedSignalStrategy:
 def bars() -> tuple[HistoricalBar, ...]:
     """Build a deterministic series with two out-of-sample windows."""
     start = datetime(2026, 1, 1, tzinfo=UTC)
-    prices = (10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 12.0)
+    closes = (10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 12.0)
+    opens = (10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 12.0)
     return tuple(
-        HistoricalBar(start + timedelta(days=index), price, price, price, price, 100.0)
-        for index, price in enumerate(prices)
+        HistoricalBar(start + timedelta(days=index), open_price, close, open_price, open_price, 100.0)
+        for index, (open_price, close) in enumerate(zip(opens, closes, strict=True))
     )
 
 
