@@ -122,9 +122,7 @@ def evaluate_out_of_sample_gate(
 
     failures: list[str] = []
     if metrics.fold_count < config.min_fold_count:
-        failures.append(
-            f"fold_count {metrics.fold_count} is below minimum {config.min_fold_count}"
-        )
+        failures.append(f"fold_count {metrics.fold_count} is below minimum {config.min_fold_count}")
     for index, fold_return in enumerate(fold_returns):
         if fold_return < config.min_fold_return:
             failures.append(
@@ -151,9 +149,7 @@ def build_validation_evidence(
     out_of_sample_config: OutOfSampleValidationConfig,
 ) -> ValidationEvidence:
     """Create immutable evidence from actual backtest and validation outputs."""
-    backtest_passed, backtest_failures = evaluate_backtest_gate(
-        backtest_metrics, backtest_config
-    )
+    backtest_passed, backtest_failures = evaluate_backtest_gate(backtest_metrics, backtest_config)
     robustness_passed, robustness_failures = evaluate_robustness_gate(
         robustness_results, robustness_config
     )
