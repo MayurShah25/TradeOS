@@ -305,6 +305,11 @@ The following documents are canonical and locked within their respective domains
 30  Safe Paper-Trading Recovery                   IMPLEMENTED / TESTED
 31  Execution Reconciliation Semantics            IMPLEMENTED / TESTED
 32  Durable Execution Reconciliation              IMPLEMENTED / TESTED
+33  Validation Evidence & Promotion Boundary      IMPLEMENTED / TESTED
+34  Validation Evidence from Research Results     IMPLEMENTED / TESTED
+35  Validation Evidence Persistence & Lineage     IMPLEMENTED / TESTED
+36  Validation Review & Audit Boundary            IMPLEMENTED / TESTED
+37  Durable Promotion Review & Governance Audit   IMPLEMENTED / TESTED
 ```
 
 These documents must be treated as authoritative until a later governed architectural change supersedes them.
@@ -330,6 +335,21 @@ Live broker connectivity, live financial exposure, automatic retry/resubmission 
 
 ---
 
-# 19. Core Rule
+# 19. Phase 5.5 Closure
+
+Phase 5.5 establishes durable governance storage after validation evidence and promotion review:
+
+- immutable promotion review persistence;
+- exact evidence and strategy lineage preservation;
+- append-only governance audit history;
+- idempotent re-save of identical immutable records;
+- rejection of mutation under an existing identifier;
+- explicit separation from execution audit and execution authorization.
+
+Durable governance persistence does not authorize orders, bypass deterministic Risk, enable live trading, or convert promotion approval into execution authority.
+
+---
+
+# 20. Core Rule
 
 > **One concept, one canonical owner, one repository path, one authoritative definition. Subsystems may specialize behavior, but they must not create competing truths.**
