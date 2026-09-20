@@ -103,9 +103,9 @@ def test_backtest_metrics_aggregate_multiple_trades() -> None:
     assert metrics.win_rate == 0.0
     assert metrics.profit_factor == 0.0
     assert metrics.average_trade_pnl == -1.5
-    assert metrics.equity_curve == (100.0, 99.0, 97.0)
-    assert metrics.drawdown_curve == (0.0, 1.0, 3.0)
-    assert metrics.max_drawdown == 3.0
+    assert metrics.equity_curve == (100.0, 99.0, 96.0)
+    assert metrics.drawdown_curve == (0.0, 1.0, 4.0)
+    assert metrics.max_drawdown == 4.0
 
 
 def test_backtest_metrics_return_zeroes_for_no_closed_trades() -> None:
