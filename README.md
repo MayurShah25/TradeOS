@@ -1,7 +1,7 @@
 # TradeOS
 
 **Version:** 0.2.3  
-**Status:** Phase 5.6 Promotion Stage Transition Boundary Implemented  
+**Status:** Phase 5.7 Promotion Transition Persistence & Lifecycle Audit Implemented  
 **Project Type:** Personal AI-Assisted Multi-Market Trading Operating System
 
 ## Overview
@@ -35,7 +35,7 @@ The documentation baseline currently consists of:
 - `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
 - `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
 - `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
-- `docs/architecture/22_DOMAIN_MODEL.md` through `38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, and durable reconciliation architecture.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md and 39_DURABLE_PROMOTION_TRANSITION_AND_LIFECYCLE_AUDIT.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, and durable reconciliation architecture.
 
 **All numbered documents 01–38 are accounted for in the repository. No numbered documentation gap is currently known.**
 
@@ -64,6 +64,7 @@ The documentation set is treated as the baseline for implementation. Future docu
 | 33–35 | `docs/architecture/` | Validation evidence, derivation, persistence, and lineage |
 | 36–37 | `docs/architecture/` | Promotion review, durable governance, and audit history |
 | 38 | `docs/architecture/` | Deterministic promotion stage transition boundary |
+| 39 | `docs/architecture/` | Durable promotion transition persistence and lifecycle audit |
 
 ## Implementation Roadmap
 
@@ -80,7 +81,7 @@ The core configuration, domain, portfolio, execution, testing, and infrastructur
 **COMPLETED.** Strategy contracts, causal historical simulation, metrics, robustness checks, and walk-forward validation are implemented.
 
 ### Phase 5 — Validation & Promotion Governance
-**IN PROGRESS.** Validation evidence, durable lineage, governance review, audit history, and deterministic promotion-stage transitions are implemented. Execution authorization and live trading remain separate boundaries.
+**IN PROGRESS.** Validation evidence, durable lineage, governance review, audit history, deterministic promotion-stage transitions, and durable lifecycle history are implemented. Execution authorization and live trading remain separate boundaries.
 
 ### Phase 6 — Paper Trading Operations
 Introduce broader real-time data workflows, simulated execution operations, reconciliation workflows, and operational monitoring.
