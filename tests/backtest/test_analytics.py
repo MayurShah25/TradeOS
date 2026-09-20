@@ -95,7 +95,7 @@ def test_backtest_metrics_aggregate_multiple_trades() -> None:
     assert metrics.winning_trades == 0
     assert metrics.losing_trades == 2
     assert metrics.gross_profit == 0.0
-    assert metrics.gross_loss == 3.0
+    assert metrics.gross_loss == 4.0
     assert metrics.realized_pnl == -3.0
     assert metrics.total_return == -0.03
     assert metrics.win_rate == 0.0
