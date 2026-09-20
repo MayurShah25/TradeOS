@@ -77,7 +77,7 @@ def test_walk_forward_preserves_cost_model_and_capital() -> None:
 
 @pytest.mark.parametrize(
     ("warmup_bars", "test_bars", "step_bars"),
-    [(0, 2, 1), (2, 0, 1), (2, 1, 0)],
+    [(0, 2, 1), (2, 0, 1), (2, 1, 0), (3, 2, 1)],
 )
 def test_walk_forward_rejects_invalid_window_configuration(
     warmup_bars: int, test_bars: int, step_bars: int
