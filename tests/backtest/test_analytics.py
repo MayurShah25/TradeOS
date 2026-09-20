@@ -38,9 +38,7 @@ class MultiTradeStrategy:
         return Signal.HOLD
 
 
-def bars(
-    closes: list[float], opens: list[float] | None = None
-) -> tuple[HistoricalBar, ...]:
+def bars(closes: list[float], opens: list[float] | None = None) -> tuple[HistoricalBar, ...]:
     """Build timestamped historical bars from close prices and optional opens."""
     start = datetime(2026, 1, 1, tzinfo=UTC)
     open_prices = opens or closes
