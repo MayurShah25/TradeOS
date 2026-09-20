@@ -1,7 +1,7 @@
 # TradeOS Documentation Governance
 
-**Version:** 0.2.0  
-**Status:** Architecture Baseline — Phase 3 Complete  
+**Version:** 0.2.3  
+**Status:** Architecture Baseline — Phase 5.5  
 **Purpose:** Define the repository documentation hierarchy, authority boundaries, canonical references, and rules for maintaining consistency as TradeOS evolves.
 
 ---
@@ -36,7 +36,12 @@ TradeOS/
     │   ├── 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
     │   ├── 30_PAPER_TRADING_RECOVERY.md
     │   ├── 31_EXECUTION_RECONCILIATION.md
-    │   └── 32_DURABLE_EXECUTION_RECONCILIATION.md
+    │   ├── 32_DURABLE_EXECUTION_RECONCILIATION.md
+    │   ├── 33_VALIDATION_EVIDENCE_AND_PROMOTION_BOUNDARY.md
+    │   ├── 34_VALIDATION_EVIDENCE_FROM_RESEARCH_RESULTS.md
+    │   ├── 35_VALIDATION_EVIDENCE_PERSISTENCE_AND_LINEAGE.md
+    │   ├── 36_VALIDATION_REVIEW_AND_AUDIT_BOUNDARY.md
+    │   └── 37_DURABLE_PROMOTION_REVIEW_AND_GOVERNANCE_AUDIT.md
     ├── configuration/
     │   └── 21_CONFIGURATION.md
     └── contracts/
@@ -103,6 +108,8 @@ Paper-run persistence → 29_PAPER_TRADING_PERSISTENCE_AND_AUDIT.md
 Recovery inspection → 30_PAPER_TRADING_RECOVERY.md
 Execution reconciliation → 31_EXECUTION_RECONCILIATION.md
 Durable reconciliation → 32_DURABLE_EXECUTION_RECONCILIATION.md
+Validation evidence → 33–35 validation architecture
+Promotion review → 36–37 validation governance architecture
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
@@ -298,6 +305,11 @@ The following documents are canonical and locked within their respective domains
 30  Safe Paper-Trading Recovery                   IMPLEMENTED / TESTED
 31  Execution Reconciliation Semantics            IMPLEMENTED / TESTED
 32  Durable Execution Reconciliation              IMPLEMENTED / TESTED
+33  Validation Evidence & Promotion Boundary      IMPLEMENTED / TESTED
+34  Validation Evidence from Research Results     IMPLEMENTED / TESTED
+35  Validation Evidence Persistence & Lineage     IMPLEMENTED / TESTED
+36  Validation Review & Audit Boundary            IMPLEMENTED / TESTED
+37  Durable Promotion Review & Governance Audit   IMPLEMENTED / TESTED
 ```
 
 These documents must be treated as authoritative until a later governed architectural change supersedes them.
@@ -323,6 +335,21 @@ Live broker connectivity, live financial exposure, automatic retry/resubmission 
 
 ---
 
-# 19. Core Rule
+# 19. Phase 5.5 Closure
+
+Phase 5.5 establishes durable governance storage after validation evidence and promotion review:
+
+- immutable promotion review persistence;
+- exact evidence and strategy lineage preservation;
+- append-only governance audit history;
+- idempotent re-save of identical immutable records;
+- rejection of mutation under an existing identifier;
+- explicit separation from execution audit and execution authorization.
+
+Durable governance persistence does not authorize orders, bypass deterministic Risk, enable live trading, or convert promotion approval into execution authority.
+
+---
+
+# 20. Core Rule
 
 > **One concept, one canonical owner, one repository path, one authoritative definition. Subsystems may specialize behavior, but they must not create competing truths.**
