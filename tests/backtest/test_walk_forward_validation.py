@@ -36,7 +36,9 @@ def bars() -> tuple[HistoricalBar, ...]:
     closes = (10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 12.0)
     opens = (10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 12.0)
     return tuple(
-        HistoricalBar(start + timedelta(days=index), open_price, close, open_price, open_price, 100.0)
+        HistoricalBar(
+            start + timedelta(days=index), open_price, close, open_price, open_price, 100.0
+        )
         for index, (open_price, close) in enumerate(zip(opens, closes, strict=True))
     )
 
