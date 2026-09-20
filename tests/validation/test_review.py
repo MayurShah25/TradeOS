@@ -27,7 +27,7 @@ def evidence(passed: bool = True) -> ValidationEvidence:
 
 
 def test_pending_review_is_derived_from_evidence() -> None:
-    review = PromotionReview.pending("review-1", evidence())
+    review = PromotionReview.pending("review-1", evidence(), (ValidationStage.BACKTEST,))
 
     assert review.eligibility is PromotionEligibility.ELIGIBLE_FOR_REVIEW
     assert review.decision is PromotionReviewDecision.PENDING
