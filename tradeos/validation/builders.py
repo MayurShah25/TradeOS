@@ -6,6 +6,7 @@ from math import isfinite
 
 from tradeos.backtest import (
     BacktestMetrics,
+    calculate_metrics,
     RobustnessResult,
     WalkForwardMetrics,
     WalkForwardValidationResult,
@@ -27,7 +28,9 @@ class BacktestValidationConfig:
     def __post_init__(self) -> None:
         if self.min_trade_count < 0:
             raise ValueError("min_trade_count must be non-negative")
-        if self.max_drawdown < 0 or not (isfinite(self.max_drawdown) or self.max_drawdown == float("inf")):
+        if self.max_drawdown < 0 or not (
+            isfinite(self.max_drawdown) or self.max_drawdown == float("inf")
+        ):
             raise ValueError("max_drawdown must be finite and non-negative")
         if not isfinite(self.min_total_return):
             raise ValueError("min_total_return must be finite")
@@ -41,7 +44,9 @@ class RobustnessValidationConfig:
     max_drawdown: float = float("inf")
 
     def __post_init__(self) -> None:
-        if self.max_drawdown < 0 or not isfinite(self.max_drawdown):
+        if self.max_drawdown < 0 or not (
+            isfinite(self.max_drawdown) or self.max_drawdown == float("inf")
+        ):
             raise ValueError("max_drawdown must be finite and non-negative")
         if not isfinite(self.min_total_return):
             raise ValueError("min_total_return must be finite")
@@ -184,6 +189,4 @@ def build_validation_evidence(
 
 def _metrics_for_result(result: RobustnessResult) -> BacktestMetrics:
     """Calculate metrics for one robustness result without mutating it."""
-    from tradeos.backtest.analytics import calculate_metrics
-
     return calculate_metrics(result.result)
