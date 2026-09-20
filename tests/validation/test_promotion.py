@@ -41,9 +41,7 @@ def test_allowed_stage_path_is_explicit() -> None:
     assert allowed_next_stages(PromotionStage.RESEARCH) == (PromotionStage.BACKTEST,)
     assert allowed_next_stages(PromotionStage.BACKTEST) == (PromotionStage.VALIDATION,)
     assert allowed_next_stages(PromotionStage.VALIDATION) == (PromotionStage.PAPER,)
-    assert allowed_next_stages(PromotionStage.PAPER) == (
-        PromotionStage.CONTROLLED_PROMOTION,
-    )
+    assert allowed_next_stages(PromotionStage.PAPER) == (PromotionStage.CONTROLLED_PROMOTION,)
     assert allowed_next_stages(PromotionStage.CONTROLLED_PROMOTION) == ()
 
 
