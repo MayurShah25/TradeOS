@@ -15,9 +15,9 @@ from tradeos.validation.evidence import (
     ValidationStage,
     evaluate_promotion_eligibility,
 )
+from tradeos.validation.in_memory_promotion_repository import InMemoryPromotionTransitionRepository
 from tradeos.validation.in_memory_repository import InMemoryValidationEvidenceRepository
 from tradeos.validation.in_memory_review_repository import InMemoryPromotionReviewRepository
-from tradeos.validation.in_memory_promotion_repository import InMemoryPromotionTransitionRepository
 from tradeos.validation.promotion import (
     PromotionStage,
     PromotionStageTransition,
@@ -49,11 +49,11 @@ __all__ = [
     "PromotionReviewAuditEventType",
     "PromotionReviewDecision",
     "PromotionReviewRepository",
+    "PromotionStage",
+    "PromotionStageTransition",
     "PromotionTransitionAuditEvent",
     "PromotionTransitionAuditEventType",
     "PromotionTransitionRepository",
-    "PromotionStage",
-    "PromotionStageTransition",
     "RobustnessValidationConfig",
     "ValidationEvidence",
     "ValidationEvidenceRepository",
