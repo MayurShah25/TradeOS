@@ -110,6 +110,7 @@ Execution reconciliation → 31_EXECUTION_RECONCILIATION.md
 Durable reconciliation → 32_DURABLE_EXECUTION_RECONCILIATION.md
 Validation evidence → 33–35 validation architecture
 Promotion review → 36–37 validation governance architecture
+Promotion stage transition → 38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
