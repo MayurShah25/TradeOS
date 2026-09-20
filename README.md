@@ -1,7 +1,7 @@
 # TradeOS
 
 **Version:** 0.2.3  
-**Status:** Phase 3 Paper Trading Foundation Implemented — Durable Reconciliation Implemented  
+**Status:** Phase 5.6 Promotion Stage Transition Boundary Implemented  
 **Project Type:** Personal AI-Assisted Multi-Market Trading Operating System
 
 ## Overview
@@ -35,9 +35,9 @@ The documentation baseline currently consists of:
 - `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
 - `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
 - `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
-- `docs/architecture/22_DOMAIN_MODEL.md` through `32_DURABLE_EXECUTION_RECONCILIATION.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, and durable reconciliation architecture.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, and durable reconciliation architecture.
 
-**All numbered documents 01–32 are accounted for in the repository. No numbered documentation gap is currently known.**
+**All numbered documents 01–38 are accounted for in the repository. No numbered documentation gap is currently known.**
 
 The documentation set is treated as the baseline for implementation. Future documentation changes must follow the governance process and must not silently contradict canonical rules or contracts.
 
@@ -61,6 +61,9 @@ The documentation set is treated as the baseline for implementation. Future docu
 | 30 | `docs/architecture/` | Safe paper-trading recovery |
 | 31 | `docs/architecture/` | Execution reconciliation semantics |
 | 32 | `docs/architecture/` | Durable execution reconciliation |
+| 33–35 | `docs/architecture/` | Validation evidence, derivation, persistence, and lineage |
+| 36–37 | `docs/architecture/` | Promotion review, durable governance, and audit history |
+| 38 | `docs/architecture/` | Deterministic promotion stage transition boundary |
 
 ## Implementation Roadmap
 
@@ -74,10 +77,10 @@ The core configuration, domain, portfolio, execution, testing, and infrastructur
 **COMPLETED.** Durable paper-run persistence, append-only audit history, persistent session integration, restart coverage, failure persistence, safe interrupted-run recovery inspection, explicit reconciliation-required state, and durable reconciliation are implemented. Real broker/live execution remains out of scope.
 
 ### Phase 4 — Strategy & Backtesting
-**NEXT.** Implement strategy interfaces, historical simulation, metrics, robustness checks, and walk-forward validation.
+**COMPLETED.** Strategy contracts, causal historical simulation, metrics, robustness checks, and walk-forward validation are implemented.
 
-### Phase 5 — Multi-Agent Intelligence
-Implement the orchestrator and specialized bounded agents according to the contracts.
+### Phase 5 — Validation & Promotion Governance
+**IN PROGRESS.** Validation evidence, durable lineage, governance review, audit history, and deterministic promotion-stage transitions are implemented. Execution authorization and live trading remain separate boundaries.
 
 ### Phase 6 — Paper Trading Operations
 Introduce broader real-time data workflows, simulated execution operations, reconciliation workflows, and operational monitoring.

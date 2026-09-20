@@ -1,4 +1,4 @@
-"""Validation evidence and governance review contracts."""
+"""Validation evidence, governance review, and promotion contracts."""
 
 from tradeos.validation.builders import (
     BacktestValidationConfig,
@@ -17,6 +17,12 @@ from tradeos.validation.evidence import (
 )
 from tradeos.validation.in_memory_repository import InMemoryValidationEvidenceRepository
 from tradeos.validation.in_memory_review_repository import InMemoryPromotionReviewRepository
+from tradeos.validation.promotion import (
+    PromotionStage,
+    PromotionStageTransition,
+    allowed_next_stages,
+    transition_from_review,
+)
 from tradeos.validation.repository import ValidationEvidenceRepository
 from tradeos.validation.review import PromotionReview, PromotionReviewDecision
 from tradeos.validation.review_audit import (
@@ -36,13 +42,17 @@ __all__ = [
     "PromotionReviewAuditEventType",
     "PromotionReviewDecision",
     "PromotionReviewRepository",
+    "PromotionStage",
+    "PromotionStageTransition",
     "RobustnessValidationConfig",
     "ValidationEvidence",
     "ValidationEvidenceRepository",
     "ValidationStage",
+    "allowed_next_stages",
     "build_validation_evidence",
     "evaluate_backtest_gate",
     "evaluate_out_of_sample_gate",
     "evaluate_promotion_eligibility",
     "evaluate_robustness_gate",
+    "transition_from_review",
 ]
