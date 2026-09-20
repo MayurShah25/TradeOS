@@ -6,7 +6,9 @@ from tradeos.backtest import BacktestEngine, BacktestRequest
 from tradeos.strategy import HistoricalBar, MovingAverageCrossStrategy, Signal
 
 
-def bars(closes: list[float], opens: list[float] | None = None) -> tuple[HistoricalBar, ...]:
+def bars(
+    closes: list[float], opens: list[float] | None = None
+) -> tuple[HistoricalBar, ...]:
     """Build timestamped historical bars from close prices and optional opens."""
     start = datetime(2026, 1, 1, tzinfo=UTC)
     open_prices = opens or closes
@@ -55,7 +57,10 @@ def test_backtest_preserves_open_long_position_when_no_sell_occurs() -> None:
 
 def test_backtest_ignores_repeated_buy_and_sell_while_flat() -> None:
     request = BacktestRequest(
-        bars([3, 3, 2, 4, 4, 3, 5, 5], opens=[3, 3, 2, 4, 4, 4, 3, 5])
+        bars(
+            [3, 3, 2, 4, 4, 3, 5, 5],
+            opens=[3, 3, 2, 4, 4, 4, 3, 5],
+        )
     )
     strategy = MovingAverageCrossStrategy(short_window=2, long_window=3)
     first = BacktestEngine().run(request, strategy)
@@ -75,9 +80,7 @@ def test_backtest_does_not_use_current_bar_for_signal_generation() -> None:
         def signal(self, history: list[HistoricalBar]) -> Signal:
             return Signal.BUY if history and history[-1].close > 100 else Signal.HOLD
 
-    request = BacktestRequest(
-        bars([100, 200, 200], opens=[100, 190, 195])
-    )
+    request = BacktestRequest(bars([100, 200, 200], opens=[100, 190, 195]))
 
     result = BacktestEngine().run(request, CloseTriggeredStrategy())
 
