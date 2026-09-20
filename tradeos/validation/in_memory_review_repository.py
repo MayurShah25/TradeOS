@@ -31,8 +31,11 @@ class InMemoryPromotionReviewRepository(PromotionReviewRepository):
         )
 
     def append_audit_event(self, event: PromotionReviewAuditEvent) -> None:
-        if self.get(event.review_id) is None:
+        review = self.get(event.review_id)
+        if review is None:
             raise ValueError("audit event references unknown review")
+        if review.evidence_id != event.evidence_id:
+            raise ValueError("audit event evidence does not match review")
         existing = self._audit_events.get(event.event_id)
         if existing is not None and existing != event:
             raise ValueError("promotion review audit event is immutable")
