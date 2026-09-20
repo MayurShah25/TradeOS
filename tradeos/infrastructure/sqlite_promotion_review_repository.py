@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Self
 
-from tradeos.validation import PromotionReview, PromotionReviewDecision, PromotionEligibility
+from tradeos.validation import PromotionEligibility, PromotionReview, PromotionReviewDecision
 from tradeos.validation.review_audit import (
     PromotionReviewAuditEvent,
     PromotionReviewAuditEventType,
@@ -167,7 +167,7 @@ class SQLitePromotionReviewRepository(PromotionReviewRepository):
             );
 
             CREATE INDEX IF NOT EXISTS idx_promotion_review_audit_review
-                ON promotion_review_audit(review_id, rowid);
+                ON promotion_review_audit(review_id);
             """
         )
         self._connection.commit()
