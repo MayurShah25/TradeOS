@@ -3,10 +3,42 @@
 from datetime import UTC, datetime, timedelta
 
 from tradeos.backtest import BacktestEngine, BacktestRequest
-from tradeos.strategy import HistoricalBar, MovingAverageCrossStrategy, Signal
+from tradeos.strategy import HistoricalBar, Signal
 
 
-def bars(closes: list[float], opens: list[float] | None = None) -> tuple[HistoricalBar, ...]:
+class FixedSignalStrategy:
+    """Small deterministic strategy fixture for engine tests."""
+
+    strategy_id = "fixed-signal"
+    version = "1.0.0"
+
+    def signal(self, history: list[HistoricalBar]) -> Signal:
+        """Emit deterministic signals from history length."""
+        if len(history) == 5:
+            return Signal.BUY
+        if len(history) == 6:
+            return Signal.SELL
+        return Signal.HOLD
+
+
+class MultiTradeStrategy:
+    """Deterministic fixture with two independent round trips."""
+
+    strategy_id = "multi-trade"
+    version = "1.0.0"
+
+    def signal(self, history: list[HistoricalBar]) -> Signal:
+        """Emit two deterministic buy/sell pairs."""
+        if len(history) in (5, 9):
+            return Signal.BUY
+        if len(history) in (6, 11):
+            return Signal.SELL
+        return Signal.HOLD
+
+
+def bars(
+    closes: list[float], opens: list[float] | None = None
+) -> tuple[HistoricalBar, ...]:
     """Build timestamped historical bars from close prices and optional opens."""
     start = datetime(2026, 1, 1, tzinfo=UTC)
     open_prices = opens or closes
@@ -24,10 +56,10 @@ def bars(closes: list[float], opens: list[float] | None = None) -> tuple[Histori
 
 
 def test_backtest_records_buy_then_sell_as_one_trade() -> None:
-    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 2], opens=[3, 3, 2, 4, 4, 4, 3]))
-    result = BacktestEngine().run(
-        request, MovingAverageCrossStrategy(short_window=2, long_window=3)
+    request = BacktestRequest(
+        bars([10, 10, 10, 10, 10, 10, 10], opens=[10, 10, 10, 10, 10, 4, 3])
     )
+    result = BacktestEngine().run(request, FixedSignalStrategy())
 
     assert len(result.trades) == 1
     trade = result.trades[0]
@@ -39,10 +71,10 @@ def test_backtest_records_buy_then_sell_as_one_trade() -> None:
 
 
 def test_backtest_preserves_open_long_position_when_no_sell_occurs() -> None:
-    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3], opens=[3, 3, 2, 4, 4, 4]))
-    result = BacktestEngine().run(
-        request, MovingAverageCrossStrategy(short_window=2, long_window=3)
+    request = BacktestRequest(
+        bars([10, 10, 10, 10, 10, 10], opens=[10, 10, 10, 10, 10, 4])
     )
+    result = BacktestEngine().run(request, FixedSignalStrategy())
 
     assert result.trades == ()
     assert result.position_open is True
@@ -52,11 +84,11 @@ def test_backtest_preserves_open_long_position_when_no_sell_occurs() -> None:
 def test_backtest_ignores_repeated_buy_and_sell_while_flat() -> None:
     request = BacktestRequest(
         bars(
-            [3, 3, 2, 4, 4, 3, 2, 2, 6, 6, 1, 1],
-            opens=[3, 3, 2, 4, 4, 4, 3, 2, 6, 5, 1, 2],
+            [10] * 12,
+            opens=[10, 10, 10, 10, 10, 4, 3, 10, 10, 5, 10, 2],
         )
     )
-    strategy = MovingAverageCrossStrategy(short_window=2, long_window=3)
+    strategy = MultiTradeStrategy()
     first = BacktestEngine().run(request, strategy)
     second = BacktestEngine().run(request, strategy)
 
@@ -86,9 +118,7 @@ def test_backtest_does_not_use_current_bar_for_signal_generation() -> None:
 
 def test_backtest_returns_empty_result_for_insufficient_history() -> None:
     request = BacktestRequest(bars([10, 11]))
-    result = BacktestEngine().run(
-        request, MovingAverageCrossStrategy(short_window=2, long_window=3)
-    )
+    result = BacktestEngine().run(request, FixedSignalStrategy())
 
     assert result.trades == ()
     assert result.position_open is False
