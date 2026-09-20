@@ -1,7 +1,7 @@
 # TradeOS Backtesting and Validation
 
 **Document:** 11_BACKTESTING_AND_VALIDATION.md  
-**Version:** 0.2.0  
+**Version:** 0.2.1  
 **Status:** Architecture Baseline  
 **Scope:** Strategy validation, model validation, agent evaluation, backtesting, walk-forward analysis, robustness, paper trading, promotion, and research governance
 
