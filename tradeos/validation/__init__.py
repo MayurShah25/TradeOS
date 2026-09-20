@@ -1,4 +1,4 @@
-"""Validation evidence and promotion eligibility contracts."""
+"""Validation evidence and governance review contracts."""
 
 from tradeos.validation.builders import (
     BacktestValidationConfig,
@@ -17,12 +17,15 @@ from tradeos.validation.evidence import (
 )
 from tradeos.validation.in_memory_repository import InMemoryValidationEvidenceRepository
 from tradeos.validation.repository import ValidationEvidenceRepository
+from tradeos.validation.review import PromotionReview, PromotionReviewDecision
 
 __all__ = [
     "BacktestValidationConfig",
     "InMemoryValidationEvidenceRepository",
     "OutOfSampleValidationConfig",
     "PromotionEligibility",
+    "PromotionReview",
+    "PromotionReviewDecision",
     "RobustnessValidationConfig",
     "ValidationEvidence",
     "ValidationEvidenceRepository",
