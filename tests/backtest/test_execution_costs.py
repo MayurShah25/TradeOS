@@ -11,7 +11,22 @@ from tradeos.backtest import (
     ExecutionCostModel,
     calculate_metrics,
 )
-from tradeos.strategy import HistoricalBar, MovingAverageCrossStrategy
+from tradeos.strategy import HistoricalBar, Signal
+
+
+class FixedSignalStrategy:
+    """Small deterministic strategy fixture for cost tests."""
+
+    strategy_id = "fixed-signal"
+    version = "1.0.0"
+
+    def signal(self, history: list[HistoricalBar]) -> Signal:
+        """Buy on the sixth bar and sell on the seventh bar."""
+        if len(history) == 5:
+            return Signal.BUY
+        if len(history) == 6:
+            return Signal.SELL
+        return Signal.HOLD
 
 
 def bars(closes: list[float], opens: list[float] | None = None) -> tuple[HistoricalBar, ...]:
@@ -34,11 +49,11 @@ def bars(closes: list[float], opens: list[float] | None = None) -> tuple[Histori
 def run_trade(cost_model: ExecutionCostModel) -> BacktestResult:
     """Run the deterministic fixture with the supplied execution costs."""
     request = BacktestRequest(
-        bars([3, 3, 2, 4, 4, 3, 2], opens=[3, 3, 2, 4, 4, 4, 3]),
+        bars([10, 10, 10, 10, 10, 10, 10], opens=[10, 10, 10, 10, 10, 4, 3]),
         initial_capital=100.0,
         cost_model=cost_model,
     )
-    return BacktestEngine().run(request, MovingAverageCrossStrategy(short_window=2, long_window=3))
+    return BacktestEngine().run(request, FixedSignalStrategy())
 
 
 def test_zero_cost_preserves_raw_and_effective_prices() -> None:
