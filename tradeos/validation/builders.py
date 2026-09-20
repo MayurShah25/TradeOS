@@ -1,6 +1,7 @@
 """Build immutable validation evidence from deterministic research results."""
 
 from dataclasses import dataclass
+from datetime import datetime
 from math import isfinite
 
 from tradeos.backtest import (
@@ -26,7 +27,7 @@ class BacktestValidationConfig:
     def __post_init__(self) -> None:
         if self.min_trade_count < 0:
             raise ValueError("min_trade_count must be non-negative")
-        if self.max_drawdown < 0 or not isfinite(self.max_drawdown):
+        if self.max_drawdown < 0 or not (isfinite(self.max_drawdown) or self.max_drawdown == float("inf")):
             raise ValueError("max_drawdown must be finite and non-negative")
         if not isfinite(self.min_total_return):
             raise ValueError("min_total_return must be finite")
@@ -133,7 +134,7 @@ def build_validation_evidence(
     dataset_version: str,
     configuration_version: str,
     code_version: str,
-    generated_at,
+    generated_at: datetime,
     strategy_id: str,
     strategy_version: str,
     backtest_metrics: BacktestMetrics,
