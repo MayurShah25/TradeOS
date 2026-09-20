@@ -18,17 +18,17 @@ from tradeos.validation.evidence import (
 from tradeos.validation.in_memory_repository import InMemoryValidationEvidenceRepository
 from tradeos.validation.in_memory_review_repository import InMemoryPromotionReviewRepository
 from tradeos.validation.in_memory_promotion_repository import InMemoryPromotionTransitionRepository
-from tradeos.validation.promotion_audit import (
-    PromotionTransitionAuditEvent,
-    PromotionTransitionAuditEventType,
-)
-from tradeos.validation.promotion_repository import PromotionTransitionRepository
 from tradeos.validation.promotion import (
     PromotionStage,
     PromotionStageTransition,
     allowed_next_stages,
     transition_from_review,
 )
+from tradeos.validation.promotion_audit import (
+    PromotionTransitionAuditEvent,
+    PromotionTransitionAuditEventType,
+)
+from tradeos.validation.promotion_repository import PromotionTransitionRepository
 from tradeos.validation.repository import ValidationEvidenceRepository
 from tradeos.validation.review import PromotionReview, PromotionReviewDecision
 from tradeos.validation.review_audit import (
