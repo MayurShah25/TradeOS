@@ -17,6 +17,12 @@ from tradeos.validation.evidence import (
 )
 from tradeos.validation.in_memory_repository import InMemoryValidationEvidenceRepository
 from tradeos.validation.in_memory_review_repository import InMemoryPromotionReviewRepository
+from tradeos.validation.in_memory_promotion_repository import InMemoryPromotionTransitionRepository
+from tradeos.validation.promotion_audit import (
+    PromotionTransitionAuditEvent,
+    PromotionTransitionAuditEventType,
+)
+from tradeos.validation.promotion_repository import PromotionTransitionRepository
 from tradeos.validation.promotion import (
     PromotionStage,
     PromotionStageTransition,
@@ -34,6 +40,7 @@ from tradeos.validation.review_repository import PromotionReviewRepository
 __all__ = [
     "BacktestValidationConfig",
     "InMemoryPromotionReviewRepository",
+    "InMemoryPromotionTransitionRepository",
     "InMemoryValidationEvidenceRepository",
     "OutOfSampleValidationConfig",
     "PromotionEligibility",
@@ -42,6 +49,9 @@ __all__ = [
     "PromotionReviewAuditEventType",
     "PromotionReviewDecision",
     "PromotionReviewRepository",
+    "PromotionTransitionAuditEvent",
+    "PromotionTransitionAuditEventType",
+    "PromotionTransitionRepository",
     "PromotionStage",
     "PromotionStageTransition",
     "RobustnessValidationConfig",
