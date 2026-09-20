@@ -15,13 +15,17 @@ from tradeos.validation.evidence import (
     ValidationStage,
     evaluate_promotion_eligibility,
 )
+from tradeos.validation.in_memory_repository import InMemoryValidationEvidenceRepository
+from tradeos.validation.repository import ValidationEvidenceRepository
 
 __all__ = [
     "BacktestValidationConfig",
+    "InMemoryValidationEvidenceRepository",
     "OutOfSampleValidationConfig",
     "PromotionEligibility",
     "RobustnessValidationConfig",
     "ValidationEvidence",
+    "ValidationEvidenceRepository",
     "ValidationStage",
     "build_validation_evidence",
     "evaluate_backtest_gate",
