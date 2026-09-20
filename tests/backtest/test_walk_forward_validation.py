@@ -1,15 +1,50 @@
 """Tests for deterministic walk-forward validation gates."""
 
 from dataclasses import replace
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from tests.backtest.test_walk_forward_analytics import walk_forward_folds
+from tradeos.backtest import BacktestRequest
+from tradeos.backtest.walk_forward import WalkForwardRequest, WalkForwardValidator
 from tradeos.backtest.walk_forward_analytics import calculate_walk_forward_metrics
 from tradeos.backtest.walk_forward_validation import (
     WalkForwardValidationConfig,
     evaluate_walk_forward_gate,
 )
+from tradeos.strategy import HistoricalBar, Signal
+
+
+class FixedSignalStrategy:
+    """Small deterministic strategy fixture for walk-forward validation tests."""
+
+    strategy_id = "fixed-signal"
+    version = "1.0.0"
+
+    def signal(self, history: tuple[HistoricalBar, ...] | list[HistoricalBar]) -> Signal:
+        """Buy on the fourth bar and sell on the fifth bar."""
+        if len(history) == 4:
+            return Signal.BUY
+        if len(history) == 5:
+            return Signal.SELL
+        return Signal.HOLD
+
+
+def bars() -> tuple[HistoricalBar, ...]:
+    """Build a deterministic series with two out-of-sample windows."""
+    start = datetime(2026, 1, 1, tzinfo=UTC)
+    prices = (10.0, 10.0, 10.0, 10.0, 12.0, 12.0, 12.0)
+    return tuple(
+        HistoricalBar(start + timedelta(days=index), price, price, price, price, 100.0)
+        for index, price in enumerate(prices)
+    )
+
+
+def walk_forward_folds():
+    """Build the deterministic fold fixture used by validation tests."""
+    request = BacktestRequest(bars(), initial_capital=100.0)
+    validation = WalkForwardRequest(warmup_bars=3, test_bars=2, step_bars=2)
+    return WalkForwardValidator().run(request, FixedSignalStrategy(), validation)
 
 
 def test_walk_forward_gate_passes_when_all_thresholds_are_met() -> None:
