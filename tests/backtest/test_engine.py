@@ -26,9 +26,7 @@ def bars(
 
 
 def test_backtest_records_buy_then_sell_as_one_trade() -> None:
-    request = BacktestRequest(
-        bars([3, 3, 2, 4, 4, 3, 5], opens=[3, 3, 2, 4, 4, 4, 3])
-    )
+    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 5], opens=[3, 3, 2, 4, 4, 4, 3]))
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
@@ -43,9 +41,7 @@ def test_backtest_records_buy_then_sell_as_one_trade() -> None:
 
 
 def test_backtest_preserves_open_long_position_when_no_sell_occurs() -> None:
-    request = BacktestRequest(
-        bars([3, 3, 2, 4, 4, 3], opens=[3, 3, 2, 4, 4, 4])
-    )
+    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3], opens=[3, 3, 2, 4, 4, 4]))
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
