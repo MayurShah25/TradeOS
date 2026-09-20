@@ -8,17 +8,25 @@ from tradeos.backtest import BacktestEngine, BacktestRequest, calculate_metrics
 from tradeos.strategy import HistoricalBar, MovingAverageCrossStrategy
 
 
-def bars(closes: list[float]) -> tuple[HistoricalBar, ...]:
+def bars(closes: list[float], opens: list[float] | None = None) -> tuple[HistoricalBar, ...]:
     """Build timestamped historical bars from close prices."""
     start = datetime(2026, 1, 1, tzinfo=UTC)
+    open_prices = opens or closes
     return tuple(
-        HistoricalBar(start + timedelta(days=index), close, close, close, close, 100.0)
-        for index, close in enumerate(closes)
+        HistoricalBar(
+            start + timedelta(days=index),
+            open_price,
+            close,
+            open_price,
+            open_price,
+            100.0,
+        )
+        for index, (open_price, close) in enumerate(zip(open_prices, closes, strict=True))
     )
 
 
 def test_backtest_metrics_calculate_pnl_return_and_win_rate() -> None:
-    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 5]), initial_capital=100.0)
+    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 2], opens=[3, 3, 2, 4, 4, 4, 3]), initial_capital=100.0)
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
@@ -41,7 +49,7 @@ def test_backtest_metrics_calculate_pnl_return_and_win_rate() -> None:
 
 
 def test_backtest_metrics_aggregate_multiple_trades() -> None:
-    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 5, 5, 2, 2, 6]), initial_capital=100.0)
+    request = BacktestRequest(bars([3, 3, 2, 4, 4, 3, 2, 2, 6, 6, 1, 1], opens=[3, 3, 2, 4, 4, 4, 3, 2, 6, 5, 1, 2]), initial_capital=100.0)
     result = BacktestEngine().run(
         request, MovingAverageCrossStrategy(short_window=2, long_window=3)
     )
