@@ -1,7 +1,7 @@
 # TradeOS Documentation Governance
 
 **Version:** 0.2.3  
-**Status:** Architecture Baseline — Phase 6.2  
+**Status:** Architecture Baseline — Phase 6.3  
 **Purpose:** Define the repository documentation hierarchy, authority boundaries, canonical references, and rules for maintaining consistency as TradeOS evolves.
 
 ---
@@ -48,6 +48,7 @@ TradeOS/
     │   ├── 41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md
     │   └── 42_PAPER_MARKET_DATA_INTEGRITY_BOUNDARY.md
     │   └── 43_PAPER_MARKET_DATA_STREAM_BOUNDARY.md
+    │   └── 44_PAPER_MARKET_DATA_SNAPSHOT_REPOSITORY.md
     ├── configuration/
     │   └── 21_CONFIGURATION.md
     └── contracts/
@@ -102,6 +103,7 @@ Configuration documents define configuration domains, precedence, validation, an
 41 → Repository-backed Promotion Lifecycle Query Boundary
 42 → Paper Market Data Integrity Boundary
 43 → Paper Market Data Stream Boundary
+44 → Paper Market Data Snapshot Repository
 ```
 
 ---
@@ -130,6 +132,7 @@ Promotion lifecycle projection → 40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONST
 Promotion lifecycle query → 41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md
 Paper market data integrity → 42_PAPER_MARKET_DATA_INTEGRITY_BOUNDARY.md
 Paper market data stream → 43_PAPER_MARKET_DATA_STREAM_BOUNDARY.md
+Paper market data repository → 44_PAPER_MARKET_DATA_SNAPSHOT_REPOSITORY.md
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
@@ -333,6 +336,10 @@ The following documents are canonical and locked within their respective domains
 38  Promotion Stage Transition                    IMPLEMENTED / TESTED
 39  Promotion Transition Persistence & Audit      IMPLEMENTED / TESTED
 40  Promotion Lifecycle Projection                IMPLEMENTED / TESTED
+41  Promotion Lifecycle Query Boundary              IMPLEMENTED / TESTED
+42  Paper Market Data Integrity Boundary            IMPLEMENTED / TESTED
+43  Paper Market Data Stream Boundary               IMPLEMENTED / TESTED
+44  Paper Market Data Snapshot Repository          IMPLEMENTED / TESTED
 ```
 
 These documents must be treated as authoritative until a later governed architectural change supersedes them.
