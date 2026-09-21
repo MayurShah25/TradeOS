@@ -7,7 +7,13 @@ from tradeos.market_data import PaperMarketDataSnapshot
 from tradeos.market_data_stream import PaperMarketDataStream
 
 
-def _snapshot(\n    *,\n    instrument_id: str = "NSE:RELIANCE",\n    source_id: str = "paper-feed-1",\n    minute: int = 0,\n    price: str = "2500",\n) -> PaperMarketDataSnapshot:
+def _snapshot(
+    *,
+    instrument_id: str = "NSE:RELIANCE",
+    source_id: str = "paper-feed-1",
+    minute: int = 0,
+    price: str = "2500",
+) -> PaperMarketDataSnapshot:
     return PaperMarketDataSnapshot(
         instrument_id=instrument_id,
         price=Decimal(price),
@@ -67,7 +73,9 @@ def test_stream_rejects_invalid_snapshot_without_mutating_state() -> None:
     assert stream.latest() == first
 
 
-@pytest.mark.parametrize(\n    ("instrument_id", "source_id"), [("", "paper-feed-1"), ("NSE:RELIANCE", "")]\n)
+@pytest.mark.parametrize(
+    ("instrument_id", "source_id"), [("", "paper-feed-1"), ("NSE:RELIANCE", "")]
+)
 def test_stream_requires_identity(instrument_id: str, source_id: str) -> None:
     with pytest.raises(ValueError, match="must not be blank"):
         PaperMarketDataStream(instrument_id=instrument_id, source_id=source_id)
