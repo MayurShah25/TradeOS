@@ -87,7 +87,9 @@ def _bridge(
             expires_at=NOW + timedelta(minutes=5),
         )
     )
-    session = PaperTradingSession(AuthorizedExecutionGateway(PaperBroker(), ledger), ledger)
+    session = PaperTradingSession(
+        AuthorizedExecutionGateway(PaperBroker(), ledger), ledger
+    )
     return (
         PaperMarketDataExecutionBridge(
             repository=repository,
