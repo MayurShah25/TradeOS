@@ -1,7 +1,7 @@
 # TradeOS
 
 **Version:** 0.2.3  
-**Status:** Phase 5.8 Promotion Lifecycle Projection & Reconstruction Implemented  
+**Status:** Phase 5.9 Promotion Lifecycle Query Boundary Implemented  
 **Project Type:** Personal AI-Assisted Multi-Market Trading Operating System
 
 ## Overview
@@ -35,9 +35,9 @@ The documentation baseline currently consists of:
 - `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
 - `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
 - `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
-- `docs/architecture/22_DOMAIN_MODEL.md` through `40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, promotion, and lifecycle architecture.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, promotion, and lifecycle architecture.
 
-**All numbered documents 01–40 are accounted for in the repository.**
+**All numbered documents 01–41 are accounted for in the repository.**
 
 The documentation set is treated as the baseline for implementation. Future documentation changes must follow the governance process and must not silently contradict canonical rules or contracts.
 
@@ -66,6 +66,7 @@ The documentation set is treated as the baseline for implementation. Future docu
 | 38 | `docs/architecture/` | Deterministic promotion stage transition boundary |
 | 39 | `docs/architecture/` | Durable promotion transition persistence and lifecycle audit |
 | 40 | `docs/architecture/` | Deterministic promotion lifecycle projection and reconstruction |
+| 41 | `docs/architecture/` | Repository-backed promotion lifecycle query boundary |
 
 ## Implementation Roadmap
 
@@ -82,7 +83,7 @@ The core configuration, domain, portfolio, execution, testing, and infrastructur
 **COMPLETED.** Strategy contracts, causal historical simulation, metrics, robustness checks, and walk-forward validation are implemented.
 
 ### Phase 5 — Validation & Promotion Governance
-**IN PROGRESS.** Validation evidence, durable lineage, governance review, audit history, deterministic promotion-stage transitions, durable lifecycle history, and deterministic lifecycle reconstruction are implemented. Execution authorization and live trading remain separate boundaries.
+**IN PROGRESS.** Validation evidence, durable lineage, governance review, audit history, deterministic promotion-stage transitions, durable lifecycle history, deterministic lifecycle reconstruction, and the repository-backed lifecycle query boundary are implemented. Execution authorization and live trading remain separate boundaries.
 
 ### Phase 6 — Paper Trading Operations
 Introduce broader real-time data workflows, simulated execution operations, reconciliation workflows, and operational monitoring.
@@ -158,12 +159,12 @@ The system is **not ready for live trading** merely because the documentation or
 ### Documentation
 **READY / BASELINE LOCKED**
 
-The repository contains the numbered architecture sequence through Document 40 plus the global rules and documentation-governance documents.
+The repository contains the numbered architecture sequence through Document 41 plus the global rules and documentation-governance documents.
 
 ### Coding
-**PHASE 5.8 IMPLEMENTED / TESTED**
+**PHASE 5.9 IMPLEMENTED / TESTED**
 
-Validation evidence, governance review, durable promotion history, deterministic promotion transitions, and deterministic lifecycle projection/reconstruction are implemented behind explicit contracts and CI.
+Validation evidence, governance review, durable promotion history, deterministic promotion transitions, deterministic lifecycle projection/reconstruction, and repository-backed lifecycle querying are implemented behind explicit contracts and CI.
 
 ### Live Trading
 **NOT READY**
