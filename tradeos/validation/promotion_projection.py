@@ -2,7 +2,11 @@
 
 from dataclasses import dataclass
 
-from tradeos.validation.promotion import PromotionStage, PromotionStageTransition, allowed_next_stages
+from tradeos.validation.promotion import (
+    PromotionStage,
+    PromotionStageTransition,
+    allowed_next_stages,
+)
 
 
 @dataclass(frozen=True, slots=True)
