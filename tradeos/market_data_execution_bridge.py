@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 
-from tradeos.execution import PaperTradingResult, PaperTradingRun, PaperTradingSession, Order
+from tradeos.execution import Order, PaperTradingResult, PaperTradingRun, PaperTradingSession
 from tradeos.market_data import (
     PaperMarketDataFreshnessPolicy,
     validate_paper_market_data,
