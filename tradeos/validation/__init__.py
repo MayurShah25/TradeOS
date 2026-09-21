@@ -28,6 +28,7 @@ from tradeos.validation.promotion_audit import (
     PromotionTransitionAuditEvent,
     PromotionTransitionAuditEventType,
 )
+from tradeos.validation.promotion_lifecycle_query import query_promotion_lifecycle
 from tradeos.validation.promotion_projection import (
     PromotionLifecycleProjection,
     project_promotion_lifecycle,
@@ -70,5 +71,6 @@ __all__ = [
     "evaluate_promotion_eligibility",
     "evaluate_robustness_gate",
     "project_promotion_lifecycle",
+    "query_promotion_lifecycle",
     "transition_from_review",
 ]
