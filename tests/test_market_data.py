@@ -37,8 +37,8 @@ def test_valid_snapshot_is_accepted() -> None:
 @pytest.mark.parametrize(
     ("field", "value", "message"),
     [
-        ("instrument_id", "", "instrument_id must be blank"),
-        ("source_id", "", "source_id must be blank"),
+        ("instrument_id", "", "instrument_id must not be blank"),
+        ("source_id", "", "source_id must not be blank"),
         ("price", Decimal(0), "price must be greater than zero"),
         ("price", Decimal(-1), "price must be greater than zero"),
     ],
