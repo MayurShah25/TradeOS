@@ -154,23 +154,24 @@ def test_rejects_broken_stage_chain() -> None:
 
 
 def test_rejects_transition_after_terminal_stage() -> None:
-    transitions = (
-        make_transition(
-            transition_id="t1",
-            from_stage=PromotionStage.PAPER,
-            to_stage=PromotionStage.CONTROLLED_PROMOTION,
-        ),
+    terminal = make_transition(
+        transition_id="t1",
+        from_stage=PromotionStage.PAPER,
+        to_stage=PromotionStage.CONTROLLED_PROMOTION,
+    )
+
+    with pytest.raises(ValueError, match="promotion stage transition"):
         make_transition(
             transition_id="t2",
             from_stage=PromotionStage.CONTROLLED_PROMOTION,
             to_stage=PromotionStage.PAPER,
-        ),
+        )
+
+    projection = project_promotion_lifecycle(
+        strategy_id="strategy-1",
+        strategy_version="1.0.0",
+        initial_stage=PromotionStage.PAPER,
+        transitions=(terminal,),
     )
 
-    with pytest.raises(ValueError, match="broken stage chain"):
-        project_promotion_lifecycle(
-            strategy_id="strategy-1",
-            strategy_version="1.0.0",
-            initial_stage=PromotionStage.PAPER,
-            transitions=transitions,
-        )
+    assert projection.current_stage is PromotionStage.CONTROLLED_PROMOTION
