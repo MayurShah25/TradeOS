@@ -1,7 +1,7 @@
 # TradeOS Documentation Governance
 
 **Version:** 0.2.3  
-**Status:** Architecture Baseline — Phase 5.8  
+**Status:** Architecture Baseline — Phase 5.9  
 **Purpose:** Define the repository documentation hierarchy, authority boundaries, canonical references, and rules for maintaining consistency as TradeOS evolves.
 
 ---
@@ -44,7 +44,8 @@ TradeOS/
     │   ├── 37_DURABLE_PROMOTION_REVIEW_AND_GOVERNANCE_AUDIT.md
     │   ├── 38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md
     │   ├── 39_DURABLE_PROMOTION_TRANSITION_AND_LIFECYCLE_AUDIT.md
-    │   └── 40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md
+    │   ├── 40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md
+    │   └── 41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md
     ├── configuration/
     │   └── 21_CONFIGURATION.md
     └── contracts/
@@ -96,6 +97,7 @@ Configuration documents define configuration domains, precedence, validation, an
 38 → Promotion Stage Transition
 39 → Promotion Transition Persistence & Lifecycle Audit
 40 → Promotion Lifecycle Projection & Reconstruction
+41 → Repository-backed Promotion Lifecycle Query Boundary
 ```
 
 ---
@@ -121,6 +123,7 @@ Promotion review → 36–37 validation governance architecture
 Promotion stage transition → 38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md
 Promotion transition persistence → 39_DURABLE_PROMOTION_TRANSITION_AND_LIFECYCLE_AUDIT.md
 Promotion lifecycle projection → 40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md
+Promotion lifecycle query → 41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
