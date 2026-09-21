@@ -82,6 +82,5 @@ class PaperMarketDataExecutionBridge:
     ) -> PaperMarketDataFreshnessPolicy:
         if max_market_data_age < timedelta(0):
             raise ValueError("max_market_data_age cannot be negative")
-        return PaperMarketDataFreshnessPolicy(
-            max_age_seconds=int(max_market_data_age.total_seconds())
-        )
+        max_age_seconds = int(max_market_data_age.total_seconds())
+        return PaperMarketDataFreshnessPolicy(max_age_seconds=max_age_seconds)
