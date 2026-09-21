@@ -1,7 +1,7 @@
 # TradeOS Documentation Governance
 
 **Version:** 0.2.3  
-**Status:** Architecture Baseline — Phase 6.1  
+**Status:** Architecture Baseline — Phase 6.2  
 **Purpose:** Define the repository documentation hierarchy, authority boundaries, canonical references, and rules for maintaining consistency as TradeOS evolves.
 
 ---
@@ -47,6 +47,7 @@ TradeOS/
     │   ├── 40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md
     │   ├── 41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md
     │   └── 42_PAPER_MARKET_DATA_INTEGRITY_BOUNDARY.md
+    │   └── 43_PAPER_MARKET_DATA_STREAM_BOUNDARY.md
     ├── configuration/
     │   └── 21_CONFIGURATION.md
     └── contracts/
@@ -100,6 +101,7 @@ Configuration documents define configuration domains, precedence, validation, an
 40 → Promotion Lifecycle Projection & Reconstruction
 41 → Repository-backed Promotion Lifecycle Query Boundary
 42 → Paper Market Data Integrity Boundary
+43 → Paper Market Data Stream Boundary
 ```
 
 ---
@@ -127,6 +129,7 @@ Promotion transition persistence → 39_DURABLE_PROMOTION_TRANSITION_AND_LIFECYC
 Promotion lifecycle projection → 40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md
 Promotion lifecycle query → 41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md
 Paper market data integrity → 42_PAPER_MARKET_DATA_INTEGRITY_BOUNDARY.md
+Paper market data stream → 43_PAPER_MARKET_DATA_STREAM_BOUNDARY.md
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
