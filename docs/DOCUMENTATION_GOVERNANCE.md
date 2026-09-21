@@ -1,7 +1,7 @@
 # TradeOS Documentation Governance
 
 **Version:** 0.2.3  
-**Status:** Architecture Baseline — Phase 6.3  
+**Status:** Architecture Baseline — Phase 6.4  
 **Purpose:** Define the repository documentation hierarchy, authority boundaries, canonical references, and rules for maintaining consistency as TradeOS evolves.
 
 ---
@@ -48,7 +48,8 @@ TradeOS/
     │   ├── 41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md
     │   └── 42_PAPER_MARKET_DATA_INTEGRITY_BOUNDARY.md
     │   └── 43_PAPER_MARKET_DATA_STREAM_BOUNDARY.md
-    │   └── 44_PAPER_MARKET_DATA_SNAPSHOT_REPOSITORY.md
+    │   ├── 44_PAPER_MARKET_DATA_SNAPSHOT_REPOSITORY.md
+    │   └── 45_PAPER_MARKET_DATA_TO_EXECUTION_BRIDGE.md
     ├── configuration/
     │   └── 21_CONFIGURATION.md
     └── contracts/
@@ -104,6 +105,7 @@ Configuration documents define configuration domains, precedence, validation, an
 42 → Paper Market Data Integrity Boundary
 43 → Paper Market Data Stream Boundary
 44 → Paper Market Data Snapshot Repository
+45 → Paper Market Data to Governed Paper Execution Bridge
 ```
 
 ---
@@ -133,6 +135,7 @@ Promotion lifecycle query → 41_PROMOTION_LIFECYCLE_QUERY_BOUNDARY.md
 Paper market data integrity → 42_PAPER_MARKET_DATA_INTEGRITY_BOUNDARY.md
 Paper market data stream → 43_PAPER_MARKET_DATA_STREAM_BOUNDARY.md
 Paper market data repository → 44_PAPER_MARKET_DATA_SNAPSHOT_REPOSITORY.md
+Paper data-to-execution bridge → 45_PAPER_MARKET_DATA_TO_EXECUTION_BRIDGE.md
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
@@ -340,6 +343,7 @@ The following documents are canonical and locked within their respective domains
 42  Paper Market Data Integrity Boundary            IMPLEMENTED / TESTED
 43  Paper Market Data Stream Boundary               IMPLEMENTED / TESTED
 44  Paper Market Data Snapshot Repository          IMPLEMENTED / TESTED
+45  Paper Market Data to Execution Bridge            IMPLEMENTED / TESTED
 ```
 
 These documents must be treated as authoritative until a later governed architectural change supersedes them.
