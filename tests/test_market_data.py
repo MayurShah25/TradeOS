@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
@@ -13,7 +13,7 @@ from tradeos.market_data import (
 def _snapshot(**overrides: object) -> PaperMarketDataSnapshot:
     values: dict[str, object] = {
         "instrument_id": "NSE:RELIANCE",
-        "price": Decimal("2500"),
+        "price": Decimal(2500),
         "observed_at": datetime(2026, 9, 21, 10, 0, tzinfo=UTC),
         "source_id": "paper-feed-1",
     }
@@ -39,8 +39,8 @@ def test_valid_snapshot_is_accepted() -> None:
     [
         ("instrument_id", "", "instrument_id must be blank"),
         ("source_id", "", "source_id must be blank"),
-        ("price", Decimal("0"), "price must be greater than zero"),
-        ("price", Decimal("-1"), "price must be greater than zero"),
+        ("price", Decimal(0), "price must be greater than zero"),
+        ("price", Decimal(-1), "price must be greater than zero"),
     ],
 )
 def test_snapshot_invariants_fail_closed(field: str, value: object, message: str) -> None:
@@ -80,7 +80,7 @@ def test_stale_snapshot_is_rejected() -> None:
 
 def test_non_utc_snapshot_is_rejected() -> None:
     with pytest.raises(ValueError, match="UTC"):
-        _snapshot(observed_at=datetime(2026, 9, 21, 10, 0)).validate()
+        _snapshot(observed_at=datetime(2026, 9, 21, 10, 0, tzinfo=timezone(timedelta(hours=1)))).validate()
 
 
 def test_negative_freshness_policy_is_rejected() -> None:
@@ -91,4 +91,4 @@ def test_negative_freshness_policy_is_rejected() -> None:
 def test_snapshot_is_immutable() -> None:
     snapshot = _snapshot()
     with pytest.raises(AttributeError):
-        snapshot.price = Decimal("2501")
+        snapshot.price = Decimal(2501)
