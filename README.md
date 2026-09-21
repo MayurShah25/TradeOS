@@ -1,7 +1,7 @@
 # TradeOS
 
 **Version:** 0.2.3  
-**Status:** Phase 5.7 Promotion Transition Persistence & Lifecycle Audit Implemented  
+**Status:** Phase 5.8 Promotion Lifecycle Projection & Reconstruction Implemented  
 **Project Type:** Personal AI-Assisted Multi-Market Trading Operating System
 
 ## Overview
@@ -21,7 +21,7 @@ TradeOS is not intended to predict markets with certainty. It is intended to mak
 - **Explainability.** Decisions must preserve the evidence, reasoning outputs, risk decisions, and outcomes needed for audit and review.
 - **Modularity.** Markets, strategies, models, agents, brokers, and data providers should be replaceable through defined boundaries.
 - **Reasoning efficiency.** Use bounded workflows, structured inputs, selective model calls, summaries, and caching where justified.
-- **Safety before automation.** Progression is **Research → Backtest → Walk-Forward Validation → Paper Trading → Controlled Live Trading**.
+- **Safety before automation.** Promotion remains governed and separate from execution authority.
 - **No trade is a valid outcome.** A rejected opportunity is a successful governance outcome when constraints are not satisfied.
 
 The global constitutional rules are defined by `rules.md`; detailed documents refine implementation without weakening those rules.
@@ -35,9 +35,9 @@ The documentation baseline currently consists of:
 - `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
 - `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
 - `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
-- `docs/architecture/22_DOMAIN_MODEL.md` through `38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md and 39_DURABLE_PROMOTION_TRANSITION_AND_LIFECYCLE_AUDIT.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, and durable reconciliation architecture.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, promotion, and lifecycle architecture.
 
-**All numbered documents 01–38 are accounted for in the repository. No numbered documentation gap is currently known.**
+**All numbered documents 01–40 are accounted for in the repository.**
 
 The documentation set is treated as the baseline for implementation. Future documentation changes must follow the governance process and must not silently contradict canonical rules or contracts.
 
@@ -65,6 +65,7 @@ The documentation set is treated as the baseline for implementation. Future docu
 | 36–37 | `docs/architecture/` | Promotion review, durable governance, and audit history |
 | 38 | `docs/architecture/` | Deterministic promotion stage transition boundary |
 | 39 | `docs/architecture/` | Durable promotion transition persistence and lifecycle audit |
+| 40 | `docs/architecture/` | Deterministic promotion lifecycle projection and reconstruction |
 
 ## Implementation Roadmap
 
@@ -81,7 +82,7 @@ The core configuration, domain, portfolio, execution, testing, and infrastructur
 **COMPLETED.** Strategy contracts, causal historical simulation, metrics, robustness checks, and walk-forward validation are implemented.
 
 ### Phase 5 — Validation & Promotion Governance
-**IN PROGRESS.** Validation evidence, durable lineage, governance review, audit history, deterministic promotion-stage transitions, and durable lifecycle history are implemented. Execution authorization and live trading remain separate boundaries.
+**IN PROGRESS.** Validation evidence, durable lineage, governance review, audit history, deterministic promotion-stage transitions, durable lifecycle history, and deterministic lifecycle reconstruction are implemented. Execution authorization and live trading remain separate boundaries.
 
 ### Phase 6 — Paper Trading Operations
 Introduce broader real-time data workflows, simulated execution operations, reconciliation workflows, and operational monitoring.
@@ -140,6 +141,8 @@ Review
 Controlled Promotion
 ```
 
+Validation and promotion records are immutable, lineage-preserving, and auditable. Lifecycle projection reconstructs the supported promotion stage from those records without mutating them or creating execution authority.
+
 Backtesting must account for relevant transaction costs, slippage, liquidity, spreads, partial fills, market hours, corporate actions, data quality, and execution latency. Historical evaluation must avoid look-ahead bias and data leakage.
 
 Learning follows a governed path from observation and logging through repeated evidence, validation, recommendation, approval, activation, and measurement. Learning may recommend improvements but must not silently modify immutable safety controls or deploy unvalidated behavior.
@@ -148,19 +151,19 @@ Learning follows a governed path from observation and logging through repeated e
 
 Secrets must never be committed to GitHub. Broker credentials, API keys, cloud credentials, database passwords, and LLM-provider credentials must use environment variables or appropriate secrets management.
 
-The system is **not ready for live trading** merely because the documentation phase is complete.
+The system is **not ready for live trading** merely because the documentation or promotion-governance phases are complete.
 
 ## Current Readiness
 
 ### Documentation
 **READY / BASELINE LOCKED**
 
-The repository currently contains the complete numbered documentation sequence **01–32**, plus the global rules and documentation-governance documents. No numbered documentation gap is currently known.
+The repository contains the numbered architecture sequence through Document 40 plus the global rules and documentation-governance documents.
 
 ### Coding
-**PHASE 3 COMPLETE — READY FOR PHASE 4**
+**PHASE 5.8 IMPLEMENTED / TESTED**
 
-The durable paper-trading repository, session integration, recovery inspection, explicit reconciliation-required lifecycle, and durable reconciliation boundary are implemented and covered by CI. The next implementation increment is the strategy and backtesting foundation.
+Validation evidence, governance review, durable promotion history, deterministic promotion transitions, and deterministic lifecycle projection/reconstruction are implemented behind explicit contracts and CI.
 
 ### Live Trading
 **NOT READY**
