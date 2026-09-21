@@ -28,6 +28,10 @@ from tradeos.validation.promotion_audit import (
     PromotionTransitionAuditEvent,
     PromotionTransitionAuditEventType,
 )
+from tradeos.validation.promotion_projection import (
+    PromotionLifecycleProjection,
+    project_promotion_lifecycle,
+)
 from tradeos.validation.promotion_repository import PromotionTransitionRepository
 from tradeos.validation.repository import ValidationEvidenceRepository
 from tradeos.validation.review import PromotionReview, PromotionReviewDecision
@@ -44,6 +48,7 @@ __all__ = [
     "InMemoryValidationEvidenceRepository",
     "OutOfSampleValidationConfig",
     "PromotionEligibility",
+    "PromotionLifecycleProjection",
     "PromotionReview",
     "PromotionReviewAuditEvent",
     "PromotionReviewAuditEventType",
@@ -64,5 +69,6 @@ __all__ = [
     "evaluate_out_of_sample_gate",
     "evaluate_promotion_eligibility",
     "evaluate_robustness_gate",
+    "project_promotion_lifecycle",
     "transition_from_review",
 ]
