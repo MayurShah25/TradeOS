@@ -80,7 +80,9 @@ def test_stale_snapshot_is_rejected() -> None:
 
 def test_non_utc_snapshot_is_rejected() -> None:
     with pytest.raises(ValueError, match="UTC"):
-        _snapshot(observed_at=datetime(2026, 9, 21, 10, 0, tzinfo=timezone(timedelta(hours=1)))).validate()
+        _snapshot(
+            observed_at=datetime(2026, 9, 21, 10, 0, tzinfo=timezone(timedelta(hours=1)))
+        ).validate()
 
 
 def test_negative_freshness_policy_is_rejected() -> None:
