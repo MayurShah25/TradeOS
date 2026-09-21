@@ -72,9 +72,10 @@ def test_repository_returns_observations_in_order(tmp_path) -> None:
 
 def test_repository_rejects_invalid_snapshot(tmp_path) -> None:
     invalid = _snapshot(price="0")
-    with SQLitePaperMarketDataRepository(tmp_path / "market.db") as repository:
-        with pytest.raises(ValueError, match="greater than zero"):
-            repository.save(invalid)
+    with SQLitePaperMarketDataRepository(tmp_path / "market.db") as repository, pytest.raises(
+        ValueError, match="greater than zero"
+    ):
+        repository.save(invalid)
 
 
 def test_repository_requires_utc_lookup(tmp_path) -> None:
