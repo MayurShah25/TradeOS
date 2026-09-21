@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 from datetime import UTC, datetime
+from decimal import Decimal
 from pathlib import Path
 from typing import Self
 
@@ -22,7 +23,6 @@ class SQLitePaperMarketDataRepository(PaperMarketDataRepository):
         self._initialize_schema()
 
     def close(self) -> None:
-        """Close the underlying database connection."""
         self._connection.close()
 
     def __enter__(self) -> Self:
@@ -32,7 +32,6 @@ class SQLitePaperMarketDataRepository(PaperMarketDataRepository):
         self.close()
 
     def save(self, snapshot: PaperMarketDataSnapshot) -> None:
-        """Persist a validated snapshot; reject mutation under the same observation key."""
         snapshot.validate()
         existing = self.get(
             instrument_id=snapshot.instrument_id,
@@ -43,7 +42,6 @@ class SQLitePaperMarketDataRepository(PaperMarketDataRepository):
             if existing != snapshot:
                 raise ValueError("paper market-data snapshot is immutable")
             return
-
         self._connection.execute(
             """
             INSERT INTO paper_market_data_snapshots (
@@ -66,7 +64,6 @@ class SQLitePaperMarketDataRepository(PaperMarketDataRepository):
         source_id: str,
         observed_at: datetime,
     ) -> PaperMarketDataSnapshot | None:
-        """Return one snapshot by its immutable identity."""
         _validate_lookup(instrument_id, source_id, observed_at)
         row = self._connection.execute(
             """
@@ -84,12 +81,10 @@ class SQLitePaperMarketDataRepository(PaperMarketDataRepository):
         instrument_id: str,
         source_id: str | None = None,
     ) -> tuple[PaperMarketDataSnapshot, ...]:
-        """Return snapshots in deterministic observation-time order."""
         if not instrument_id.strip():
             raise ValueError("instrument_id must not be blank")
         if source_id == "":
             raise ValueError("source_id must not be blank")
-
         if source_id is None:
             rows = self._connection.execute(
                 """
@@ -130,11 +125,7 @@ class SQLitePaperMarketDataRepository(PaperMarketDataRepository):
         self._connection.commit()
 
 
-def _validate_lookup(
-    instrument_id: str,
-    source_id: str,
-    observed_at: datetime,
-) -> None:
+def _validate_lookup(instrument_id: str, source_id: str, observed_at: datetime) -> None:
     if not instrument_id.strip():
         raise ValueError("instrument_id must not be blank")
     if not source_id.strip():
@@ -160,5 +151,5 @@ def _decode_snapshot(row: sqlite3.Row) -> PaperMarketDataSnapshot:
         instrument_id=row["instrument_id"],
         source_id=row["source_id"],
         observed_at=_decode_datetime(row["observed_at"]),
-        price=__import__("decimal").Decimal(row["price"]),
+        price=Decimal(row["price"]),
     )
