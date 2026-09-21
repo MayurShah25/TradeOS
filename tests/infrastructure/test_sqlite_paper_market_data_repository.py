@@ -29,11 +29,14 @@ def test_repository_round_trip(tmp_path) -> None:
     with SQLitePaperMarketDataRepository(tmp_path / "market.db") as repository:
         snapshot = _snapshot()
         repository.save(snapshot)
-        assert repository.get(
-            instrument_id=snapshot.instrument_id,
-            source_id=snapshot.source_id,
-            observed_at=snapshot.observed_at,
-        ) == snapshot
+        assert (
+            repository.get(
+                instrument_id=snapshot.instrument_id,
+                source_id=snapshot.source_id,
+                observed_at=snapshot.observed_at,
+            )
+            == snapshot
+        )
 
 
 def test_repository_is_idempotent_for_exact_resave(tmp_path) -> None:
@@ -72,8 +75,9 @@ def test_repository_returns_observations_in_order(tmp_path) -> None:
 
 def test_repository_rejects_invalid_snapshot(tmp_path) -> None:
     invalid = _snapshot(price="0")
-    with SQLitePaperMarketDataRepository(tmp_path / "market.db") as repository, pytest.raises(
-        ValueError, match="greater than zero"
+    with (
+        SQLitePaperMarketDataRepository(tmp_path / "market.db") as repository,
+        pytest.raises(ValueError, match="greater than zero"),
     ):
         repository.save(invalid)
 
