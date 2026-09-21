@@ -1,7 +1,7 @@
 # TradeOS Documentation Governance
 
 **Version:** 0.2.3  
-**Status:** Architecture Baseline — Phase 5.5  
+**Status:** Architecture Baseline — Phase 5.8  
 **Purpose:** Define the repository documentation hierarchy, authority boundaries, canonical references, and rules for maintaining consistency as TradeOS evolves.
 
 ---
@@ -41,7 +41,10 @@ TradeOS/
     │   ├── 34_VALIDATION_EVIDENCE_FROM_RESEARCH_RESULTS.md
     │   ├── 35_VALIDATION_EVIDENCE_PERSISTENCE_AND_LINEAGE.md
     │   ├── 36_VALIDATION_REVIEW_AND_AUDIT_BOUNDARY.md
-    │   └── 37_DURABLE_PROMOTION_REVIEW_AND_GOVERNANCE_AUDIT.md
+    │   ├── 37_DURABLE_PROMOTION_REVIEW_AND_GOVERNANCE_AUDIT.md
+    │   ├── 38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md
+    │   ├── 39_DURABLE_PROMOTION_TRANSITION_AND_LIFECYCLE_AUDIT.md
+    │   └── 40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md
     ├── configuration/
     │   └── 21_CONFIGURATION.md
     └── contracts/
@@ -88,6 +91,11 @@ Configuration documents define configuration domains, precedence, validation, an
 30 → Safe Paper-Trading Recovery
 31 → Execution Reconciliation Semantics
 32 → Durable Execution Reconciliation
+33–35 → Validation Evidence
+36–37 → Promotion Review & Governance Audit
+38 → Promotion Stage Transition
+39 → Promotion Transition Persistence & Lifecycle Audit
+40 → Promotion Lifecycle Projection & Reconstruction
 ```
 
 ---
@@ -112,6 +120,7 @@ Validation evidence → 33–35 validation architecture
 Promotion review → 36–37 validation governance architecture
 Promotion stage transition → 38_PROMOTION_STAGE_TRANSITION_BOUNDARY.md
 Promotion transition persistence → 39_DURABLE_PROMOTION_TRANSITION_AND_LIFECYCLE_AUDIT.md
+Promotion lifecycle projection → 40_PROMOTION_LIFECYCLE_PROJECTION_AND_RECONSTRUCTION.md
 ```
 
 A subsystem document may describe how it uses a concept but must not create a competing canonical definition.
@@ -312,6 +321,9 @@ The following documents are canonical and locked within their respective domains
 35  Validation Evidence Persistence & Lineage     IMPLEMENTED / TESTED
 36  Validation Review & Audit Boundary            IMPLEMENTED / TESTED
 37  Durable Promotion Review & Governance Audit   IMPLEMENTED / TESTED
+38  Promotion Stage Transition                    IMPLEMENTED / TESTED
+39  Promotion Transition Persistence & Audit      IMPLEMENTED / TESTED
+40  Promotion Lifecycle Projection                IMPLEMENTED / TESTED
 ```
 
 These documents must be treated as authoritative until a later governed architectural change supersedes them.
@@ -339,7 +351,7 @@ Live broker connectivity, live financial exposure, automatic retry/resubmission 
 
 # 19. Phase 5.5 Closure
 
-Phase 5.5 establishes durable governance storage after validation evidence and promotion review:
+Phase 5.5 established durable governance storage after validation evidence and promotion review:
 
 - immutable promotion review persistence;
 - exact evidence and strategy lineage preservation;
@@ -352,6 +364,21 @@ Durable governance persistence does not authorize orders, bypass deterministic R
 
 ---
 
-# 20. Core Rule
+# 20. Phase 5.8 Boundary
+
+Phase 5.8 establishes a deterministic read-side projection over immutable promotion-transition history:
+
+- reconstruct current governed promotion stage from ordered transitions;
+- enforce contiguous legal stage progression;
+- preserve exact strategy/version lineage;
+- reject duplicate, conflicting, or broken histories;
+- keep projection derived and non-authoritative;
+- keep execution authorization, Risk, and live trading separate.
+
+The projection is a view of recorded governance facts, not a new authority boundary.
+
+---
+
+# 21. Core Rule
 
 > **One concept, one canonical owner, one repository path, one authoritative definition. Subsystems may specialize behavior, but they must not create competing truths.**
