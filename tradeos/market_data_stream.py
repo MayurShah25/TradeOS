@@ -46,7 +46,7 @@ class PaperMarketDataStream:
             raise ValueError("market-data instrument does not match stream")
         if snapshot.source_id != self._source_id:
             raise ValueError("market-data source does not match stream")
-        if self._last_snapshot is not None and snapshot.observed_at <= self._last_snapshot.observed_at:
+        if (\n            self._last_snapshot is not None\n            and snapshot.observed_at <= self._last_snapshot.observed_at\n        ):
             raise ValueError("market-data observation is duplicate or out of order")
         self._last_snapshot = snapshot
 
