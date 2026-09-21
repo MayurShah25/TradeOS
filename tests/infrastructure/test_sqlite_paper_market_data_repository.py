@@ -8,7 +8,6 @@ from tradeos.infrastructure.sqlite_paper_market_data_repository import (
 )
 from tradeos.market_data import PaperMarketDataSnapshot
 from tradeos.market_data_repository import PaperMarketDataRepository
-from tradeos.validation import ValidationStage
 
 
 def _snapshot(
@@ -62,7 +61,6 @@ def test_repository_returns_observations_in_order(tmp_path) -> None:
         repository.save(later)
         repository.save(other_source)
         repository.save(earlier)
-
         assert repository.list_for_instrument(
             instrument_id="NSE:RELIANCE",
             source_id="paper-feed-1",
@@ -81,14 +79,13 @@ def test_repository_rejects_invalid_snapshot(tmp_path) -> None:
 
 def test_repository_requires_utc_lookup(tmp_path) -> None:
     snapshot = _snapshot()
-    non_utc = datetime(2026, 9, 21, 10, tzinfo=UTC)
     with SQLitePaperMarketDataRepository(tmp_path / "market.db") as repository:
         repository.save(snapshot)
         with pytest.raises(ValueError, match="UTC"):
             repository.get(
                 instrument_id=snapshot.instrument_id,
                 source_id=snapshot.source_id,
-                observed_at=non_utc.replace(tzinfo=None),
+                observed_at=snapshot.observed_at.replace(tzinfo=None),
             )
 
 
