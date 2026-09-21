@@ -49,6 +49,4 @@ class InMemoryPaperMarketDataRepository(PaperMarketDataRepository):
             if stored_instrument == instrument_id
             and (source_id is None or stored_source == source_id)
         )
-        return tuple(
-            sorted(values, key=lambda item: (item.observed_at, item.source_id))
-        )
+        return tuple(sorted(values, key=lambda item: (item.observed_at, item.source_id)))
