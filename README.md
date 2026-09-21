@@ -1,7 +1,7 @@
 # TradeOS
 
 **Version:** 0.2.3  
-**Status:** Phase 6.1 Paper Market Data Integrity Boundary Implemented  
+**Status:** Phase 6.2 Paper Market Data Stream Boundary Implemented  
 **Project Type:** Personal AI-Assisted Multi-Market Trading Operating System
 
 ## Overview
@@ -35,9 +35,9 @@ The documentation baseline currently consists of:
 - `docs/architecture/01_PROJECT_VISION.md` through `19_TESTING_ARCHITECTURE.md` — core architecture documentation.
 - `docs/contracts/20_AGENT_CONTRACTS.md` — agent boundaries and contracts.
 - `docs/configuration/21_CONFIGURATION.md` — configuration architecture and policy.
-- `docs/architecture/22_DOMAIN_MODEL.md` through `42_PAPER_MARKET_DATA_INTEGRITY_BOUNDARY.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, promotion, and lifecycle architecture.
+- `docs/architecture/22_DOMAIN_MODEL.md` through `43_PAPER_MARKET_DATA_STREAM_BOUNDARY.md` — domain, state, event, authority, reasoning, governance, persistence, recovery, reconciliation, promotion, and lifecycle architecture.
 
-**All numbered documents 01–42 are accounted for in the repository.**
+**All numbered documents 01–43 are accounted for in the repository.**
 
 The documentation set is treated as the baseline for implementation. Future documentation changes must follow the governance process and must not silently contradict canonical rules or contracts.
 
@@ -68,6 +68,7 @@ The documentation set is treated as the baseline for implementation. Future docu
 | 40 | `docs/architecture/` | Deterministic promotion lifecycle projection and reconstruction |
 | 41 | `docs/architecture/` | Repository-backed promotion lifecycle query boundary |
 | 42 | `docs/architecture/` | Paper market data integrity and freshness boundary |
+| 43 | `docs/architecture/` | Ordered paper market data stream boundary |
 
 ## Implementation Roadmap
 
@@ -87,7 +88,7 @@ The core configuration, domain, portfolio, execution, testing, and infrastructur
 **IN PROGRESS.** Validation evidence, durable lineage, governance review, audit history, deterministic promotion-stage transitions, durable lifecycle history, deterministic lifecycle reconstruction, and the repository-backed lifecycle query boundary are implemented. Execution authorization and live trading remain separate boundaries.
 
 ### Phase 6 — Paper Trading Operations
-**IN PROGRESS.** Phase 6.1 establishes deterministic paper market-data integrity and freshness validation. Broader real-time data workflows, simulated execution operations, reconciliation workflows, and operational monitoring remain subsequent increments.
+**IN PROGRESS.** Phase 6.1 established deterministic paper market-data integrity and freshness validation. Phase 6.2 establishes ordered paper market-data stream handling. Simulated execution operations, reconciliation workflows, and operational monitoring remain subsequent increments.
 
 ### Phase 7 — Dashboard & Learning
 Add monitoring, journal, coaching, learning reports, and analytics.
@@ -160,10 +161,10 @@ The system is **not ready for live trading** merely because the documentation or
 ### Documentation
 **READY / BASELINE LOCKED**
 
-The repository contains the numbered architecture sequence through Document 42 plus the global rules and documentation-governance documents.
+The repository contains the numbered architecture sequence through Document 43 plus the global rules and documentation-governance documents.
 
 ### Coding
-**PHASE 6.1 IMPLEMENTED / TESTED**
+**PHASE 6.2 IMPLEMENTED / TESTED**
 
 Validation evidence, governance review, durable promotion history, deterministic promotion transitions, deterministic lifecycle projection/reconstruction, and repository-backed lifecycle querying are implemented behind explicit contracts and CI.
 
