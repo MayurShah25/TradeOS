@@ -66,7 +66,9 @@ def test_query_ignores_other_strategy_history() -> None:
     )
 
     assert projection.current_stage is PromotionStage.BACKTEST
-    assert projection.transitions == (_transition("t1", PromotionStage.RESEARCH, PromotionStage.BACKTEST),)
+    assert projection.transitions == (
+        _transition("t1", PromotionStage.RESEARCH, PromotionStage.BACKTEST),
+    )
 
 
 def test_query_rejects_version_lineage_mismatch() -> None:
